@@ -1,5 +1,5 @@
-# Hyphenate-SDK-Web
---------
-Hyphenate demo web IM app works as a simple web IM app and demonstrate the implementation of Hyphenate service. 
+## 环信 WebIM sdk
 
-http://webim-demo.hyphenate.io/
+测试环信WebIM请访问 https://webim.easemob.com。
+
+更多关于环信的开发文档请见：https://docs.easemob.com

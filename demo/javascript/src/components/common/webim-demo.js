@@ -3,56 +3,63 @@ var React = require("react");
 
 exports.Input = React.createClass({
 
-    handleChange: function () {
+    getInitialState: function () {
+        return {
+            value: this.props.value || ''
+        }
+    },
+
+    handleChange: function (e) {
         typeof this.props.change === 'function' && this.props.change(this.refs.input.value);
+
+        var v = e.target.value;
+        this.setState({value: v});
+        (typeof this.props.onChange == 'function') && this.props.onChange(e);
     },
 
     componentWillUnmount: function () {
-        if ( this.props.keydown ) {
+        if (this.props.keydown) {
             this.refs.input.removeEventListener('keydown', this.props.keydown);
         }
         this.refs.input = null;
     },
 
     componentDidMount: function () {
-        if ( this.props.keydown ) {
+        if (this.props.keydown) {
             this.refs.input.addEventListener('keydown', this.props.keydown);
         }
-        if ( this.props.defaultFocus ) {
+        if (this.props.defaultFocus) {
             this.refs.input.focus();
         }
     },
 
     render: function () {
-        var type = this.props.type || 'text'; 
-        return <input className='webim-input'  type={type}  defaultValue={this.props.text} ref='input' placeholder={this.props.placeholder} onChange={this.handleChange} />;
+        var type = this.props.type || 'text';
+        return <input className='webim-input' type={type} defaultValue={this.props.text} ref='input'
+                      value={this.state.value}
+                      placeholder={this.props.placeholder} onChange={this.handleChange}/>;
     }
 });
-
-
 
 
 exports.Button = React.createClass({
 
     render: function () {
         var className = this.props.className ? ' ' + this.props.className : '';
-        return <button className={'webim-button bg-color' + className}  onClick={this.props.onClick}>{this.props.text}</button>;
+        return <button className={'webim-button bg-color' + className} ref='button'
+                       onClick={this.props.onClick}>{this.props.text}</button>;
     }
 });
-
-
 
 
 exports.SmallButton = React.createClass({
 
     render: function () {
         var className = this.props.status ? ' ' + this.props.status : '';
-        return <button className={'webim-button small' + className}  onClick={this.props.click}>{this.props.text}</button>;
+        return <button className={'webim-button small' + className}
+                       onClick={this.props.click}>{this.props.text}</button>;
     }
 });
-
-
-
 
 
 exports.Radio = React.createClass({
@@ -62,12 +69,10 @@ exports.Radio = React.createClass({
     },
 
     render: function () {
-        return <input ref='input' type='radio' className='webim-input' defaultValue={this.props.text} onChange={this.handleChange} />;
+        return <input ref='input' type='radio' className='webim-input' defaultValue={this.props.text}
+                      onChange={this.handleChange}/>;
     }
 });
-
-
-
 
 
 exports.Checkbox = React.createClass({
@@ -81,11 +86,11 @@ exports.Checkbox = React.createClass({
     handleClick: function () {
         this.toggleChecked();
         this.refs.input.checked = !this.state.checked;
-        this.setState({ checked: !this.state.checked });
+        this.setState({checked: !this.state.checked});
     },
 
     toggleChecked: function () {
-        if ( this.refs.i.className ) {
+        if (this.refs.i.className) {
             this.refs.i.className = '';
         } else {
             this.refs.i.className = 'checked';
@@ -104,7 +109,7 @@ exports.Checkbox = React.createClass({
                 <i ref='i' onClick={this.handleClick}>
                     <em ref='rec' className={'font small' + className}>W</em>
                 </i>
-                <input ref='input' type='checkbox' className='hide' onChange={this.handleChange} />
+                <input ref='input' type='checkbox' className='hide' onChange={this.handleChange}/>
                 <span>{this.props.text}</span>
             </div>
         );

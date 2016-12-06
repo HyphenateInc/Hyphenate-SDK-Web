@@ -1,4 +1,5 @@
-;(function () {
+;
+(function () {
     var connIndex = 0,
         uploadIndex = 100,
         downloadIndex = 200,
@@ -13,8 +14,8 @@
         WEBIM_CONNCTION_ATTACH_ERROR: connIndex++,
         WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: connIndex++,
         WEBIM_CONNCTION_REOPEN_ERROR: connIndex++,
-        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++,
-        WEBIM_CONNCTION_SERVER_ERROR: connIndex++,
+        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++,  //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+        WEBIM_CONNCTION_SERVER_ERROR: connIndex++,        //8: offline by multi login
         WEBIM_CONNCTION_IQ_ERROR: connIndex++,
 
         WEBIM_CONNCTION_PING_ERROR: connIndex++,
@@ -23,7 +24,7 @@
         WEBIM_CONNCTION_CROSSDOMAIN_ERROR: connIndex++,
         WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: connIndex++,
         WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: connIndex++,
-        WEBIM_CONNCTION_DISCONNECTED: connIndex++,
+        WEBIM_CONNCTION_DISCONNECTED: connIndex++,    //16: server-side close the websocket connection
         WEBIM_CONNCTION_AJAX_ERROR: connIndex++,
         WEBIM_CONNCTION_JOINROOM_ERROR: connIndex++,
         WEBIM_CONNCTION_GETROOM_ERROR: connIndex++,
@@ -41,6 +42,9 @@
 
         WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: connIndex++,
         WEBIM_CONNCTION_CALLBACK_INNER_ERROR: connIndex++,
+        WEBIM_CONNCTION_CLIENT_OFFLINE: connIndex++,        //32: client offline
+        WEBIM_CONNCTION_CLIENT_LOGOUT: connIndex++,        //33: client logout
+        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: connIndex++, // Over amount of the tabs a user opened in the same browser
 
 
         WEBIM_UPLOADFILE_BROWSER_ERROR: uploadIndex++,
@@ -78,6 +82,7 @@
         STATUS_DOLOGIN_IM: statusIndex++,
         STATUS_OPENED: statusIndex++,
         STATUS_CLOSING: statusIndex++,
-        STATUS_CLOSED: statusIndex++
+        STATUS_CLOSED: statusIndex++,
+        STATUS_ERROR: statusIndex++
     };
 }());
