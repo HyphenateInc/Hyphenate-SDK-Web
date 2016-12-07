@@ -10,15 +10,15 @@ WebIM.config = {
     /*
      * XMPP server
      */
-    xmppURL: 'im-api.easemob.com',
+    xmppURL: 'im-api.hyphenate.io',
     /*
      * Backend REST API URL
      */
-    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.hyphenate.io',
     /*
      * Application AppKey
      */
-    appkey: 'easemob-demo#chatdemoui',
+    appkey: 'hyphenatedemo#hyphenatedemo',
     /*
      * Whether to use wss
      * @parameter {Boolean} true or false

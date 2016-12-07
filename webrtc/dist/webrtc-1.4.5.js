@@ -580,7 +580,6 @@
 
 	        var mediaStreamConstaints = {};
 	        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
-
 	        this.call(callee, mediaStreamConstaints, accessSid);
 	    },
 
@@ -621,7 +620,6 @@
 	                self.onError(error);
 	            }
 	        });
-
 	        this.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, this.api.jid(callee), function (from, rtcOptions) {
 	            if (rtcOptions.online == "0") {
 	                self.listener.onError({ message: "callee is not online!" });

@@ -63,7 +63,6 @@ var _Call = {
 
         var mediaStreamConstaints = {};
         Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
-
         this.call(callee, mediaStreamConstaints, accessSid);
     },
 
@@ -104,7 +103,6 @@ var _Call = {
                 self.onError(error);
             }
         });
-
         this.api.reqP2P(
             rt,
             mediaStreamConstaints.video ? 1 : 0,
