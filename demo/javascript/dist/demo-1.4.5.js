@@ -23079,7 +23079,7 @@
 	                alert("registerUser:" + code + " - " + msg);
 	            });
 	        } else {
-	            Demo.conn.registerUser(options);
+	            WebIM.utils.registerUser(options);
 	        }
 	    },
 
@@ -23245,11 +23245,18 @@
 	                    Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
 	                }
 	            },
+	            // used for blacklist
+	            onBlacklistUpdate: function onBlacklistUpdate(list) {
+	                // log('onBlacklistUpdate', list);
+	                Demo.api.blacklist.parse(list);
+	                me.setState({ blacklist: list });
+	                // TODO 增量更新
+	                Demo.api.updateRoster();
+	            },
 	            onError: function onError(message) {
-	                if (typeof message === 'string') {
-	                    Demo.api.NotifyError(message);
-	                    return;
-	                }
+	                /*if ( msg && msg.reconnect ) {}*/
+	                // log(WebIM.utils.ts(), 'onError', message);
+	                // console.log('onError', message);
 	                var text = '';
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
@@ -23283,15 +23290,8 @@
 	                }
 
 	                Demo.api.init(Demo.conn.errorType);
-	            },
-	            // used for blacklist
-	            onBlacklistUpdate: function onBlacklistUpdate(list) {
-	                // log('onBlacklistUpdate', list);
-	                Demo.api.blacklist.parse(list);
-	                me.setState({ blacklist: list });
-	                // TODO 增量更新
-	                Demo.api.updateRoster();
 	            }
+
 	        });
 
 	        return {
@@ -29901,16 +29901,14 @@
 	                return iterate(json);
 	            }
 	        },
-	        /*
-	        registerUser: function (options) {
+	        registerUser: function registerUser(options) {
 	            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
 	                Demo.conn.dnsIndex = 0;
 	                Demo.conn.getHttpDNS(options, 'signup');
 	            } else {
 	                Demo.conn.signup(options);
 	            }
-	         },
-	        */
+	        },
 	        login: function login(options) {
 	            var options = options || {};
 	            var suc = options.success || EMPTYFN;

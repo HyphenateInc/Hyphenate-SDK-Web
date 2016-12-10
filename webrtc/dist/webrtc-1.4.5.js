@@ -580,6 +580,7 @@
 
 	        var mediaStreamConstaints = {};
 	        Util.extend(mediaStreamConstaints, this.mediaStreamConstaints);
+
 	        this.call(callee, mediaStreamConstaints, accessSid);
 	    },
 
@@ -620,6 +621,7 @@
 	                self.onError(error);
 	            }
 	        });
+
 	        this.api.reqP2P(rt, mediaStreamConstaints.video ? 1 : 0, mediaStreamConstaints.audio ? 1 : 0, this.api.jid(callee), function (from, rtcOptions) {
 	            if (rtcOptions.online == "0") {
 	                self.listener.onError({ message: "callee is not online!" });
@@ -2136,9 +2138,6 @@
 	        var self = this;
 
 	        _logger.debug('[WebRTC-API] setRemoteDescription start. ');
-
-	        desc.sdp = desc.sdp.replace(/UDP\/TLS\/RTP\/SAVPF/g, "RTP/SAVPF");
-	        _logger.debug('[WebRTC-API] setRemoteDescription.', desc);
 
 	        desc = new RTCSessionDescription(desc);
 

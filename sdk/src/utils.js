@@ -218,7 +218,6 @@
                 return iterate(json);
             }
         },
-        /*
         registerUser: function (options) {
             if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
                 Demo.conn.dnsIndex = 0;
@@ -228,7 +227,6 @@
             }
 
         },
-        */
         login: function (options) {
             var options = options || {};
             var suc = options.success || EMPTYFN;

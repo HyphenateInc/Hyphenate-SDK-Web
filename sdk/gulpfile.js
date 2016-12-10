@@ -6,8 +6,8 @@ let version = packageJson.version
 
 var gulp = require('gulp')
 var webpack = require('webpack-stream')
-var mocha = require('gulp-mocha')   // 用于单元测试
-var babel = require('gulp-babel')   // 用于ES6转化ES5
+var mocha = require('gulp-mocha')   // For unit test
+var babel = require('gulp-babel')   // For turn ES6 into ES5
 // var browserify = require('browserify');
 // var source = require('vinyl-source-stream');
 // var buffer = require('vinyl-buffer');
@@ -47,8 +47,3 @@ gulp.task('sdk', ['sdk:umd', 'sdk:umd:min'])
 
 gulp.task('default', ['sdk'])
 
-//
-// gulp.task('watch', function() {
-//     livereload.listen(); //要在这里调用listen()方法
-//     gulp.watch('less/*.less', ['less']);
-// });
