@@ -5,12 +5,13 @@ The demo app demonstrates how to use the Hyphenate Mobile Instant Messaging (MIM
 - Demo is based on React.
 - Sign in multiple sessions/devices simutaneously ```isMultiLoginSessions:true```
 - Perform extra layer of security check for HTTP/IP to prevent DNS hijacking. ```isHttpDNS:true```
-- Real-time one-to-one and group chat
+- Real-time one-to-one and group chat 
 - File, photo/video, and location sharing with your friends
-- Video/Voice calling for browsers support https+Webkit.
+- Video/Voice calling for browsers support https+Webkit. 
 
 Live demo app
 https://webim-demo.hyphenate.io/
 
 Further details
 https://docs.hyphenate.io/docs/web-install-sdk
+
