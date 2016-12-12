@@ -10,45 +10,65 @@ var Button = UI.Button;
 var Input = UI.Input;
 
 
-
 var Subscribe = React.createClass({
 
-    check: function ( node ) {
-        if ( node.parentNode.childNodes.length === 1 ) {
+    check: function (node, name) {
+        if (node.parentNode.childNodes.length === 1) {
             node.parentNode.removeChild(node);
             this.close();
         } else {
             node.parentNode.removeChild(node);
         }
+        this.props.onHandle(name);
     },
 
-	agree: function ( e ) {
+    agree: function (e) {
         var li = e.target.parentNode,
             name = li.getAttribute('id');
 
-        Demo.conn.subscribed({
-            to: name,
-            message: '[resp:true]'
-        });
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"acceptInvitation","to":"' + name + '"}',
+                function success(str) {
+                    //do nothing
+                },
+                function failure(errCode, errMessage) {
+                    Demo.api.NotifyError('agree:' + errCode);
+                });
+        } else {
+            Demo.conn.subscribed({
+                to: name,
+                message: '[resp:true]'
+            });
 
-        Demo.conn.subscribe({
-            to: name,
-            message: '[resp:true]'
-        });
+            Demo.conn.subscribe({
+                to: name,
+                message: '[resp:true]'
+            });
+        }
 
-        this.check(li);
-	},
+        this.check(li, name);
+    },
 
-    reject: function ( e ) {
+    reject: function (e) {
         var li = e.target.parentNode,
             name = li.getAttribute('id');
 
-        Demo.conn.unsubscribed({
-            to: name,
-            message: new Date().toLocaleString()
-        });
+        if (WebIM.config.isWindowSDK) {
+            WebIM.doQuery('{"type":"declineInvitation","to":"' + name + '"}',
+                function success(str) {
+                    //do nothing
+                },
+                function failure(errCode, errMessage) {
+                    Demo.api.NotifyError('reject:' + errCode);
+                });
+        } else {
+            Demo.conn.unsubscribed({
+                to: name,
+                message: new Date().toLocaleString()
+            });
+        }
 
-        this.check(li);
+        this.check(li, name);
     },
 
     close: function () {
@@ -58,15 +78,15 @@ var Subscribe = React.createClass({
     render: function () {
         var requests = [];
 
-        for ( var i in this.props.data ) {
-            if ( this.props.data.hasOwnProperty(i) ) {
-                var msg = this.props.data[i];
+        for (var i in this.props.data) {
+            if (!this.props.data[i].handled) {
+                var msg = this.props.data[i].msg;
 
                 requests.push(
                     <li id={i} key={i}>
                         <span>{msg}</span>
-                        <Button text={Demo.lan.agree} onClick={this.agree} className='webim-subscribe-button' />
-                        <Button text={Demo.lan.reject} onClick={this.reject} className='error webim-subscribe-button' />
+                        <Button text={Demo.lan.agree} onClick={this.agree} className='webim-subscribe-button'/>
+                        <Button text={Demo.lan.reject} onClick={this.reject} className='error webim-subscribe-button'/>
                     </li>
                 );
             }
@@ -89,17 +109,27 @@ var Subscribe = React.createClass({
 
 module.exports = {
     requests: {},
-    show: function ( data ) {
-
-        !this.requests[data.from] && (this.requests[data.from] = data.from + ': ' + data.status);
+    show: function (data) {
+        if (!this.requests[data.from]) {
+            this.requests[data.from] = {msg: data.from + ': ' + data.status, handled: false};
+        } else {
+            if (this.requests[data.from].handled) {
+                this.requests[data.from].handled = false;
+            }
+        }
 
         ReactDOM.render(
-            <Subscribe onClose={this.close} data={this.requests} />,
-            dom 
-        );       
+            <Subscribe onClose={this.close} onHandle={this.handle} data={this.requests}/>,
+            dom
+        );
+    },
+    handle: function (name) {
+        if (module.exports.requests[name]) {
+            module.exports.requests[name].handled = true;
+        }
     },
 
     close: function () {
         ReactDOM.unmountComponentAtNode(dom);
     }
-}
+};

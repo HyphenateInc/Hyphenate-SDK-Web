@@ -209,12 +209,12 @@
         return obj;
     })();
 
-    window.Hyphenate = window.Hyphenate || {};
-    window.Hyphenate.im = window.Hyphenate.im || _im;
-    window.Hyphenate.im.Connection = _c;
-    window.Hyphenate.im.Utils = _im.utils;
-    window.Hyphenate.im.Utils.parseEmotions = _im.utils.parseEmoji;
-    window.Hyphenate.im.Utils.parseTextMessage = function ( message, faces ) {
+    window.Easemob = window.Easemob || {};
+    window.Easemob.im = window.Easemob.im || _im;
+    window.Easemob.im.Connection = _c;
+    window.Easemob.im.Utils = _im.utils;
+    window.Easemob.im.Utils.parseEmotions = _im.utils.parseEmoji;
+    window.Easemob.im.Utils.parseTextMessage = function ( message, faces ) {
         var faces = _im.Emoji;
 
         if ( typeof message !== 'string' ) {
@@ -251,7 +251,7 @@
         var isemotion = false;
         for ( var i = 0; i < emotions.length; i++ ) {
             var tmsg = receiveMsg.substring(0, receiveMsg.indexOf(emotions[i])),
-                existEmotion = Hyphenate.im.EMOTIONS.map[emotions[i]];
+                existEmotion = Easemob.im.EMOTIONS.map[emotions[i]];
 
             if ( tmsg ) {
                 emessage.push({
@@ -266,7 +266,7 @@
                 });
                 continue;
             }
-            var emotion = Hyphenate.im.EMOTIONS.map ? Hyphenate.im.EMOTIONS.path + existEmotion : null;
+            var emotion = Easemob.im.EMOTIONS.map ? Easemob.im.EMOTIONS.path + existEmotion : null;
 
             if ( emotion ) {
                 isemotion = true;

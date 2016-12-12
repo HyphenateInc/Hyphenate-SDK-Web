@@ -1,4 +1,5 @@
 require('../../stylesheet/demo.scss');
+// require('easemob-websdk');
 
 var Api = require('./api');
 var Emoji = require('./components/chat/emoji');
@@ -16,14 +17,16 @@ window.Demo = {
 };
 
 // import language package
-// Demo.lan = Language.Chinese;
 Demo.lan = Language.English;
+// Demo.lan = Language.Chinese;
 
 // for webview in client
 Demo.api = Api;
 
 Demo.roster = {};
+Demo.friends = [];
 Demo.strangers = {};
+Demo.blacklist = {};
 
 Demo.IMGTYPE = {
     gif: 1,
@@ -49,12 +52,21 @@ Demo.AUDIOTYPE = {
     wmv: 1
 };
 
+Demo.selectedCate = '';   //friends|groups|chatrooms|strangers
+
 // initialize webIM connection
 Demo.conn = new WebIM.connection({
     isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
-    https : typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
+    https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
     url: WebIM.config.xmppURL,
-    isAutoLogin: false
+    isAutoLogin: false,
+    heartBeatWait: WebIM.config.heartBeatWait,
+    autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+    autoReconnectInterval: WebIM.config.autoReconnectInterval
 });
 
 Demo.api.render(document.getElementById('demo'));
+
+if (module.hot) {
+    module.hot.accept();
+}

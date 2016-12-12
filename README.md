@@ -14,3 +14,4 @@ https://webim-demo.hyphenate.io/
 
 Further details
 https://docs.hyphenate.io/docs/web-install-sdk
+
