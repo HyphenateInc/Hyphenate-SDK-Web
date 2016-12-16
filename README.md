@@ -10,7 +10,7 @@ The demo app demonstrates how to use the Hyphenate Mobile Instant Messaging (MIM
 - Video/Voice calling for browsers support https+Webkit. 
 
 Live demo app
-https://webim-demo.hyphenate.io/
+https://demo.hyphenate.io/
 
 Further details
 https://docs.hyphenate.io/docs/web-install-sdk
