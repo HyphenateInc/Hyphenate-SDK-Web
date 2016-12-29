@@ -42,14 +42,11 @@ if (WebIM.config.autoSignIn) {
 WebIM.config.isDocker = false;
 if (WebIM.config.isDocker) {
     WebIM.config.xmppURL = 'localhost:5280';
-    // //localhost:8080 通过nginx转发到子域 a1.localhost.需要:
-    // 1.nginx新增8080的server配置
-    // 2.gmask(或者/etc/hosts)指定: 127.0.0.1 a1.localhost
+    // //localhost:8080 via nginx direct to sub-domain a1.localhost. requires:
+    // 1. nginx add 8080 server setup
+    // 2. gmask(or /etc/hosts) points to: 127.0.0.1 a1.localhost
     WebIM.config.apiURL = '//a1.localhost';
 
-    //易乐天的server
-    // WebIM.config.xmppURL = '172.17.3.122:5280';
-    // WebIM.config.apiURL = '//172.17.3.155:8080';
     console.log('isDocker=true');
     console.log('xmpp:' + WebIM.config.xmppURL + ' rest:' + WebIM.config.apiURL);
 }
