@@ -586,7 +586,7 @@ var _getXmppUrl = function (baseUrl, https) {
 };
 
 
-//class
+// class
 var connection = function (options) {
     if (!this instanceof connection) {
         return new connection(options);

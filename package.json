@@ -24,7 +24,6 @@
     "gulp-mocha": "*",
     "gulp-uglify": "^2.0.0",
     "immutable": "*",
-    "line-numbers": "*",
     "node-sass": "*",
     "open-browser-webpack-plugin": "0.0.2",
     "react": "^15.3.2",
@@ -50,7 +49,7 @@
   "license": "ISC",
   "dependencies": {
     "antd": "^2.1.0",
-    "easemob-websdk": "^1.4.5",
+    "hyphenate-web": "^1.4.5",
     "underscore": "^1.8.3"
   },
   "keywords": [
