@@ -814,7 +814,7 @@ connection.prototype.getHttpDNS = function (options, type) {
         dataType: 'text',
         type: 'GET',
 
-        // url: 'http://www.hyphenate.io/easemob/server.xml',
+        // url: 'http://www.hyphenate.io/hyphenate/server.xml',
         // dataType: 'xml',
         data: {app_key: encodeURIComponent(options.appKey)},
         success: suc || _utils.emptyfn,
@@ -1041,7 +1041,7 @@ connection.prototype.notifyVersion = function (suc, fail) {
     })
         .c('query', {xmlns: 'jabber:iq:version'})
         .c('name')
-        .t('easemob')
+        .t('hyphenate')
         .up()
         .c('version')
         .t(_version)
@@ -2095,7 +2095,7 @@ connection.prototype.joinChatRoom = function (options) {
         .c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'member', role: 'participant'})
         .up().up()
-        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+        .c('roomtype', {xmlns: 'hyphenate:x:roomtype', type: 'chatroom'});
 
     this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
@@ -2119,7 +2119,7 @@ connection.prototype.quitChatRoom = function (options) {
         .c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'none', role: 'none'})
         .up().up()
-        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+        .c('roomtype', {xmlns: 'hyphenate:x:roomtype', type: 'chatroom'});
 
     this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
@@ -2524,7 +2524,7 @@ connection.prototype.destroyGroup = function (options) {
  *
  * @param options
  */
-// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="hyphenatedemo#chatdemoui_1477481609392@conference.hyphenate.io" type="set">
+// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_hyphenate_occupants_change_affiliation" to="hyphenatedemo#chatdemoui_1477481609392@conference.hyphenate.io" type="set">
 //     <query xmlns="http://jabber.org/protocol/muc#admin">
 //         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
 //     </query>
@@ -2611,7 +2611,7 @@ connection.prototype.leaveGroup = function (options) {
  </x>
  </message>
  <!-- add group member：send -->
- <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io' type='set'>
+ <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_hyphenate_occupants_change_affiliation' to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io' type='set'>
  <query xmlns='http://jabber.org/protocol/muc#admin'>
  <item affiliation='member' jid='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'/>
  </query>
