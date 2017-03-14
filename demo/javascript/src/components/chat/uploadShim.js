@@ -119,7 +119,7 @@ module.exports = function (options) {
                         Demo.conn.send(msg.body);
 
                     } catch (e) {
-                        Demo.api.NotifyError('文件发送失败');
+                        Demo.api.NotifyError('failed to delivery file');
                     }
                 }
             });

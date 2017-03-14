@@ -131,7 +131,7 @@ module.exports = (function ( window ) {
                     _right = Number(me.dom.style.right.slice(0, -2)),
                     _bottom = Number(me.dom.style.bottom.slice(0, -2));
                 
-                //width
+                // width
                 if ( _width < me.rect.width ) {
                     me.dom.style.left = 'auto';
                     me.dom.style.right = 0;
@@ -142,7 +142,7 @@ module.exports = (function ( window ) {
                     me.dom.style.left = 'auto';
                 }
 
-                //height
+                // height
                 if ( _height < me.rect.height ) {
                     me.dom.style.top = 'auto';
                     me.dom.style.bottom = 0;
@@ -154,7 +154,6 @@ module.exports = (function ( window ) {
                 }
             });
         };
-
 
         _ev.bind(me.dom, 'mousedown', _start);
         _ev.bind(me.dom, 'mouseup', _moveend);

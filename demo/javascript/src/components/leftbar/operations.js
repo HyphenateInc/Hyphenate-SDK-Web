@@ -8,7 +8,7 @@ module.exports = React.createClass({
 
     getInitialState: function () {
         var me = this;
-        // TODO 关闭各种弹出框
+        // TODO: close pop up frame
         return {hide: 'hide'};
     },
 

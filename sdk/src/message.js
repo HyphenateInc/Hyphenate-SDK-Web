@@ -46,7 +46,7 @@
     };
 
     /*
-     * cmd message
+     * command message
      */
     Message.cmd = function (id) {
         this.id = id;
@@ -69,7 +69,7 @@
     };
 
     /*
-     * loc message
+     * location message
      */
     Message.location = function (id) {
         this.id = id;
@@ -89,7 +89,7 @@
     };
 
     /*
-     * img message
+     * image message
      */
     Message.img = function (id) {
         this.id = id;

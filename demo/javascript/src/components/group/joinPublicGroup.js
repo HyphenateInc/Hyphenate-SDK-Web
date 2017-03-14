@@ -16,11 +16,11 @@ var JoinPublicGroup = React.createClass({
         var value = this.refs.input.refs.input.value;
 
         if (!value) {
-            Demo.api.NotifyError("群组名不能为空");
+            Demo.api.NotifyError("group subject cannot be empty");
             return;
         }
         if (WebIM.config.isWindowSDK) {
-            //TODO:@lhr 申请加入群组
+            // TODO: @lhr request to join group
             WebIM.doQuery('{"type":"joinPublicGroup"}',
                 function (response) {
                     Demo.api.updateGroup();

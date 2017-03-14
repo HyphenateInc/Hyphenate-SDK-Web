@@ -21,11 +21,11 @@
 
 # How to install
 
-npm install easemob-webim --save
+npm install hyphenate-web --save
 
 
 ```
-require('easemob-websdk');
+require('hyphenate-web');
 ```
 
 

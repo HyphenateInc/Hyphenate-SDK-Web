@@ -38,7 +38,7 @@ module.exports = React.createClass({
                 this.ctrl_down = true;
             } else if (e.keyCode == 13) {
                 if (this.ctrl_down) {
-                    this.ctrl_down = false;  //换行后记得将全局变量置为1，否则enter将变成换行，失去发送功能
+                    this.ctrl_down = false;  // change the value to 1 after newline, otherwise 'enter' will become newline then it would not be able to send message
                     this.refs.textarea.value += '\n';
                 } else {
                     this.sendText();
@@ -58,7 +58,7 @@ module.exports = React.createClass({
             return;
         }
 
-        // TODO: ios/android client doesn't encodeURIComponent yet
+        // TODO: iOS/Android client doesn't encodeURIComponent yet
         // value = encodeURIComponent(value);
 
         setTimeout(function () {

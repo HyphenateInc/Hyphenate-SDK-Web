@@ -92,12 +92,12 @@ module.exports = React.createClass({
                 });
             }
         } else {
-            //get the last 10 messages
+            // get the last 10 messages
             if (WebIM.config.isWindowSDK) {
                 console.log(document.getElementById(this.props.id).querySelector('em').innerHTML);
                 if (document.getElementById(this.props.id).querySelector('em').innerHTML == '') {
                     WebIM.doQuery('{"type":"loadMoreMessages","id":"' + this.props.id + '","chatType":"singlechat"}', function success(str) {
-                        //Add seperator
+                        // Add seperator
                     }, function failure(errCode, errMessage) {
                         Demo.api.NotifyError('getRoster:' + errCode);
                         errFn();

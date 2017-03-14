@@ -60,7 +60,7 @@ var CreateGroup = React.createClass({
         var friendsSelected = [];//this.refs.friendList.refs.multiSelected.label();
         var friendsValues = this.refs.friendList.refs.multiSelected.value();
         if (!value) {
-            Demo.api.NotifyError("群组名不能为空");
+            Demo.api.NotifyError("group subject cannot be empty");
             return;
         }
 
@@ -91,7 +91,7 @@ var CreateGroup = React.createClass({
                 members: friendsSelected,
                 optionsPublic: style == 'PUBLIC_JOIN_OPEN' || style == 'PUBLIC_JOIN_APPROVAL',
                 optionsModerate: style != 'PUBLIC_JOIN_OPEN',
-                // 是否只允许 会员进入 ??
+                // allow member to join
                 optionsMembersOnly: style != 'PUBLIC_JOIN_OPEN',
                 optionsAllowInvites: style == 'PRIVATE_MEMBER_INVITE',
             });
@@ -134,13 +134,13 @@ var CreateGroup = React.createClass({
                                 <input className="radio" type="radio" value="option1"
                                        checked={this.state.selectedOption === 'option1'}
                                        onChange={this.handleOptionChange}/>
-                                <span className="radio_span">公有群</span>
+                                <span className="radio_span">public_group</span>
                             </label>
                             <label>
                                 <input className="radio" type="radio" value="option2"
                                        checked={this.state.selectedOption === 'option2'}
                                        onChange={this.handleOptionChange}/>
-                                <span className="radio_span">私有群</span>
+                                <span className="radio_span">private_group</span>
                             </label>
                         </div>
                         <div>
@@ -152,14 +152,14 @@ var CreateGroup = React.createClass({
                                        checked={this.state.selectedOption2 === 'option3'}
                                        onChange={this.handleOptionChange2}/>
                                 <span
-                                    className="radio_span">{this.state.selectedOption === 'option1' ? '审批' : '不允许邀请'}</span>
+                                    className="radio_span">{this.state.selectedOption === 'option1' ? 'approved' : 'disallow invitation'}</span>
                             </label>
                             <label>
                                 <input className="radio" type="radio" value="option4"
                                        checked={this.state.selectedOption2 === 'option4'}
                                        onChange={this.handleOptionChange2}/>
                                 <span
-                                    className="radio_span">{this.state.selectedOption === 'option1' ? '随便加' : '允许'}</span>
+                                    className="radio_span">{this.state.selectedOption === 'option1' ? 'free to join' : 'allow'}</span>
                             </label>
                         </div>
                     </div>

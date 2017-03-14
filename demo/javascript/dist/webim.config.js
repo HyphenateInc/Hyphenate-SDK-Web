@@ -40,8 +40,8 @@ WebIM.config = {
      */
     isWindowSDK: false,
     /**
-     * isSandBox=true:  xmppURL: 'im-api.sandbox.easemob.com',  apiURL: '//a1.sdb.easemob.com',
-     * isSandBox=false: xmppURL: 'im-api.easemob.com',          apiURL: '//a1.easemob.com',
+     * isSandBox=true:  xmppURL: 'im-api.sandbox.hyphenate.io',  apiURL: '//a1.sdb.hyphenate.io',
+     * isSandBox=false: xmppURL: 'im-api.hyphenate.io',          apiURL: '//a1.hyphenate.io',
      * @parameter {Boolean} true or false
      */
     isSandBox: false,

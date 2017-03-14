@@ -1,5 +1,4 @@
 require('../../stylesheet/demo.scss');
-// require('easemob-websdk');
 
 var Api = require('./api');
 var Emoji = require('./components/chat/emoji');
@@ -7,7 +6,6 @@ var Language = require('./components/language');
 
 // import emoji
 WebIM.Emoji = Emoji;
-
 
 // global log method
 window.log = Api.log;

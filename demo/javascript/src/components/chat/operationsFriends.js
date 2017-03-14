@@ -74,7 +74,7 @@ module.exports = React.createClass({
         var value = this.props.name;
         var me = this;
 
-        //TODO by lwz 重构
+        // TODO: by lwz refactoring 
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"addToBlackList", "username": "' + value + '"}',
                 function success(str) {

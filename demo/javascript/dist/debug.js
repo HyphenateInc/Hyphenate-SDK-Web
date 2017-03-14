@@ -21,8 +21,8 @@ if (WebIM.config.isDebug) {
 
 
 if (WebIM.config.isSandBox) {
-    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.easemob.', '.sandbox.easemob.');
-    WebIM.config.apiURL = WebIM.config.apiURL.replace('.easemob.', '.sdb.easemob.');
+    WebIM.config.xmppURL = WebIM.config.xmppURL.replace('.hyphenate.', '.sandbox.hyphenate.');
+    WebIM.config.apiURL = WebIM.config.apiURL.replace('.hyphenate.', '.sdb.hyphenate.');
 }
 
 /**

@@ -1,10 +1,10 @@
 /**
- * 参考 https://github.com/wheatma/react-multiple-select-box
+ * refer https://github.com/wheatma/react-multiple-select-box
  *
- * 修改
- * 1.名称： MultipleSelectBox -> MultipleSelectBoxList
- * 2.去掉select框 options列表默认显示
- * 3.去掉 ok 和 cancel 按钮
+ * modification
+ * 1. name: MultipleSelectBox -> MultipleSelectBoxList
+ * 2. remove select frame. Display options list as default
+ * 3. remove 'ok' and 'cancel' button
  */
 import React, { Component, PropTypes } from 'react';
 

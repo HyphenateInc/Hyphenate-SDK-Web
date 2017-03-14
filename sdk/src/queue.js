@@ -5,9 +5,9 @@
 
     Array_h.prototype = {
         /**
-         * 返回数组长度
+         * return length of array
          *
-         * @return {Number} length [数组长度]
+         * @return {Number} length [length of array]
          */
         length: function () {
             return this.array.length;
@@ -22,21 +22,21 @@
         },
 
         /**
-         * 向数组的末尾添加一个或多个元素，并返回新的长度。
+         * add object to the end of array, and return length of array
          *
          * @param  {*} obj [description]
-         * @return {Number} length [新数组的长度]
+         * @return {Number} length [length of array]
          */
         push: function (obj) {
             return this.array.push(obj);
         },
 
         /**
-         * 返回数组中选定的元素
+         * return selected range of object in array
          *
-         * @param  {Number} start [开始索引值]
-         * @param  {Number} end [结束索引值]
-         * @return {Array} newArray  [新的数组]
+         * @param  {Number} start [start index]
+         * @param  {Number} end [end index]
+         * @return {Array} newArray  [new array]
          */
         slice: function (start, end) {
             return this.array = this.array.slice(start, end);
@@ -61,9 +61,9 @@
     };
 
     /**
-     * 先进先出队列 (First Input First Output)
+     * First Input First Output
      *
-     * 一种先进先出的数据缓存器
+     * FIFO buffer
      */
     var Queue = function () {
         this._array_h = new Array_h();
@@ -73,7 +73,7 @@
         _index: 0,
 
         /**
-         * 排队
+         * queue
          *
          * @param  {Object} obj [description]
          * @return {[type]}     [description]
@@ -83,7 +83,7 @@
         },
 
         /**
-         * 出队
+         * dequeue
          *
          * @return {Object} [description]
          */
@@ -100,7 +100,7 @@
         },
 
         /**
-         * 返回队列中头部(即最新添加的)的动态对象
+         * return the latest added object of the array (last object in array)
          *
          * @return {Object} [description]
          */
@@ -113,7 +113,7 @@
         },
 
         /**
-         * 返回队列中尾部(即最早添加的)的动态对象
+         * return the oldest added object of the array
          *
          * @return {Object} [description]
          */
@@ -126,7 +126,7 @@
         },
 
         /**
-         * 返回数据队列长度
+         * return the length of the queue
          *
          * @return {Number} [description]
          */
@@ -135,7 +135,7 @@
         },
 
         /**
-         * 队列是否为空
+         * if empty queue
          *
          * @return {Boolean} [description]
          */

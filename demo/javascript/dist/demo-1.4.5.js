@@ -54,7 +54,7 @@
 	'use strict';
 
 	__webpack_require__(2);
-	// require('easemob-websdk');
+	// require('hyphenate-web');
 
 	var Api = __webpack_require__(10);
 	var Emoji = __webpack_require__(228);
@@ -22662,7 +22662,7 @@
 	        } else {
 	            Demo.userTimestamp = new Date().getTime();
 
-	            var key = 'easemob_' + Demo.user;
+	            var key = 'hyphenate_' + Demo.user;
 	            var val = window.localStorage.getItem(key);
 	            var count = 0;
 	            var oneMinute = 60 * 1000;

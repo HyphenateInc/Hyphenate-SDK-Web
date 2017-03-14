@@ -30,7 +30,7 @@ module.exports = React.createClass({
                     chat: true,
                     loadingStatus: 'hide'
                 });
-                // blacklist and it's callback call updateRoster
+                // blacklist and callback call updateRoster
                 me.getBlacklist();
                 me.getGroup();
                 me.getChatroom();
@@ -108,7 +108,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
-                    //webRTC:断线处理
+                    // webRTC: handle disconnection
                     if (WebIM.config.isWebRTC) {
                         var closeButton = document.getElementById('webrtc_close');
                         closeButton && closeButton.click();
@@ -116,12 +116,12 @@ module.exports = React.createClass({
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
-            // used for blacklist
+            // blacklist updated
             onBlacklistUpdate: function (list) {
                 // log('onBlacklistUpdate', list);
                 Demo.api.blacklist.parse(list);
                 me.setState({blacklist: list});
-                // TODO 增量更新
+                // TODO: incremental update
                 Demo.api.updateRoster();
             },
             onError: function (message) {
@@ -154,18 +154,14 @@ module.exports = React.createClass({
                     Demo.api.NotifyError('onError:' + text);
                 }
 
-                //webRTC:断线处理
+                // webRTC: handle disconnection
                 if (WebIM.config.isWebRTC) {
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
                 }
 
-
                 Demo.api.init(Demo.conn.errorType);
-
-
             }
-
         });
 
         return {
@@ -183,7 +179,7 @@ module.exports = React.createClass({
     confirmPop: function (options) {
         ConfirmPop.show(options);
     },
-    //for WindosSDK
+    // for Windows SDK
     updateMyRoster: function (options) {
         var friends = [];
         var roster = eval('(' + options + ')');
@@ -198,7 +194,7 @@ module.exports = React.createClass({
         Demo.friends = friends;
         this.setState({friends: friends});
     },
-    //for WindosSDK
+    // for Windows SDK
     updateMyGroupList: function (options) {
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
@@ -361,7 +357,6 @@ module.exports = React.createClass({
                 break;
             case 'joinPublicGroupSuccess':
                 Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
-                //TODO: 服务器端有bug，先延迟1秒刷新列表,找易乐天
                 setTimeout(function () {
                     Demo.api.updateGroup()
                 }, 1000);
@@ -401,7 +396,6 @@ module.exports = React.createClass({
                 Demo.api.NotifyError(options.msg);
                 break;
         }
-
     },
 
     getStrangers: function () {
@@ -514,7 +508,7 @@ module.exports = React.createClass({
                 success: function (list) {
                     var states = {};
                     if (list.data) {
-                        //TODO: 等接口返回totalnum这个参数之后，就不要再计算totalnum了。 直接states.chatrooms_totalnum=list.totalnum
+                        // TODO: once there's API for parameter totalnum, then no need to calculate totalnum. Get the value directly, states.chatrooms_totalnum=list.totalnum
                         if (list.data.length > 0) {
                             states.chatrooms_totalnum = (parseInt(list.params.pagenum[0]) + 1) * Demo.api.pagesize;
                             states.chatrooms = me.state.chatrooms.concat(list.data);
@@ -532,7 +526,7 @@ module.exports = React.createClass({
         }
     },
 
-    // when signed then get blacklist
+    // get blacklist after login
     getBlacklist: function () {
         var me = this;
         Demo.api.blacklist.getBlacklist({

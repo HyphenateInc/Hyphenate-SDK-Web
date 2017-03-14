@@ -19,7 +19,7 @@ module.exports = React.createClass({
     },
 
     getGroupInfo: function (cb_type) {
-        //only group window
+        // only group view
         if (this.props.chatType == 'groupChat') {
             var me = this;
             if (WebIM.config.isWindowSDK) {

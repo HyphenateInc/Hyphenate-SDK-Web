@@ -20,7 +20,7 @@ var Channel = React.createClass({
     },
 
     close: function () {
-        //close stream and camera first
+        // close stream and camera first
         this.props.close();
 
         try {
@@ -86,8 +86,6 @@ var Channel = React.createClass({
         localVideo.addEventListener('resize', this.resizeLocalHandler);
 
         remoteVideo.addEventListener('resize', this.resizeRemoteHandler);
-
-
     },
 
     componentWillUnmount: function () {
@@ -223,7 +221,7 @@ module.exports = function (dom) {
             var hideAccept = false;
             var localFullRemoteCorner = false;
             if (Demo.user == Demo.call.caller) {
-                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' 视频中...';
+                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' video streaming...';
                 hideAccept = true;
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
@@ -242,7 +240,7 @@ module.exports = function (dom) {
             if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
             } else {
-                title = Demo.call.callee.split('@')[0].split('_')[1] + ' 请求视频通话...';
+                title = Demo.call.callee.split('@')[0].split('_')[1] + ' request video call...';
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
