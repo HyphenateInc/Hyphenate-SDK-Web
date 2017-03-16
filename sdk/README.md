@@ -2,11 +2,11 @@
 
 ## v1.4.10 @ 2017-02-16
 
-###Feature
+### Features
 
 * [sdk] webrtc add voice call
 
-###BugFix
+### Bug Fixes
 
 * [sdk] webrtc:Firefox error while close call
 * [sdk] webrtc:logical error after multitimes connection and close
@@ -15,31 +15,31 @@
 
 ## v1.4.9 @ 2017-01-20
 
-###BugFix
+### BugFixes
 
 * [sdk] fix a bug in success/error callback
 
 ## v1.4.8 @ 2016-12-27
 
-###Feature
+### Features
 
 * [demo] Add a mute button to the video chat window
 * [demo] Create a chat window automaticly
 * [demo] Hide the chat window when switch a cate in leftbar
 * [demo] Not back to the login page when refresh the webpage if login succeed
 
-###BugFix
+### Bug Fixes
 
 * [sdk] Remove all of the log methods
 * [sdk] Send an unavailable presence stanza when leave a group
 
 ## v1.4.7 @ 2016-12-21
 
-###Feature
+### Features
 
 * [demo] Add video chat and send video file functions into the demo.html
 
-###BugFix
+### Bug Fixes
 
 * [sdk] Fix the bug when the browser runs in back end that WebIM can't reconnect on phones
 * [demo] Refresh the group list on the front end after create a group succeed on back end
