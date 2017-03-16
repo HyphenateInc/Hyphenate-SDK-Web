@@ -13,5 +13,5 @@ Live demo app
 https://demo.hyphenate.io/
 
 Further details
-https://docs.hyphenate.io/docs/web-install-sdk
+[Hyphenate web SDK](https://docs.hyphenate.io/docs/web-install-sdk)
 

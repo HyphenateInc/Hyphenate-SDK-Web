@@ -10,7 +10,7 @@
 
 ###BugFix
 
-* does not update catact list UI after destory group
+* does not update contact list UI after destory group
 * does not call the callback function after send out the cmd message
 
 ## 1.1.4
@@ -21,13 +21,11 @@
 
 # How to install
 
-npm install hyphenate-web --save
-
+Run `npm install hyphenate-web --save`
 
 ```
 require('hyphenate-web');
 ```
-
 
 ```
 Demo.conn = new WebIM.connection({
@@ -43,6 +41,6 @@ Demo.conn = new WebIM.connection({
 
 # How to release
 
-npm install
+`npm install`
 
-npm run build
+`npm run build`
