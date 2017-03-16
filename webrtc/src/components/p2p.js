@@ -32,6 +32,10 @@ var CommonPattern = {
 
     consult: false,
 
+    isCaller: false,
+    accepted: false,
+    hangup: false,
+
 
     init: function () {
         var self = this;
@@ -84,6 +88,12 @@ var CommonPattern = {
         var self = this;
         self.sid = accessSid;
 
+        self.isCaller = true;
+        self.accepted = false;
+        self.hangup = false;
+
+        self.streamType = mediaStreamConstaints.audio && mediaStreamConstaints.video ? "VIDEO" : "VOICE";
+
         self.createLocalMedia(mediaStreamConstaints);
     },
 
@@ -114,7 +124,7 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.api.initC(rt, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
+        self.api.initC(rt, self.streamType, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
             _logger.debug("initc result", rtcOptions);
         });
 
@@ -156,6 +166,8 @@ var CommonPattern = {
 
         _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
+        self.accepted = true;
+
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
         options.cands && self._onTcklC(from, options);
     },
@@ -166,6 +178,10 @@ var CommonPattern = {
 
         self.consult = false;
 
+        self.isCaller = false;
+        self.accepted = false;
+        self.hangup = false;
+
         self.callee = from;
         self._rtcCfg2 = options.rtcCfg;
         self._rtKey = rtkey;
@@ -174,6 +190,8 @@ var CommonPattern = {
 
         self._rtcId = options.rtcId;
         self._sessId = options.sessId;
+
+        self.streamType = options.streamType;
 
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
@@ -246,10 +264,19 @@ var CommonPattern = {
                 } else {
                     self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
                 }
+
+                self.accepted = true;
             });
         }
 
-        self.webRtc.createMedia(function (webrtc, stream) {
+        var constaints = {
+            audio: true
+        };
+        if(self.streamType == "VIDEO"){
+            constaints.video = true;
+        }
+
+        self.webRtc.createMedia(constaints, function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
 
             createAndSendAnswer();
@@ -337,7 +364,10 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, reason);
+        var sendReason;
+        reason || (!self.isCaller && !self.accepted && (sendReason = 'decline')) || (sendReason = 'success');
+
+        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, sendReason);
 
         self.webRtc.close();
 
@@ -346,11 +376,23 @@ var CommonPattern = {
         self.onTermCall(reason);
     },
 
+    /**
+     *
+     * @param from
+     * @param options
+     * @param options.reason
+     *               "ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+     *               "decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+     * @private
+     */
     _onTermC: function (from, options) {
+        _logger.debug("[_onTermC] options.reason = " + options.reason);
+
         var self = this;
 
         self.hangup = true;
         self.termCall(options.reason);
+
     },
 
     onTermCall: function () {

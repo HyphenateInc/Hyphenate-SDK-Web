@@ -13,8 +13,7 @@
     <article id='demo'></article>
     <article id='components'></article>
 </section>
-
-<!-- config-->
+<!--config-->
 <script src="./demo/javascript/dist/webim.config.js"></script>
 <script>
     if (WebIM.config.isWindowSDK) {
@@ -28,23 +27,19 @@
         document.write("<script src='./sdk/dist/strophe-1.2.8.min.js'><\/script>");
     }
 </script>
-
-<!-- Hyphenate web SDK -->
-<script src='./sdk/dist/websdk-1.4.5.js'></script>
-
-<!-- webrtc -->
+<!--sdk-->
+<script src='./sdk/dist/websdk-1.4.10.js'></script>
+<!--webrtc-->
 <script>
     if (WebIM.config.isWebRTC) {
         document.write("<script src='./webrtc/dist/adapter.js'><\/script>");
-        document.write("<script src='./webrtc/dist/webrtc-1.4.5.js'><\/script>");
+        document.write("<script src='./webrtc/dist/webrtc-1.4.10.js'><\/script>");
     }
 </script>
-
 <!--[if lte IE 9]>
 <script src="./demo/javascript/dist/swfupload/swfupload.min.js"></script>
 <![endif]-->
-
 <!--demo javascript-->
-<script src="./demo/javascript/dist/demo-1.4.5.js"></script>
+<script src="./demo/javascript/dist/demo-1.4.10.js"></script>
 </body>
 </html>

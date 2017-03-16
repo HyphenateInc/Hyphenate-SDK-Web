@@ -10,6 +10,9 @@ var ConfirmGroupInfo = require('../group/confirmGroupInfo');
 
 module.exports = React.createClass({
 
+    // Switch the left bar doesn't release chat records
+    release: true,
+
     getInitialState: function () {
         var me = this;
 
@@ -30,7 +33,7 @@ module.exports = React.createClass({
                     chat: true,
                     loadingStatus: 'hide'
                 });
-                // blacklist and callback call updateRoster
+                // blacklist and it's callback call updateRoster
                 me.getBlacklist();
                 me.getGroup();
                 me.getChatroom();
@@ -38,54 +41,61 @@ module.exports = React.createClass({
             },
             onClosed: function (msg) {
                 // Demo.api.logout();
-
             },
             onTextMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'txt');
                 Demo.api.appendMsg(message, 'txt');
             },
             onEmojiMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'emoji');
                 Demo.api.appendMsg(message, 'emoji');
             },
             onPictureMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'img');
                 Demo.api.appendMsg(message, 'img');
             },
             onCmdMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'cmd');
                 Demo.api.appendMsg(message, 'cmd');
             },
             onAudioMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'aud');
                 Demo.api.appendMsg(message, 'aud');
             },
             onLocationMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'loc');
                 Demo.api.appendMsg(message, 'loc');
             },
             onFileMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'file');
                 Demo.api.appendMsg(message, 'file');
             },
             onVideoMessage: function (message) {
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
                 }
+                Demo.api.addToChatRecord(message, 'video');
                 Demo.api.appendMsg(message, 'video');
             },
             onPresence: function (message) {
@@ -98,7 +108,8 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
-                message.reason && Demo.api.NotifyError(message.reason);
+                var notify = WebIM.utils.sprintf(Demo.lan.inviteToGroup, message.from);
+                message.type === "invite" && Demo.api.NotifySuccess(notify);
                 me.getGroup();
             },
             onOnline: function () {
@@ -116,18 +127,7 @@ module.exports = React.createClass({
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
-            // blacklist updated
-            onBlacklistUpdate: function (list) {
-                // log('onBlacklistUpdate', list);
-                Demo.api.blacklist.parse(list);
-                me.setState({blacklist: list});
-                // TODO: incremental update
-                Demo.api.updateRoster();
-            },
             onError: function (message) {
-                /*if ( msg && msg.reconnect ) {}*/
-                // log(WebIM.utils.ts(), 'onError', message);
-                // console.log('onError', message);
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -148,10 +148,28 @@ module.exports = React.createClass({
                     } else {
                         text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
-                    // Demo.api.logout(message.type);
                 }
                 if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
-                    Demo.api.NotifyError('onError:' + text);
+                    if(message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
+                        Demo.api.NotifySuccess(text);
+                        return;
+                    }else{
+                        if(text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8'){
+                            text = Demo.lan.logoutSuc;
+                            window.history.pushState({}, 0, 'index.html');
+                            Demo.api.NotifySuccess(text);
+                        }else{
+                            Demo.api.NotifyError('onError:' + text);
+                        }
+                    }
                 }
 
                 // webRTC: handle disconnection
@@ -159,8 +177,15 @@ module.exports = React.createClass({
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
                 }
-
-                Demo.api.init(Demo.conn.errorType);
+                Demo.api.init();
+            },
+            // used for blacklist
+            onBlacklistUpdate: function (list) {
+                // log('onBlacklistUpdate', list);
+                Demo.api.blacklist.parse(list);
+                me.setState({blacklist: list});
+                // TODO incremental update
+                Demo.api.updateRoster();
             }
         });
 
@@ -173,13 +198,14 @@ module.exports = React.createClass({
             strangers: [],
             blacklist: {},
             chatrooms_totalnum: Demo.api.pagesize,
-            contact_loading_show: false
+            contact_loading_show: false,
+            window: []
         };
     },
     confirmPop: function (options) {
         ConfirmPop.show(options);
     },
-    // for Windows SDK
+    //for WindosSDK
     updateMyRoster: function (options) {
         var friends = [];
         var roster = eval('(' + options + ')');
@@ -194,7 +220,6 @@ module.exports = React.createClass({
         Demo.friends = friends;
         this.setState({friends: friends});
     },
-    // for Windows SDK
     updateMyGroupList: function (options) {
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
@@ -208,16 +233,20 @@ module.exports = React.createClass({
     },
 
     componentDidUpdate: function (prevProps, prevState) {
-        for (var o in Demo.strangers) {
-            if (Demo.strangers.hasOwnProperty(o)) {
-                var msg = null;
-
-
-                while (msg = Demo.strangers[o].pop()) {
-                    Demo.api.appendMsg(msg.msg, msg.type);
-                }
-            }
-        }
+        // for (var o in Demo.strangers) {
+        //     if (Demo.strangers.hasOwnProperty(o)) {
+        //         var msg = null;
+        //         while (msg = Demo.strangers[o].pop()) {
+        //             Demo.api.addToChatRecord(msg.msg, msg.type);
+        //             Demo.api.appendMsg(msg.msg, msg.type);
+        //         }
+        //     }
+        // }
+        // if(this.release){
+        //     Demo.api.releaseChatRecord();
+        // }else{
+        //     this.release = true;
+        // }
     },
 
     componentDidMount: function () {
@@ -249,21 +278,37 @@ module.exports = React.createClass({
                 onAcceptCall: function (from, options) {
                     // console.log('onAcceptCall', from, options);
                 },
-                onGotRemoteStream: function (stream) {
+                onGotRemoteStream: function (stream, streamType) {
                     // console.log('onGotRemoteStream');
-                    me.channel.setRemote(stream);
+                    me.channel.setRemote(stream, streamType);
                 },
-                onGotLocalStream: function (stream) {
-                    // console.log('onGotLocalStream');
-                    me.channel.setLocal(stream);
+                onGotLocalStream: function (stream, streamType) {
+                    me.channel.setLocal(stream, streamType);
                 },
                 onRinging: function (caller) {
                     // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
-                    if (reason && reason == 'busy') {
+                    //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+                    //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+                    // TODO reason undefine if reason is busy
+                    if (reason && (reason == 'busy' || reason == 'BUSY')) {
                         Demo.api.NotifyError('Target is busy. Try it later.');
                     }
+                    if (reason && (reason == 'timeout' || reason == 'NORESPONSE')) {
+                        Demo.api.NotifyError('Target no response. Try it later.');
+                    }
+                    if (reason && (reason == 'decline' || reason == 'REJECT')) {
+                        Demo.api.NotifyError('Target reject.');
+                    }
+                    if (reason && (reason == 'failed-transport' || reason == 'FAIL')) {
+                        Demo.api.NotifyError('Call failed. Try it later.');
+                    }
+                    if (reason && (reason == 'ok' || reason == 'success' || reason == 'HANGUP')) {
+                        Demo.api.NotifySuccess('Target hangup. ');
+                    }
+
+
                     Demo.call.caller = '';
                     Demo.call.callee = '';
                     me.channel.close();
@@ -276,10 +321,14 @@ module.exports = React.createClass({
                     // console.log('onIceConnectionStateChange', iceState);
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
+                            //console.warn("Warn. disconnect. notify offline");
+
                             me.rtcTimeoutID = setTimeout(function () {
-                                Demo.api.NotifyError('Target is offline');
-                                var closeButton = document.getElementById('webrtc_close');
-                                closeButton && closeButton.click();
+                                if(!(Demo.call.pattern && Demo.call.pattern.hangup)){
+                                    Demo.api.NotifySuccess('Target is offline');
+                                    var closeButton = document.getElementById('webrtc_close');
+                                    closeButton && closeButton.click();
+                                }
                             }, 10000);
                         }
                     } else if (iceState == "connected") {
@@ -310,6 +359,7 @@ module.exports = React.createClass({
                 }
             }
         });
+
     },
 
     componentWillReceiveProps: function (nextProps) {
@@ -332,11 +382,22 @@ module.exports = React.createClass({
                 ConfirmGroupInfo.show(msg);
                 break;
             case 'createGroupACK':
-
+                Demo.conn.createGroupAsync({
+                    from: msg.from,
+                    success: function(option) {
+                        Demo.api.updateGroup();
+                        var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
+                        Demo.api.NotifySuccess(str);
+                    }
+                });
                 break;
             case 'leaveGroup':// dismissed by admin
-                Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
+                Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
+                if(msg.from == Demo.selected && !msg.kicked){
+                    me.delContactItem();
+                    Demo.selected = '';
+                }
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
                 if (!Demo.roster[msg.from]) {
@@ -351,32 +412,45 @@ module.exports = React.createClass({
                 break;
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
+                if('code' in msg){
+                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
+                }else{
+                    // 被删除
+                    if(msg.from == Demo.selected && !msg.kicked){
+                        me.delContactItem();
+                        Demo.selected = '';
+                    }
+
+                    delete Demo.chatRecord[msg.from];
+                }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
+                me.delContactItem();
                 break;
             case 'joinPublicGroupSuccess':
-                Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
-                setTimeout(function () {
-                    Demo.api.updateGroup()
-                }, 1000);
-
+                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
+                Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Demo.api.NotifyError('Fail to Join the group');
+                Demo.api.NotifySuccess('Fail to Join the group');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
             case 'deleteGroupChat':// The chat room or group is deleted.
                 // ignore the sync `recv` request
                 // only handle on async request
-                if (msg.original_type == 'unavailable') return;
-
+                if (msg.original_type == 'unavailable'){
+                    Demo.api.updateGroup();
+                    return;
+                }
                 var target = document.getElementById(msg.from);
+
+                delete Demo.chatRecord[target];
                 var options = {
                     title: "Group notification",
                     msg: "You have been out of the group",
@@ -393,9 +467,10 @@ module.exports = React.createClass({
                     Demo.api.updateGroup();
                 }
 
-                Demo.api.NotifyError(options.msg);
+                Demo.api.NotifySuccess(options.msg);
                 break;
         }
+
     },
 
     getStrangers: function () {
@@ -476,6 +551,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 error: function (e) {
+                    console.log('error');
                     Demo.conn.setPresence();
                 }
             });
@@ -502,7 +578,7 @@ module.exports = React.createClass({
                 });
         } else {
             Demo.conn.getChatRooms({
-                apiUrl: WebIM.config.apiURL,
+                apiUrl: Demo.conn.apiUrl,
                 pagenum: pagenum,
                 pagesize: Demo.api.pagesize,
                 success: function (list) {
@@ -537,11 +613,104 @@ module.exports = React.createClass({
     },
 
     update: function (cur) {
-        this.setState({cur: cur, contact_loading_show: false});
+        var node = Demo.chatState[Demo.selectedCate].selected;
+        Demo.selected = node;
+        if(Demo.selectedCate == 'chatrooms' && node){
+            // clear the chatrooms chating records
+            delete Demo.chatRecord[node];
+            Demo.conn.joinChatRoom({
+                roomId: node
+            });
+        }
+        this.setChatWindow(true);
+        this.setState({curNode: node, cur: cur, contact_loading_show: false});
     },
 
-    updateNode: function (id) {
-        this.setState({curNode: id});
+    storeChatWindow: function(){
+        var id, cate = '',
+            props = {
+                sendPicture: this.sendPicture,
+                sendAudio: this.sendAudio,
+                sendFile: this.sendFile,
+                name: ''
+            };
+        if(Demo.selected){
+            id = Demo.selected;
+            cate = Demo.selectedCate;
+
+            // clear this chat window
+            while(Demo.chatState[cate].chatWindow.length){
+                Demo.chatState[cate].chatWindow.pop();
+            }
+
+            switch(cate){
+                case 'friends':
+                    props.name = id;
+                    props.delFriend = this.delContactItem;
+                    Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
+                    updateNode={this.updateNode} className={''}/>);
+            break;
+            case 'groups':
+                //createGroup is two step progresses.first send presence,second send iq.
+                //on first recv group list, the newest created one's roomId=name,
+                //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+                for (var i = 0; i < this.state.groups.length; i++) {
+                    if(id == this.state.groups[i].roomId){
+                        props.name = this.state.groups[i].name;
+                        props.leaveGroup = this.delContactItem;
+                        props.destroyGroup = this.delContactItem;
+                        if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                            this.state.groups[i].name = Demo.createGroupName;
+                            Demo.createGroupName = '';
+                        }
+                        Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
+                        className={''}/>);
+                        break;
+                    }
+                }
+                break;
+            case 'chatrooms':
+                for (var i = 0; i < this.state.chatrooms.length; i++) {
+                    if(id == this.state.chatrooms[i].id){
+                        props.name = this.state.chatrooms[i].name;
+                        Demo.chatState[cate].chatWindow.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
+                        className={''}/>);
+                    }
+                }
+                break;
+            case 'strangers':
+                props.name = id;
+                Demo.chatState[cate].chatWindow.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
+                className={''}/>);
+                break;
+            default:
+                console.log('Default: ', cate);
+            }
+        }
+    },
+
+    setChatWindow: function(show){
+        var cate = Demo.selectedCate;
+        if(!show){
+            this.setState({window: []});
+        }else{
+            this.setState({window: Demo.chatState[cate].chatWindow});
+        }
+    },
+
+    delContactItem: function(){
+        var cate = Demo.selectedCate;
+        Demo.selected = '';
+        Demo.chatState.clear(cate);
+        this.setState({curNode: ''});
+        this.setChatWindow(true);
+    },
+
+    updateNode: function (cid) {
+        Demo.chatState[Demo.selectedCate].selected = cid;
+        this.storeChatWindow();
+        this.setChatWindow(true);
+        this.setState({curNode: cid});
     },
 
     sendPicture: function (chatType) {
@@ -572,7 +741,7 @@ module.exports = React.createClass({
         var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -580,22 +749,27 @@ module.exports = React.createClass({
                 log(error);
                 me.refs.picture.value = null;
 
-                Demo.api.appendMsg({
+                var option = {
                     data: Demo.lan.sendImageFailed,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'txt');
+                };
+                Demo.api.addToChatRecord(option, 'txt');
+                Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
+                console.log('data: ', data);
             },
             success: function (id) {
-                Demo.api.appendMsg({
+                var option = {
                     data: url,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'img');
+                };
+                Demo.api.addToChatRecord(option, 'img');
+                Demo.api.appendMsg(option, 'img');
             },
             flashUpload: WebIM.flashUpload
         });
@@ -624,7 +798,7 @@ module.exports = React.createClass({
             me = this;
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -633,24 +807,28 @@ module.exports = React.createClass({
                 log(error);
                 me.refs.audio.value = null;
 
-                Demo.api.appendMsg({
+                var option = {
                     data: Demo.lan.sendAudioFailed,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'txt');
+                };
+                Demo.api.addToChatRecord(option, 'txt');
+                Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function (id, sid) {
-                Demo.api.appendMsg({
+                var option = {
                     data: url,
                     from: Demo.user,
                     to: Demo.selected,
                     id: sid,
                     length: duration
-                }, 'aud');
+                };
+                Demo.api.addToChatRecord(option, 'aud');
+                Demo.api.appendMsg(option, 'aud');
             },
             flashUpload: WebIM.flashUpload
         });
@@ -729,50 +907,54 @@ module.exports = React.createClass({
             msg = new WebIM.message('file', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
+            fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
+
+        if(!fileSize){
+            Demo.api.NotifyError(Demo.lan.fileOverSize);
+            return false;
+        }
 
         if (!file.filename) {
             me.refs.file.value = null;
             return false;
         }
-
-        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
-            me.refs.file.value = null;
-            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
-            return;
-        }
-
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
+            ext:{
+                fileSize: fileSize
+            },
             onFileUploadError: function (error) {
                 log(error);
                 me.refs.file.value = null;
-
-                Demo.api.appendMsg({
+                var option = {
                     data: Demo.lan.sendFileFailed,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'txt');
+                };
+                Demo.api.addToChatRecord(option, 'txt');
+                Demo.api.appendMsg(option, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function (id) {
-                Demo.api.appendMsg({
+                var option = {
                     data: url,
                     filename: filename,
                     from: Demo.user,
                     to: Demo.selected
-                }, 'file');
+                };
+                Demo.api.addToChatRecord(option, 'file');
+                Demo.api.appendMsg(option, 'file');
             },
             flashUpload: WebIM.flashUpload
         });
-
         if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
         } else if (chatroom) {
@@ -783,48 +965,6 @@ module.exports = React.createClass({
     },
 
     render: function () {
-        // Demo.api.curLength = this.state[this.state.cur].length;
-
-        var windows = [], id,
-            props = {
-                sendPicture: this.sendPicture,
-                sendAudio: this.sendAudio,
-                sendFile: this.sendFile,
-                name: ''
-            };
-
-        for (var i = 0; i < this.state.friends.length; i++) {
-            id = this.state.friends[i].name;
-            props.name = id;
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props} chatType='singleChat'
-                                     updateNode={this.updateNode}
-                                     className={this.state.friends[i].name === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.groups.length; i++) {
-            id = this.state.groups[i].roomId;
-            props.name = this.state.groups[i].name;
-
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
-                                     className={id === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.chatrooms.length; i++) {
-            id = this.state.chatrooms[i].id;
-            props.name = this.state.chatrooms[i].name;
-
-            windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='chatRoom'
-                                     className={id === this.state.curNode ? '' : 'hide'}/>);
-        }
-
-        for (var i = 0; i < this.state.strangers.length; i++) {
-            id = this.state.strangers[i].name;
-            props.name = id;
-
-            windows.push(<ChatWindow id={'wrapper' + id} key={id} {...props}
-                                     className={this.state.strangers[i].name === this.state.curNode ? '' : 'hide'}/>);
-        }
-
         return (
             <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
                 <LeftBar cur={this.state.cur} update={this.update}/>
@@ -839,7 +979,7 @@ module.exports = React.createClass({
                          strangers={this.state.strangers}
                          getChatroom={this.getChatroom}
                          loading={this.state.contact_loading_show}/>
-                {windows}
+                {this.state.window}
                 <input ref='picture' onChange={this.pictureChange} type='file' className='hide'/>
                 <input ref='audio' onChange={this.audioChange} type='file' className='hide'/>
                 <input ref='file' onChange={this.fileChange} type='file' className='hide'/>

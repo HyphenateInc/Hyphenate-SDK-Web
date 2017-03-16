@@ -15,12 +15,15 @@ var Channel = React.createClass({
             close_bottom: 0,
             accept_left: 0,
             accept_bottom: 0,
-            accept_display: this.props.hideAccept ? 'none' : 'block'
+            accept_display: this.props.hideAccept ? 'none' : 'block',
+            mute_left: 0,
+            mute_bottom: 6,
+            mute_display: 'none'
         };
     },
 
     close: function () {
-        // close stream and camera first
+        //close stream and camera first
         this.props.close();
 
         try {
@@ -52,23 +55,32 @@ var Channel = React.createClass({
         });
     },
 
+    mute: function () {
+        // var mute = this.refs.remoteVideo.mute;
+        this.refs.remoteVideo.muted = !this.refs.remoteVideo.muted;
+        var muted = this.refs.remoteVideo.muted;
+        if(muted){
+            this.refs.mute.style.color = '#4eb1f4';
+        }else{
+            this.refs.mute.style.color = '#eeeeee';
+        }
+    },
+
     setStream: function (props) {
 
         this.refs.remoteVideo.srcObject = props.remoteStream;
         this.refs.localVideo.srcObject = props.localStream;
-
-
     },
 
 
     componentWillReceiveProps: function (nextProps) {
-        // console.log('componentWillReceiveProps', nextProps);
+        console.log('componentWillReceiveProps', nextProps);
         this.setStream(nextProps);
     },
 
 
     componentDidMount: function () {
-        // console.log('did mount', this.props);
+        console.log('did mount', this.props);
         new Drag(this.refs.onAcceptCallrtc);
         this.resetButtonPosition();
 
@@ -86,6 +98,8 @@ var Channel = React.createClass({
         localVideo.addEventListener('resize', this.resizeLocalHandler);
 
         remoteVideo.addEventListener('resize', this.resizeRemoteHandler);
+
+
     },
 
     componentWillUnmount: function () {
@@ -108,6 +122,7 @@ var Channel = React.createClass({
 
         this.setState({
             toggle_display: 'block',
+            mute_display: 'block',
             accept_display: 'none'
         });
     },
@@ -118,6 +133,16 @@ var Channel = React.createClass({
 
         this.local_width = video.videoWidth;
         this.local_height = video.videoHeight;
+
+        if(this.local_width == 0 && this.local_height == 0){
+            this.setState({
+                toggle_display: 'none',
+                localVideo_display: 'none'
+            });
+
+            return;
+        }
+
         this.setState({
             full_width: video.videoWidth,
             full_height: video.videoHeight,
@@ -128,12 +153,28 @@ var Channel = React.createClass({
     loadedmetadataRemoteHandler: function () {
 
         var video = this.refs.remoteVideo;
-        this.remote_width = video.videoWidth;
-        this.remote_height = video.videoHeight;
-        this.setState({
-            full_width: video.videoWidth,
-            full_height: video.videoHeight,
-        });
+
+        var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled;
+        var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled;
+
+        if(hasVideo) { //视频 + 音频
+            this.remote_width = video.videoWidth;
+            this.remote_height = video.videoHeight;
+            this.setState({
+                full_width: video.videoWidth,
+                full_height: video.videoHeight,
+            });
+        }
+        if(hasAudio && !hasVideo){ //仅有音频
+            this.setState({
+                full_width: 330,
+                full_height: 90,
+            });
+            this.setState({
+                toggle_display: 'none',
+                localVideo_display: 'none'
+            });
+        }
     },
 
 
@@ -154,12 +195,27 @@ var Channel = React.createClass({
         var video = this.refs.remoteVideo;
 
         if (!this.state.localFullRemoteCorner) {
-            this.remote_width = video.videoWidth;
-            this.remote_height = video.videoHeight;
-            this.setState({
-                full_width: video.videoWidth,
-                full_height: video.videoHeight,
-            });
+            var hasVideo = this.props.remoteStream.getVideoTracks()[0] && this.props.remoteStream.getVideoTracks()[0].enabled;
+            var hasAudio = this.props.remoteStream.getAudioTracks()[0].enabled;
+
+            if(hasVideo) { //视频 + 音频
+                this.remote_width = video.videoWidth;
+                this.remote_height = video.videoHeight;
+                this.setState({
+                    full_width: video.videoWidth,
+                    full_height: video.videoHeight,
+                });
+            }
+            if(hasAudio && !hasVideo){ //仅有音频
+                this.setState({
+                    full_width: 330,
+                    full_height: 90,
+                });
+                this.setState({
+                    toggle_display: 'none',
+                    localVideo_display: 'none'
+                });
+            }
         }
     },
 
@@ -205,6 +261,15 @@ var Channel = React.createClass({
                        top: this.state.toggle_top + 'px',
                        bottom: 'auto'
                    }} onClick={this.toggle}>d</i>
+                <i ref='mute' className='font small mute'
+                style={{
+                    display: this.state.mute_display,
+                        left: this.state.toggle_right + 'px',
+                        right: 'auto',
+                        top: 'auto',
+                        bottom: this.state.mute_bottom + 'px'
+                }} onClick={this.mute}>m</i>
+
             </div>
         );
     }
@@ -214,14 +279,14 @@ module.exports = function (dom) {
     this.dom = dom;
     var me = this;
     return {
-        setLocal: function (stream) {
+        setLocal: function (stream, streamType) {
             // console.log('channel setLocal', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.localStream = stream;
             var title = '';
             var hideAccept = false;
             var localFullRemoteCorner = false;
             if (Demo.user == Demo.call.caller) {
-                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' video streaming...';
+                title = 'waiting for ' + Demo.call.callee.split('@')[0].split('_')[1] + (streamType == 'VOICE' ? ' voice calling...' : ' video calling...');
                 hideAccept = true;
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
@@ -232,7 +297,7 @@ module.exports = function (dom) {
                 me.dom
             );
         },
-        setRemote: function (stream) {
+        setRemote: function (stream, streamType) {
             // console.log('channel setRemote', 'user=', Demo.user, 'caller=', Demo.call.caller, 'callee=', Demo.call.callee);
             this.remoteStream = stream;
             var title = '';
@@ -240,7 +305,7 @@ module.exports = function (dom) {
             if (Demo.call.caller != '' && Demo.call.caller == Demo.user) {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
             } else {
-                title = Demo.call.callee.split('@')[0].split('_')[1] + ' request video call...';
+                title = Demo.call.callee.split('@')[0].split('_')[1] + (streamType == 'VOICE' ? ' request voice call...' : ' request video call...');
             }
             ReactDOM.render(
                 <Channel close={this.close} localStream={this.localStream} remoteStream={this.remoteStream}
@@ -262,6 +327,14 @@ module.exports = function (dom) {
                 local.getTracks().forEach(function (track) {
                     track.stop();
                 });
+            }
+
+            // Firefox issue: srcObject to null video certification
+            var videoObjs = me.dom.getElementsByTagName("video");
+            if(videoObjs && videoObjs.length > 0){
+                for(var i = 0; i < videoObjs.length; i++){
+                    videoObjs[i].srcObject = null;
+                }
             }
 
             ReactDOM.unmountComponentAtNode(me.dom);
