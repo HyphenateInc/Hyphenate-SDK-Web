@@ -1,19 +1,30 @@
 # Changelog
 
+## v1.4.6
+
+### Features
+
+* add demo.html
+
+### Bug Fixes
+
+* to decoupling from Demo namespaces, delete codes using Demo
+* delete connection.prototype.createRoom, which is not supported by server
+
 ## v1.4.5
 
-###Feature
+### Features
 
 * GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
 * support webrtc
 * while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
 
-###BugFix
+### Bug Fixes
 
 * does not update contact list UI after destory group
 * does not call the callback function after send out the cmd message
 
-## 1.1.4
+## v1.1.4
 
 * add browser version support umd
 * remove strophe from sdk because it't too big for webpack or other compiler
