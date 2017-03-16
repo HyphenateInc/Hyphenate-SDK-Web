@@ -1042,7 +1042,7 @@
 	 * Strophe.Websocket has a bug while logout:
 	 * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
 	 * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
-	 * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+	 * WebSocket connection to 'ws://api.hyphenate.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
 	 * 3 "Websocket error [object Event]"
 	 * _changeConnectStatus
 	 * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
@@ -1573,7 +1573,7 @@
 	    return url.prefix + url.base + url.suffix;
 	};
 
-	//class
+	// class
 	var connection = function connection(options) {
 	    if (!this instanceof connection) {
 	        return new connection(options);
@@ -1799,7 +1799,7 @@
 	        dataType: 'text',
 	        type: 'GET',
 
-	        // url: 'http://www.easemob.com/easemob/server.xml',
+	        // url: 'http://www.hyphenate.io/hyphenate/server.xml',
 	        // dataType: 'xml',
 	        data: { app_key: encodeURIComponent(options.appKey) },
 	        success: suc || _utils.emptyfn,
@@ -2022,7 +2022,7 @@
 	        from: this.context.jid || '',
 	        to: this.domain,
 	        type: 'result'
-	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');
+	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('hyphenate').up().c('version').t(_version).up().c('os').t('webim');
 
 	    var suc = suc || _utils.emptyfn;
 	    var error = fail || this.onError;
@@ -2093,7 +2093,7 @@
 	        }
 	    }
 
-	    // <item affiliation="member" jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none">
+	    // <item affiliation="member" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io" role="none">
 	    //     <actor nick="liuwz"/>
 	    // </item>
 	    // one record once a time
@@ -2119,9 +2119,9 @@
 	    }
 
 	    // from message : apply to join group
-	    // <message from="easemob-demo#chatdemoui_lwz4@easemob.com/mobile" id="259151681747419640" to="easemob-demo#chatdemoui_liuwz@easemob.com" xmlns="jabber:client">
+	    // <message from="hyphenatedemo#chatdemoui_lwz4@hyphenate.io/mobile" id="259151681747419640" to="hyphenatedemo#chatdemoui_liuwz@hyphenate.io" xmlns="jabber:client">
 	    //     <x xmlns="http://jabber.org/protocol/muc#user">
-	    //         <apply from="easemob-demo#chatdemoui_lwz4@easemob.com" to="easemob-demo#chatdemoui_1477733677560@conference.easemob.com" toNick="lwzlwzlwz">
+	    //         <apply from="hyphenatedemo#chatdemoui_lwz4@hyphenate.io" to="hyphenatedemo#chatdemoui_1477733677560@conference.hyphenate.io" toNick="lwzlwzlwz">
 	    //             <reason>qwe</reason>
 	    //         </apply>
 	    //     </x>
@@ -3061,7 +3061,7 @@
 	    var iq = $pres({
 	        from: this.context.jid,
 	        to: room_nick
-	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -3081,7 +3081,7 @@
 	        from: this.context.jid,
 	        to: room_nick,
 	        type: 'unavailable'
-	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -3220,7 +3220,7 @@
 	    return list;
 	};
 
-	// used for blacklist
+	// get blacklist
 	connection.prototype.getBlacklist = function (options) {
 	    options = options || {};
 	    var iq = $iq({ type: 'get' });
@@ -3239,7 +3239,7 @@
 	    });
 	};
 
-	// used for blacklist
+	// add group member to blacklist
 	connection.prototype.addToBlackList = function (options) {
 	    var iq = $iq({ type: 'set' });
 	    var blacklist = options.list || {};
@@ -3300,7 +3300,7 @@
 	    return appKey + '_' + to + '@conference.' + this.domain;
 	};
 
-	// used for blacklist
+	// add member to blacklist
 	connection.prototype.addToGroupBlackList = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3342,7 +3342,7 @@
 	    return list;
 	}
 
-	// used for blacklist
+	// get group blacklist
 	connection.prototype.getGroupBlacklist = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3364,7 +3364,7 @@
 	    });
 	};
 
-	// used for blacklist
+	// remove group member from blacklist
 	connection.prototype.removeGroupMemberFromBlacklist = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3387,11 +3387,11 @@
 	};
 
 	/**
-	 * changeGroupSubject 修改群名称
+	 * changeGroupSubject update to group subject
 	 *
 	 * @param options
 	 */
-	// <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
+	// <iq to='hyphenatedemo#chatdemoui_roomid@conference.hyphenate.io' type='set' id='3940489311' xmlns='jabber:client'>
 	//     <query xmlns='http://jabber.org/protocol/muc#owner'>
 	//         <x type='submit' xmlns='jabber:x:data'>
 	//             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
@@ -3418,11 +3418,11 @@
 	};
 
 	/**
-	 * destroyGroup 删除群组
+	 * destroyGroup destroy group
 	 *
 	 * @param options
 	 */
-	// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+	// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="hyphenatedemo#chatdemoui_1477462231499@conference.hyphenate.io" type="set">
 	//     <query xmlns="http://jabber.org/protocol/muc#owner">
 	//         <destroy>
 	//             <reason>xxx destory group yyy</reason>
@@ -3448,13 +3448,13 @@
 	};
 
 	/**
-	 * leaveGroupBySelf 主动离开群组
+     * leaveGroupBySelf leave group by self
 	 *
 	 * @param options
 	 */
-	// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+	// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_hyphenate_occupants_change_affiliation" to="hyphenatedemo#chatdemoui_1477481609392@conference.hyphenate.io" type="set">
 	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
 	//     </query>
 	// </iq>
 	connection.prototype.leaveGroupBySelf = function (options) {
@@ -3480,16 +3480,16 @@
 	};
 
 	/**
-	 * leaveGroup 被踢出群组
+     * leaveGroup leave or removed by admin from group
 	 *
 	 * @param options
 	 */
-	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="hyphenatedemo#chatdemoui_1477481597120@conference.hyphenate.io" type="set" xmlns="jabber:client">
 	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
-	//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-	//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io"/>
+	//         <item jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io" role="none"/>
+	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
+	//         <item jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io" role="none"/>
 	//     </query>
 	// </iq>
 	connection.prototype.leaveGroup = function (options) {
@@ -3524,23 +3524,23 @@
 	};
 
 	/**
-	 * addGroupMembers 添加群组成员
+	 * addGroupMembers add group member
 	 *
 	 * @param options
 
-	 Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
+	 message sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
 	 <!-- 添加成员通知：send -->
-	 <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
+	 <message to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io'>
 	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
+	 <invite to='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'>
 	 <reason>liuwz invite you to join group '谢谢'</reason>
 	 </invite>
 	 </x>
 	 </message>
-	 <!-- 添加成员：send -->
-	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
+	 <!-- add user：send -->
+	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_hyphenate_occupants_change_affiliation' to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io' type='set'>
 	 <query xmlns='http://jabber.org/protocol/muc#admin'>
-	 <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
+	 <item affiliation='member' jid='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'/>
 	 </query>
 	 </iq>
 	 */
@@ -3601,9 +3601,9 @@
 	 *
 	 * throw request for now 暂时不处理，直接丢弃
 	 *
-	 <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+	 <message to='hyphenatedemo#chatdemoui_mt002@hyphenate.io' from='easmeob-demo#chatdemoui_mt001@hyphenate.io' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
 	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+	 <apply to='hyphenatedemo#chatdemoui_groupid1@conference.hyphenate.io' from='easmeob-demo#chatdemoui_mt001@hyphenate.io' toNick='llllll'>
 	 <reason>reject</reason>
 	 </apply>
 	 </x>
@@ -3627,16 +3627,16 @@
 	    // this.sendCommand(dom.tree());
 	};
 
-	/**
-	 * createGroup 创建群组
-	 *
-	 * 1. 创建申请 -> 得到房主身份
-	 * 2. 获取房主信息 -> 得到房间form
-	 * 3. 完善房间form -> 创建成功
-	 * 4. 添加房间成员
-	 * 5. 消息通知成员
-	 * @param options
-	 */
+        /**
+         * createGroup create group
+         *
+         * 1. create group request -> obtain group admin
+         * 2. obtain group admin info -> obtain group form
+         * 3. complete group form -> group created successfully
+         * 4. add user to group
+         * 5. notify group member
+         * @param options
+         */
 	connection.prototype.createGroup = function (options) {
 	    var roomId = +new Date();
 	    var toRoom = this._getGroupJid(roomId);
@@ -4026,7 +4026,7 @@
 	            }).c('body').t(jsonstr);
 
 	            if (message.roomType) {
-	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	                dom.up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
 	            }
 
 	            setTimeout(function () {

@@ -24,7 +24,6 @@
     "gulp-mocha": "*",
     "gulp-uglify": "^2.0.0",
     "immutable": "*",
-    "line-numbers": "*",
     "node-sass": "*",
     "open-browser-webpack-plugin": "0.0.2",
     "react": "^15.3.2",

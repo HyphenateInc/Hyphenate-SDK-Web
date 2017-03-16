@@ -3,10 +3,9 @@ path = require('path');
 
 module.exports = {
     entry: {
-        //add [] to fix: Module not found: Error: a dependency to an entry point is not allowed
-        './sdk/dist/websdk-1.4.5': ['./sdk/index'],
-        './demo/javascript/dist/demo-1.4.5': ['./demo/javascript/src/entry'],
-        './webrtc/dist/webrtc-1.4.5': ['./webrtc/src/entry']
+        './sdk/dist/websdk-1.4.5': ['./sdk/index'],                             // Hyphenate web SDK
+        './demo/javascript/dist/demo-1.4.5': ['./demo/javascript/src/entry'],   // demo entry point
+        './webrtc/dist/webrtc-1.4.5': ['./webrtc/src/entry']                    // webrtc
     },
     output: {
         path: './',
@@ -50,6 +49,5 @@ module.exports = {
         //     }
         // })
     ],
-}
-;
+};
 

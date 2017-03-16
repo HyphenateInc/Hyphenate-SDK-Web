@@ -19,7 +19,7 @@ module.exports = React.createClass({
         } else {
             Demo.userTimestamp = new Date().getTime();
 
-            var key = 'easemob_' + Demo.user;
+            var key = 'hyphenate_' + Demo.user;
             var val = window.localStorage.getItem(key);
             var count = 0;
             var oneMinute = 60 * 1000;

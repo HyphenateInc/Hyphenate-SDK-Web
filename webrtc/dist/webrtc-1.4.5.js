@@ -74,7 +74,7 @@
 	}
 
 	/**
-	 * 判断是否支持pranswer
+	 * check if support pranswer
 	 */
 	if (/Chrome/.test(navigator.userAgent)) {
 	    WebIM.WebRTC.supportPRAnswer = navigator.userAgent.split("Chrome/")[1].split(".")[0] >= 50 ? true : false;
@@ -558,7 +558,7 @@
 	        var self = this;
 
 	        if (typeof self.connection === "undefined") {
-	            throw "Caller need a instance of Easemob.im.Connection";
+	            throw "Caller need a instance of Hyphenate.im.Connection";
 	        }
 
 	        self.api = self.api || new Api({

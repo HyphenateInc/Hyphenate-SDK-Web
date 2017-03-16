@@ -1,8 +1,5 @@
 /**
- * git do not control webim.config.js
- * everyone should copy webim.config.js.demo to webim.config.js
- * and have their own configs.
- * In this way , others won't be influenced by this config while git pull.
+ * webim.config.js is web app configurations and urls to connect to Hyphenate server
  *
  */
 var WebIM = {};
@@ -12,11 +9,11 @@ WebIM.config = {
      */
     xmppURL: 'im-api.hyphenate.io',
     /*
-     * Backend REST API URL
+     * Hyphenate server REST API URL
      */
     apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.hyphenate.io',
     /*
-     * Application AppKey
+     * Application API Key
      */
     appkey: 'hyphenatedemo#hyphenatedemo',
     /*
@@ -40,8 +37,8 @@ WebIM.config = {
      */
     isWindowSDK: false,
     /**
-     * isSandBox=true:  xmppURL: 'im-api.sandbox.hyphenate.io',  apiURL: '//a1.sdb.hyphenate.io',
-     * isSandBox=false: xmppURL: 'im-api.hyphenate.io',          apiURL: '//a1.hyphenate.io',
+     * isSandBox=true:  xmppURL: 'api.sandbox.hyphenate.io',  apiURL: '//api.sdb.hyphenate.io',
+     * isSandBox=false: xmppURL: 'api.hyphenate.io',          apiURL: '//api.hyphenate.io',
      * @parameter {Boolean} true or false
      */
     isSandBox: false,
