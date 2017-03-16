@@ -41,6 +41,8 @@ module.exports = React.createClass({
         props.groupChange = this.props.groupChange;
         props.chatroomChange = this.props.chatroomChange;
 
+        var year = new Date().getFullYear();
+
         return (
             <div>
                 <div className={'webim' + (WebIM.config.isWindowSDK ? ' webim_isWindowSDK' : '')}>

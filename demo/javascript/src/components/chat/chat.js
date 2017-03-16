@@ -98,7 +98,8 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
-                message.reason && Demo.api.NotifyError(message.reason);
+                var notify = WebIM.utils.sprintf(Demo.lan.inviteToGroup, message.from);
+                message.type === "invite" && Demo.api.NotifySuccess(notify);
                 me.getGroup();
             },
             onOnline: function () {
@@ -116,18 +117,8 @@ module.exports = React.createClass({
                     Demo.api.logout(WebIM.statusCode.WEBIM_CONNCTION_CLIENT_OFFLINE);
                 }
             },
-            // blacklist updated
-            onBlacklistUpdate: function (list) {
-                // log('onBlacklistUpdate', list);
-                Demo.api.blacklist.parse(list);
-                me.setState({blacklist: list});
-                // TODO: incremental update
-                Demo.api.updateRoster();
-            },
             onError: function (message) {
-                /*if ( msg && msg.reconnect ) {}*/
-                // log(WebIM.utils.ts(), 'onError', message);
-                // console.log('onError', message);
+
                 var text = '';
                 if (WebIM.config.isWindowSDK) {
                     message = eval('(' + message + ')');
@@ -148,10 +139,22 @@ module.exports = React.createClass({
                     } else {
                         text = WebIM.utils.getObjectKey(WebIM.statusCode, message.type) + ' ' + ' type=' + message.type;
                     }
-                    // Demo.api.logout(message.type);
                 }
                 if (Demo.conn.errorType != WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT) {
-                    Demo.api.NotifyError('onError:' + text);
+                    if(message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+                        ||
+                        message.type === WebIM.statusCode.WEBIM_CONNECTION_CLOSED){
+                        Demo.api.NotifySuccess(text);
+                        return;
+                    }else{
+                        Demo.api.NotifyError('onError:' + text);
+                    }
                 }
 
                 // webRTC: handle disconnection
@@ -159,8 +162,15 @@ module.exports = React.createClass({
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
                 }
-
-                Demo.api.init(Demo.conn.errorType);
+                Demo.api.init();
+            },
+            // used for blacklist
+            onBlacklistUpdate: function (list) {
+                // log('onBlacklistUpdate', list);
+                Demo.api.blacklist.parse(list);
+                me.setState({blacklist: list});
+                // TODO incremental update
+                Demo.api.updateRoster();
             }
         });
 
@@ -194,8 +204,8 @@ module.exports = React.createClass({
         Demo.friends = friends;
         this.setState({friends: friends});
     },
-    // for Windows SDK
     updateMyGroupList: function (options) {
+        console.log('updateMygroupList');
         var rooms = eval('(' + options + ')');
         this.setState({groups: rooms});
     },
@@ -261,9 +271,26 @@ module.exports = React.createClass({
                     // console.log('onRinging', caller);
                 },
                 onTermCall: function (reason) {
-                    if (reason && reason == 'busy') {
+                    //"ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+                    //"decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+                    // TODO reason undefine if reason is busy
+                    if (reason && (reason == 'busy' || reason == 'BUSY')) {
                         Demo.api.NotifyError('Target is busy. Try it later.');
                     }
+                    if (reason && (reason == 'timeout' || reason == 'NORESPONSE')) {
+                        Demo.api.NotifyError('Target no response. Try it later.');
+                    }
+                    if (reason && (reason == 'decline' || reason == 'REJECT')) {
+                        Demo.api.NotifyError('Target reject.');
+                    }
+                    if (reason && (reason == 'failed-transport' || reason == 'FAIL')) {
+                        Demo.api.NotifyError('Call failed. Try it later.');
+                    }
+                    if (reason && (reason == 'ok' || reason == 'success' || reason == 'HANGUP')) {
+                        Demo.api.NotifySuccess('Target hangup. ');
+                    }
+
+
                     Demo.call.caller = '';
                     Demo.call.callee = '';
                     me.channel.close();
@@ -277,7 +304,7 @@ module.exports = React.createClass({
                     if (iceState == "disconnected") {
                         if (!me.rtcTimeoutID) {
                             me.rtcTimeoutID = setTimeout(function () {
-                                Demo.api.NotifyError('Target is offline');
+                                Demo.api.NotifySuccess('Target is offline');
                                 var closeButton = document.getElementById('webrtc_close');
                                 closeButton && closeButton.click();
                             }, 10000);
@@ -332,10 +359,17 @@ module.exports = React.createClass({
                 ConfirmGroupInfo.show(msg);
                 break;
             case 'createGroupACK':
-
+                Demo.conn.createGroupAsync({
+                    from: msg.from,
+                    success: function(option) {
+                        Demo.api.updateGroup();
+                        var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
+                        Demo.api.NotifySuccess(str);
+                    }
+                });
                 break;
             case 'leaveGroup':// dismissed by admin
-                Demo.api.NotifyError(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
+                Demo.api.NotifySuccess(`${msg.kicked || 'You'} have been dismissed by ${msg.actor || 'admin'} .`);
                 Demo.api.updateGroup();
                 break;
             case 'subscribe':// The sender asks the receiver to be a friend.
@@ -351,31 +385,35 @@ module.exports = React.createClass({
                 break;
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
+                if('code' in msg){
+                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
+                }else{
+                    console.log('Deleted');
+                }
                 if (Demo.roster[msg.from]) {
                     delete Demo.roster[msg.from];
                 }
                 break;
             case 'joinPublicGroupSuccess':
-                Demo.api.NotifyError(`You have been invited to group ${msg.from}`);
-                setTimeout(function () {
-                    Demo.api.updateGroup()
-                }, 1000);
-
+                // Demo.api.NotifySuccess(`You have been invited to group ${msg.from}`);
+                Demo.api.updateGroup();
                 break;
             case 'joinChatRoomSuccess':// Join the chat room successfully
                 Demo.currentChatroom = msg.from;
                 break;
             case 'reachChatRoomCapacity':// Failed to join the chat room
                 Demo.currentChatroom = null;
-                Demo.api.NotifyError('Fail to Join the group');
+                Demo.api.NotifySuccess('Fail to Join the group');
                 break;
             case 'leaveChatRoom':// Leave the chat room
                 break;
             case 'deleteGroupChat':// The chat room or group is deleted.
                 // ignore the sync `recv` request
                 // only handle on async request
-                if (msg.original_type == 'unavailable') return;
-
+                if (msg.original_type == 'unavailable'){
+                    Demo.api.updateGroup();
+                    return;
+                }
                 var target = document.getElementById(msg.from);
                 var options = {
                     title: "Group notification",
@@ -393,7 +431,7 @@ module.exports = React.createClass({
                     Demo.api.updateGroup();
                 }
 
-                Demo.api.NotifyError(options.msg);
+                Demo.api.NotifySuccess(options.msg);
                 break;
         }
     },
@@ -476,6 +514,7 @@ module.exports = React.createClass({
                     me.setState({groups: rooms});
                 },
                 error: function (e) {
+                    console.log('error');
                     Demo.conn.setPresence();
                 }
             });
@@ -502,7 +541,7 @@ module.exports = React.createClass({
                 });
         } else {
             Demo.conn.getChatRooms({
-                apiUrl: WebIM.config.apiURL,
+                apiUrl: Demo.conn.apiUrl,
                 pagenum: pagenum,
                 pagesize: Demo.api.pagesize,
                 success: function (list) {
@@ -572,7 +611,7 @@ module.exports = React.createClass({
         var msg = new WebIM.message('img', Demo.conn.getUniqueId());
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -587,7 +626,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.picture.value = null;
             },
             success: function (id) {
@@ -624,7 +663,7 @@ module.exports = React.createClass({
             me = this;
 
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             to: Demo.selected,
             roomType: chatroom,
@@ -640,7 +679,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.audio.value = null;
             },
             success: function (id, sid) {
@@ -729,29 +768,30 @@ module.exports = React.createClass({
             msg = new WebIM.message('file', Demo.conn.getUniqueId()),
             chatroom = Demo.selectedCate === 'chatrooms',
             file = WebIM.utils.getFileUrl(me.refs.file),
+            fileSize = WebIM.utils.getFileSize(me.refs.file),
             filename = file.filename;
+
+        if(!fileSize){
+            Demo.api.NotifyError(Demo.lan.fileOverSize);
+            return false;
+        }
 
         if (!file.filename) {
             me.refs.file.value = null;
             return false;
         }
-
-        if (!Demo.FILETYPE[file.filetype.toLowerCase()]) {
-            me.refs.file.value = null;
-            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
-            return;
-        }
-
         msg.set({
-            apiUrl: WebIM.config.apiURL,
+            apiUrl: Demo.conn.apiUrl,
             file: file,
             filename: filename,
             to: Demo.selected,
             roomType: chatroom,
+            ext:{
+                fileSize: fileSize
+            },
             onFileUploadError: function (error) {
                 log(error);
                 me.refs.file.value = null;
-
                 Demo.api.appendMsg({
                     data: Demo.lan.sendFileFailed,
                     from: Demo.user,
@@ -759,7 +799,7 @@ module.exports = React.createClass({
                 }, 'txt');
             },
             onFileUploadComplete: function (data) {
-                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
+                url = ((location.protocol != 'https:' && WebIM.config.isHttpDNS) ? (Demo.conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9))) : data.uri) + '/' + data.entities[0].uuid;
                 me.refs.file.value = null;
             },
             success: function (id) {
@@ -772,7 +812,6 @@ module.exports = React.createClass({
             },
             flashUpload: WebIM.flashUpload
         });
-
         if (Demo.selectedCate === 'groups') {
             msg.setGroup(Demo.groupType);
         } else if (chatroom) {
@@ -804,6 +843,13 @@ module.exports = React.createClass({
         for (var i = 0; i < this.state.groups.length; i++) {
             id = this.state.groups[i].roomId;
             props.name = this.state.groups[i].name;
+            //createGroup is two step progresses.first send presence,second send iq.
+            //on first recv group list, the newest created one's roomId=name,
+            //should replace the name by Demo.createGroupName which is stored before Demo.conn.createGroup
+            if (this.state.groups[i].roomId == this.state.groups[i].name && Demo.createGroupName && Demo.createGroupName != '') {
+                this.state.groups[i].name = Demo.createGroupName;
+                Demo.createGroupName = '';
+            }
 
             windows.push(<ChatWindow roomId={id} id={'wrapper' + id} key={id} {...props} chatType='groupChat'
                                      className={id === this.state.curNode ? '' : 'hide'}/>);

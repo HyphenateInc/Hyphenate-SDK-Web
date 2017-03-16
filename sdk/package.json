@@ -1,6 +1,6 @@
 {
   "name": "hyphenate-web",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Hyphenate web sdk",
   "main": "index.js",
   "scripts": {

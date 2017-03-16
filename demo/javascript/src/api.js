@@ -247,7 +247,6 @@ module.exports = {
                 props = null;
                 break;
         }
-
         if (props) {
             ReactDOM.render(<Webim config={WebIM.config} close={this.logout} {...props} />, this.node);
         } else {
@@ -459,7 +458,7 @@ module.exports = {
                         }
                     } else {
                         brief = '[' + Demo.lan.file + ']';
-                        fileMsg({
+                        var option = {
                             id: msg.id,
                             wrapper: targetNode,
                             name: name,
@@ -467,7 +466,11 @@ module.exports = {
                             filename: msg.filename,
                             error: msg.error,
                             errorText: msg.errorText
-                        }, this.sentByMe);
+                        };
+                        if(msg.ext){
+                            option.fileSize = msg.ext.fileSize;
+                        }
+                        fileMsg(option, this.sentByMe);
                     }
 
 
@@ -562,8 +565,6 @@ module.exports = {
                 this.addCount(msg.to, cate);
                 break;
         }
-
-
     },
 
     appendBrief: function (id, value) {

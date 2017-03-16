@@ -218,15 +218,6 @@
                 return iterate(json);
             }
         },
-        registerUser: function (options) {
-            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
-                Demo.conn.dnsIndex = 0;
-                Demo.conn.getHttpDNS(options, 'signup');
-            } else {
-                Demo.conn.signup(options);
-            }
-
-        },
         login: function (options) {
             var options = options || {};
             var suc = options.success || EMPTYFN;
@@ -311,8 +302,7 @@
             }
         },
 
-        getFileSize: function (fileInputId) {
-            var file = document.getElementById(fileInputId);
+        getFileSize: function (file) {
             var fileSize = 0;
             if (file) {
                 if (file.files) {
@@ -324,6 +314,22 @@
                     var fileobject = new ActiveXObject('Scripting.FileSystemObject');
                     var file = fileobject.GetFile(file.value);
                     fileSize = file.Size;
+                }
+            }
+            console.log('fileSize: ', fileSize);
+            if(fileSize > 10000000){
+                return false;
+            }
+            var kb = Math.round(fileSize / 1000);
+            if(kb < 1000){
+                fileSize = kb + ' KB';
+            }else if(kb >= 1000){
+                var mb = kb / 1000;
+                if(mb < 1000) {
+                    fileSize = mb.toFixed(1) + ' MB';
+                }else{
+                    var gb = mb / 1000;
+                    fileSize = gb.toFixed(1) + ' GB';
                 }
             }
             return fileSize;
@@ -853,8 +859,48 @@
                 }
             }
             return '';
-        }
+        },
 
+        sprintf: function(){
+            var arg = arguments,
+                str = arg[0] || '',
+                i, len;
+            for(i = 1, len = arg.length ; i < len ; i++){
+                str = str.replace(/%s/, arg[i]);
+            }
+            return str;
+        },
+
+        clone: function (obj) {
+            var o;
+            switch(typeof obj){
+                case 'undefined': break;
+                case 'string': o = obj + ''; break;
+                case 'number': o = obj - 0; break;
+                case 'boolean': o = obj;break;
+                case 'object':
+                    if(obj === null){
+                        o = null;
+                    }else{
+                        if(obj instanceof Array){
+                            o = [];
+                            for(var i = 0, len = obj.length ; i < len ; i++){
+                                o.push(this.clone(obj[i]));
+                            }
+                        }else{
+                            o = {};
+                            for(var k in obj){
+                                o[k] = this.clone(obj[k]);
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    o = obj;
+                    break;
+            }
+            return o;
+        }
     };
 
 

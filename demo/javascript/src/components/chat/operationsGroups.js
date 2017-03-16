@@ -48,7 +48,7 @@ module.exports = React.createClass({
     },
 
     destroyGroup: function () {
-        log('destroyGroup:' + this.props.roomId);
+        var roomId = this.props.roomId;
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"destroyGroup","id":"' + this.props.roomId + '"}',
                 function () {

@@ -56,19 +56,17 @@ var Channel = React.createClass({
 
         this.refs.remoteVideo.srcObject = props.remoteStream;
         this.refs.localVideo.srcObject = props.localStream;
-
-
     },
 
 
     componentWillReceiveProps: function (nextProps) {
-        // console.log('componentWillReceiveProps', nextProps);
+        console.log('componentWillReceiveProps', nextProps);
         this.setStream(nextProps);
     },
 
 
     componentDidMount: function () {
-        // console.log('did mount', this.props);
+        console.log('did mount', this.props);
         new Drag(this.refs.onAcceptCallrtc);
         this.resetButtonPosition();
 
@@ -221,7 +219,7 @@ module.exports = function (dom) {
             var hideAccept = false;
             var localFullRemoteCorner = false;
             if (Demo.user == Demo.call.caller) {
-                title = '等候 ' + Demo.call.callee.split('@')[0].split('_')[1] + ' video streaming...';
+                title = 'waiting for ' + Demo.call.callee.split('@')[0].split('_')[1] + ' video streaming...';
                 hideAccept = true;
             } else {
                 title = Demo.call.callee.split('@')[0].split('_')[1];
