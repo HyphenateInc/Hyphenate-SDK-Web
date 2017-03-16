@@ -32,6 +32,9 @@ var CommonPattern = {
 
     consult: false,
 
+    isCaller: false,
+    accepted: false,
+
 
     init: function () {
         var self = this;
@@ -83,6 +86,9 @@ var CommonPattern = {
     initC: function (mediaStreamConstaints, accessSid) {
         var self = this;
         self.sid = accessSid;
+
+        self.isCaller = true;
+        self.accepted = false;
 
         self.createLocalMedia(mediaStreamConstaints);
     },
@@ -156,6 +162,8 @@ var CommonPattern = {
 
         _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
+        self.accepted = true;
+
         options.sdp && self.webRtc.setRemoteDescription(options.sdp);
         options.cands && self._onTcklC(from, options);
     },
@@ -165,6 +173,9 @@ var CommonPattern = {
         var self = this;
 
         self.consult = false;
+
+        self.isCaller = false;
+        self.accepted = false;
 
         self.callee = from;
         self._rtcCfg2 = options.rtcCfg;
@@ -183,15 +194,15 @@ var CommonPattern = {
 
 
             /*
-             * chrome 版本 大于 50时，可以使用pranswer。
-             * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
+             * support pranswer if Chrome version > 50
+             * does not support pranswer if < 50. Here default vibrate
              *
              */
             if (WebIM.WebRTC.supportPRAnswer) {
                 self.webRtc.createPRAnswer(function (prAnswer) {
                     self._onGotWebRtcPRAnswer(prAnswer);
 
-                    setTimeout(function () { //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
+                    setTimeout(function () { // if Chrome is using pranswer, then ice status is just checking, there's no vibration when connected as SDK.
                         _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
                         self.onRinging(self.callee);
                     }, 500);
@@ -246,6 +257,8 @@ var CommonPattern = {
                 } else {
                     self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
                 }
+
+                self.accepted = true;
             });
         }
 
@@ -337,7 +350,10 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, reason);
+        var sendReason;
+        reason || (!self.isCaller && !self.accepted && (sendReason = 'decline')) || (sendReason = 'success');
+
+        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, sendReason);
 
         self.webRtc.close();
 
@@ -346,11 +362,23 @@ var CommonPattern = {
         self.onTermCall(reason);
     },
 
+    /**
+     *
+     * @param from
+     * @param options
+     * @param options.reason
+     *               "ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+     *               "decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+     * @private
+     */
     _onTermC: function (from, options) {
+        _logger.debug("[_onTermC] options.reason = " + options.reason);
+
         var self = this;
 
         self.hangup = true;
         self.termCall(options.reason);
+
     },
 
     onTermCall: function () {

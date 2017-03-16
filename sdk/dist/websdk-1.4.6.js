@@ -272,14 +272,6 @@
 	                return iterate(json);
 	            }
 	        },
-	        registerUser: function registerUser(options) {
-	            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
-	                Demo.conn.dnsIndex = 0;
-	                Demo.conn.getHttpDNS(options, 'signup');
-	            } else {
-	                Demo.conn.signup(options);
-	            }
-	        },
 	        login: function login(options) {
 	            var options = options || {};
 	            var suc = options.success || EMPTYFN;
@@ -361,8 +353,7 @@
 	            }
 	        },
 
-	        getFileSize: function getFileSize(fileInputId) {
-	            var file = document.getElementById(fileInputId);
+	        getFileSize: function getFileSize(file) {
 	            var fileSize = 0;
 	            if (file) {
 	                if (file.files) {
@@ -374,6 +365,22 @@
 	                    var fileobject = new ActiveXObject('Scripting.FileSystemObject');
 	                    var file = fileobject.GetFile(file.value);
 	                    fileSize = file.Size;
+	                }
+	            }
+	            console.log('fileSize: ', fileSize);
+	            if (fileSize > 10000000) {
+	                return false;
+	            }
+	            var kb = Math.round(fileSize / 1000);
+	            if (kb < 1000) {
+	                fileSize = kb + ' KB';
+	            } else if (kb >= 1000) {
+	                var mb = kb / 1000;
+	                if (mb < 1000) {
+	                    fileSize = mb.toFixed(1) + ' MB';
+	                } else {
+	                    var gb = mb / 1000;
+	                    fileSize = gb.toFixed(1) + ' GB';
 	                }
 	            }
 	            return fileSize;
@@ -880,8 +887,53 @@
 	                }
 	            }
 	            return '';
-	        }
+	        },
 
+	        sprintf: function sprintf() {
+	            var arg = arguments,
+	                str = arg[0] || '',
+	                i,
+	                len;
+	            for (i = 1, len = arg.length; i < len; i++) {
+	                str = str.replace(/%s/, arg[i]);
+	            }
+	            return str;
+	        },
+
+	        clone: function clone(obj) {
+	            var o;
+	            switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
+	                case 'undefined':
+	                    break;
+	                case 'string':
+	                    o = obj + '';break;
+	                case 'number':
+	                    o = obj - 0;break;
+	                case 'boolean':
+	                    o = obj;break;
+	                case 'object':
+	                    if (obj === null) {
+	                        o = null;
+	                    } else {
+	                        if (obj instanceof Array) {
+	                            o = [];
+	                            for (var i = 0, len = obj.length; i < len; i++) {
+	                                o.push(this.clone(obj[i]));
+	                            }
+	                        } else {
+	                            o = {};
+	                            for (var k in obj) {
+	                                o[k] = this.clone(obj[k]);
+	                            }
+	                        }
+	                    }
+	                    break;
+	                default:
+	                    o = obj;
+	                    break;
+	            }
+	            return o;
+	        }
 	    };
 
 	    exports.utils = utils;
@@ -896,87 +948,87 @@
 
 	;
 	(function () {
-	    var connIndex = 0,
-	        uploadIndex = 100,
-	        downloadIndex = 200,
-	        msgIndex = 300,
-	        statusIndex = 400;
 
 	    exports.code = {
-	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_OPEN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_AUTH_ERROR: connIndex++,
-	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: connIndex++,
-	        WEBIM_CONNCTION_ATTACH_ERROR: connIndex++,
-	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: connIndex++,
-	        WEBIM_CONNCTION_REOPEN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: connIndex++, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
-	        WEBIM_CONNCTION_SERVER_ERROR: connIndex++, //8: offline by multi login
-	        WEBIM_CONNCTION_IQ_ERROR: connIndex++,
+	        WEBIM_CONNCTION_USER_NOT_ASSIGN_ERROR: 0,
+	        WEBIM_CONNCTION_OPEN_ERROR: 1,
+	        WEBIM_CONNCTION_AUTH_ERROR: 2,
+	        WEBIM_CONNCTION_OPEN_USERGRID_ERROR: 3,
+	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
+	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
+	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: 8, //8: offline by multi login
+	        WEBIM_CONNCTION_IQ_ERROR: 9,
 
-	        WEBIM_CONNCTION_PING_ERROR: connIndex++,
-	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: connIndex++,
-	        WEBIM_CONNCTION_GETROSTER_ERROR: connIndex++,
-	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: connIndex++,
-	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: connIndex++,
-	        WEBIM_CONNCTION_DISCONNECTED: connIndex++, //16: server-side close the websocket connection
-	        WEBIM_CONNCTION_AJAX_ERROR: connIndex++,
-	        WEBIM_CONNCTION_JOINROOM_ERROR: connIndex++,
-	        WEBIM_CONNCTION_GETROOM_ERROR: connIndex++,
+	        WEBIM_CONNCTION_PING_ERROR: 10,
+	        WEBIM_CONNCTION_NOTIFYVERSION_ERROR: 11,
+	        WEBIM_CONNCTION_GETROSTER_ERROR: 12,
+	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
+	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
+	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
+	        WEBIM_CONNCTION_DISCONNECTED: 16, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_AJAX_ERROR: 17,
+	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
+	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
 
-	        WEBIM_CONNCTION_GETROOMINFO_ERROR: connIndex++,
-	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: connIndex++,
-	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: connIndex++,
-	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: connIndex++,
-	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: connIndex++,
-	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: connIndex++,
-	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: connIndex++,
-	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: connIndex++,
+	        WEBIM_CONNCTION_GETROOMINFO_ERROR: 20,
+	        WEBIM_CONNCTION_GETROOMMEMBER_ERROR: 21,
+	        WEBIM_CONNCTION_GETROOMOCCUPANTS_ERROR: 22,
+	        WEBIM_CONNCTION_LOAD_CHATROOM_ERROR: 23,
+	        WEBIM_CONNCTION_NOT_SUPPORT_CHATROOM_ERROR: 24,
+	        WEBIM_CONNCTION_JOINCHATROOM_ERROR: 25,
+	        WEBIM_CONNCTION_QUITCHATROOM_ERROR: 26,
+	        WEBIM_CONNCTION_APPKEY_NOT_ASSIGN_ERROR: 27,
+	        WEBIM_CONNCTION_TOKEN_NOT_ASSIGN_ERROR: 28,
+	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
 
-	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: connIndex++,
-	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: connIndex++,
-	        WEBIM_CONNCTION_CLIENT_OFFLINE: connIndex++, //32: client offline
-	        WEBIM_CONNCTION_CLIENT_LOGOUT: connIndex++, //33: client logout
-	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: connIndex++, // Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32, //32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33, //33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
+	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
+	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
+	        WEBIM_CONNECTION_DECLINE_JOIN_GROUP: 38,
+	        WEBIM_CONNECTION_CLOSED: 39,
 
+	        WEBIM_UPLOADFILE_BROWSER_ERROR: 100,
+	        WEBIM_UPLOADFILE_ERROR: 101,
+	        WEBIM_UPLOADFILE_NO_LOGIN: 102,
+	        WEBIM_UPLOADFILE_NO_FILE: 103,
 
-	        WEBIM_UPLOADFILE_BROWSER_ERROR: uploadIndex++,
-	        WEBIM_UPLOADFILE_ERROR: uploadIndex++,
-	        WEBIM_UPLOADFILE_NO_LOGIN: uploadIndex++,
-	        WEBIM_UPLOADFILE_NO_FILE: uploadIndex++,
+	        WEBIM_DOWNLOADFILE_ERROR: 200,
+	        WEBIM_DOWNLOADFILE_NO_LOGIN: 201,
+	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: 202,
 
-	        WEBIM_DOWNLOADFILE_ERROR: downloadIndex++,
-	        WEBIM_DOWNLOADFILE_NO_LOGIN: downloadIndex++,
-	        WEBIM_DOWNLOADFILE_BROWSER_ERROR: downloadIndex++,
+	        WEBIM_MESSAGE_REC_TEXT: 300,
+	        WEBIM_MESSAGE_REC_TEXT_ERROR: 301,
+	        WEBIM_MESSAGE_REC_EMOTION: 302,
+	        WEBIM_MESSAGE_REC_PHOTO: 303,
+	        WEBIM_MESSAGE_REC_AUDIO: 304,
+	        WEBIM_MESSAGE_REC_AUDIO_FILE: 305,
+	        WEBIM_MESSAGE_REC_VEDIO: 306,
+	        WEBIM_MESSAGE_REC_VEDIO_FILE: 307,
+	        WEBIM_MESSAGE_REC_FILE: 308,
+	        WEBIM_MESSAGE_SED_TEXT: 309,
+	        WEBIM_MESSAGE_SED_EMOTION: 310,
+	        WEBIM_MESSAGE_SED_PHOTO: 311,
+	        WEBIM_MESSAGE_SED_AUDIO: 312,
+	        WEBIM_MESSAGE_SED_AUDIO_FILE: 313,
+	        WEBIM_MESSAGE_SED_VEDIO: 314,
+	        WEBIM_MESSAGE_SED_VEDIO_FILE: 315,
+	        WEBIM_MESSAGE_SED_FILE: 316,
+	        WEBIM_MESSAGE_SED_ERROR: 317,
 
-	        WEBIM_MESSAGE_REC_TEXT: msgIndex++,
-	        WEBIM_MESSAGE_REC_TEXT_ERROR: msgIndex++,
-	        WEBIM_MESSAGE_REC_EMOTION: msgIndex++,
-	        WEBIM_MESSAGE_REC_PHOTO: msgIndex++,
-	        WEBIM_MESSAGE_REC_AUDIO: msgIndex++,
-	        WEBIM_MESSAGE_REC_AUDIO_FILE: msgIndex++,
-	        WEBIM_MESSAGE_REC_VEDIO: msgIndex++,
-	        WEBIM_MESSAGE_REC_VEDIO_FILE: msgIndex++,
-	        WEBIM_MESSAGE_REC_FILE: msgIndex++,
-	        WEBIM_MESSAGE_SED_TEXT: msgIndex++,
-	        WEBIM_MESSAGE_SED_EMOTION: msgIndex++,
-	        WEBIM_MESSAGE_SED_PHOTO: msgIndex++,
-	        WEBIM_MESSAGE_SED_AUDIO: msgIndex++,
-	        WEBIM_MESSAGE_SED_AUDIO_FILE: msgIndex++,
-	        WEBIM_MESSAGE_SED_VEDIO: msgIndex++,
-	        WEBIM_MESSAGE_SED_VEDIO_FILE: msgIndex++,
-	        WEBIM_MESSAGE_SED_FILE: msgIndex++,
-
-	        STATUS_INIT: statusIndex++,
-	        STATUS_DOLOGIN_USERGRID: statusIndex++,
-	        STATUS_DOLOGIN_IM: statusIndex++,
-	        STATUS_OPENED: statusIndex++,
-	        STATUS_CLOSING: statusIndex++,
-	        STATUS_CLOSED: statusIndex++,
-	        STATUS_ERROR: statusIndex++
+	        STATUS_INIT: 400,
+	        STATUS_DOLOGIN_USERGRID: 401,
+	        STATUS_DOLOGIN_IM: 402,
+	        STATUS_OPENED: 403,
+	        STATUS_CLOSING: 404,
+	        STATUS_CLOSED: 405,
+	        STATUS_ERROR: 406
 	    };
 	})();
 
@@ -1042,7 +1094,7 @@
 	 * Strophe.Websocket has a bug while logout:
 	 * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
 	 * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
-	 * WebSocket connection to 'ws://api.hyphenate.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+	 * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
 	 * 3 "Websocket error [object Event]"
 	 * _changeConnectStatus
 	 * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
@@ -1357,6 +1409,7 @@
 	        conn.onError(error);
 	    } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
 	        // client should limit the speed of sending ack messages  up to 5/s
+	        conn.autoReconnectNumTotal = 0;
 	        conn.intervalId = setInterval(function () {
 	            conn.handelSendQueue();
 	        }, 200);
@@ -1440,8 +1493,8 @@
 	        }
 	    } else if (status == Strophe.Status.DISCONNECTED) {
 	        if (conn.isOpened()) {
-	            if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
-	                Demo.conn.reconnect();
+	            if (conn.autoReconnectNumTotal < conn.autoReconnectNumMax) {
+	                conn.reconnect();
 	                return;
 	            } else {
 	                error = {
@@ -1573,7 +1626,7 @@
 	    return url.prefix + url.base + url.suffix;
 	};
 
-	// class
+	//class
 	var connection = function connection(options) {
 	    if (!this instanceof connection) {
 	        return new connection(options);
@@ -1581,6 +1634,7 @@
 
 	    var options = options || {};
 
+	    this.isHttpDNS = options.isHttpDNS || false;
 	    this.isMultiLoginSessions = options.isMultiLoginSessions || false;
 	    this.wait = options.wait || 30;
 	    this.retry = options.retry || false;
@@ -1601,6 +1655,8 @@
 	    this.context = { status: _code.STATUS_INIT };
 	    this.sendQueue = new Queue(); //instead of sending message immediately,cache them in this queue
 	    this.intervalId = null; //clearInterval return value
+	    this.apiUrl = options.apiUrl || '';
+	    this.isWindowSDK = options.isWindowSDK || false;
 
 	    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
 	    this.dnsIndex = 0; //the dns ip used in dnsArr currently
@@ -1611,6 +1667,17 @@
 	    this.xmppHosts = null; //xmpp server ips
 	    this.xmppIndex = 0; //the xmpp ip used in xmppHosts currently
 	    this.xmppTotal = 0; //max number of creating xmpp server connection(ws/bosh) retries
+
+	    this.groupOption = {};
+	};
+
+	connection.prototype.registerUser = function (options) {
+	    if (location.protocol != 'https:' && this.isHttpDNS) {
+	        this.dnsIndex = 0;
+	        this.getHttpDNS(options, 'signup');
+	    } else {
+	        this.signup(options);
+	    }
 	};
 
 	connection.prototype.handelSendQueue = function () {
@@ -1688,7 +1755,7 @@
 	};
 
 	connection.prototype.getStrophe = function () {
-	    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+	    if (location.protocol != 'https:' && this.isHttpDNS) {
 	        //TODO: try this.xmppTotal times on fail
 	        var url = '';
 	        var host = this.xmppHosts[this.xmppIndex];
@@ -1747,7 +1814,7 @@
 	    }
 
 	    if (url != '') {
-	        WebIM.config.apiURL = url;
+	        this.apiUrl = url;
 	        options.apiUrl = url;
 	    }
 
@@ -1799,7 +1866,7 @@
 	        dataType: 'text',
 	        type: 'GET',
 
-	        // url: 'http://www.hyphenate.io/hyphenate/server.xml',
+	        // url: 'http://www.easemob.com/easemob/server.xml',
 	        // dataType: 'xml',
 	        data: { app_key: encodeURIComponent(options.appKey) },
 	        success: suc || _utils.emptyfn,
@@ -1831,7 +1898,7 @@
 	    }
 
 	    var error = function error(res, xhr, msg) {
-	        if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+	        if (location.protocol != 'https:' && self.isHttpDNS) {
 	            if (self.restIndex + 1 < self.restTotal) {
 	                self.restIndex++;
 	                self.getRestFromHttpDNS(options, 'signup');
@@ -1863,7 +1930,7 @@
 	};
 
 	connection.prototype.open = function (options) {
-	    if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+	    if (location.protocol != 'https:' && this.isHttpDNS) {
 	        this.dnsIndex = 0;
 	        this.getHttpDNS(options, 'login');
 	    } else {
@@ -1900,7 +1967,7 @@
 	            _login(data, conn);
 	        };
 	        var error = function error(res, xhr, msg) {
-	            if (location.protocol != 'https:' && WebIM.config.isHttpDNS) {
+	            if (location.protocol != 'https:' && conn.isHttpDNS) {
 	                if (conn.restIndex + 1 < conn.restTotal) {
 	                    conn.restIndex++;
 	                    conn.getRestFromHttpDNS(options, 'login');
@@ -2022,7 +2089,7 @@
 	        from: this.context.jid || '',
 	        to: this.domain,
 	        type: 'result'
-	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('hyphenate').up().c('version').t(_version).up().c('os').t('webim');
+	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');
 
 	    var suc = suc || _utils.emptyfn;
 	    var error = fail || this.onError;
@@ -2047,6 +2114,7 @@
 	    var presence_type = msginfo.getAttribute('presence_type') || '';
 	    var fromUser = _parseNameFromJidFn(from);
 	    var toUser = _parseNameFromJidFn(to);
+	    var isCreate = false;
 	    var info = {
 	        from: fromUser,
 	        to: toUser,
@@ -2093,16 +2161,12 @@
 	        }
 	    }
 
-	    // <item affiliation="member" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io" role="none">
-	    //     <actor nick="liuwz"/>
-	    // </item>
-	    // one record once a time
-	    // kick info: actor / member
 	    var members = msginfo.getElementsByTagName('item');
 	    if (members && members.length > 0) {
 	        var member = members[0];
 	        var role = member.getAttribute('role');
 	        var jid = member.getAttribute('jid');
+	        var affiliation = member.getAttribute('affiliation');
 	        // dismissed by group
 	        if (role == 'none' && jid) {
 	            var kickedMember = _parseNameFromJidFn(jid);
@@ -2113,19 +2177,13 @@
 	        }
 	        // Service Acknowledges Room Creation `createGroupACK`
 	        if (role == 'moderator' && info.code == '201') {
-	            // info.type = 'createGroupACK';
-	            info.type = 'joinPublicGroupSuccess';
+	            if (affiliation === 'owner') {
+	                info.type = 'createGroupACK';
+	                isCreate = true;
+	            } else info.type = 'joinPublicGroupSuccess';
 	        }
 	    }
 
-	    // from message : apply to join group
-	    // <message from="hyphenatedemo#chatdemoui_lwz4@hyphenate.io/mobile" id="259151681747419640" to="hyphenatedemo#chatdemoui_liuwz@hyphenate.io" xmlns="jabber:client">
-	    //     <x xmlns="http://jabber.org/protocol/muc#user">
-	    //         <apply from="hyphenatedemo#chatdemoui_lwz4@hyphenate.io" to="hyphenatedemo#chatdemoui_1477733677560@conference.hyphenate.io" toNick="lwzlwzlwz">
-	    //             <reason>qwe</reason>
-	    //         </apply>
-	    //     </x>
-	    // </message>
 	    var apply = msginfo.getElementsByTagName('apply');
 	    if (apply && apply.length > 0) {
 	        apply = apply[0];
@@ -2171,7 +2229,7 @@
 
 	        if (/subscribe/.test(info.type)) {
 	            //subscribe | subscribed | unsubscribe | unsubscribed
-	        } else if (type == "" && !info.status && !info.error) {
+	        } else if (type == "" && !info.status && !info.error && !isCreate) {
 	            info.type = 'joinPublicGroupSuccess';
 	        } else if (presence_type === 'unavailable' || type === 'unavailable') {
 	            // There is no roomtype when a chat room is deleted.
@@ -2184,6 +2242,7 @@
 	            }
 	        }
 	    }
+	    console.log('msginfo: ', msginfo);
 	    this.onPresence(info, msginfo);
 	};
 
@@ -2235,6 +2294,7 @@
 	};
 
 	connection.prototype.handleMessage = function (msginfo) {
+	    var self = this;
 	    if (this.isClosed()) {
 	        return;
 	    }
@@ -2341,7 +2401,7 @@
 	                        from: from,
 	                        to: too,
 
-	                        url: location.protocol != 'https:' && WebIM.config.isHttpDNS ? WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
 	                        secret: msgBody.secret,
 	                        filename: msgBody.filename,
 	                        thumb: msgBody.thumb,
@@ -2367,7 +2427,7 @@
 	                        from: from,
 	                        to: too,
 
-	                        url: location.protocol != 'https:' && WebIM.config.isHttpDNS ? WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
 	                        secret: msgBody.secret,
 	                        filename: msgBody.filename,
 	                        length: msgBody.length || '',
@@ -2390,7 +2450,7 @@
 	                        from: from,
 	                        to: too,
 
-	                        url: location.protocol != 'https:' && WebIM.config.isHttpDNS ? WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
 	                        secret: msgBody.secret,
 	                        filename: msgBody.filename,
 	                        file_length: msgBody.file_length,
@@ -2429,7 +2489,7 @@
 	                        from: from,
 	                        to: too,
 
-	                        url: location.protocol != 'https:' && WebIM.config.isHttpDNS ? WebIM.config.apiURL + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
+	                        url: location.protocol != 'https:' && self.isHttpDNS ? self.apiUrl + msgBody.url.substr(msgBody.url.indexOf("/", 9)) : msgBody.url,
 	                        secret: msgBody.secret,
 	                        filename: msgBody.filename,
 	                        file_length: msgBody.file_length,
@@ -2562,9 +2622,16 @@
 	};
 
 	connection.prototype.send = function (message) {
-	    if (WebIM.config.isWindowSDK) {
+	    var self = this;
+	    if (this.isWindowSDK) {
 	        WebIM.doQuery('{"type":"sendMessage","to":"' + message.to + '","message_type":"' + message.type + '","msg":"' + encodeURI(message.msg) + '","chatType":"' + message.chatType + '"}', function (response) {}, function (code, msg) {
-	            Demo.api.NotifyError('send:' + code + " - " + msg);
+	            var message = {
+	                data: {
+	                    data: "send"
+	                },
+	                type: _code.WEBIM_MESSAGE_SED_ERROR
+	            };
+	            self.onError(message);
 	        });
 	    } else {
 	        if (Object.prototype.toString.call(message) === '[object Object]') {
@@ -2692,19 +2759,6 @@
 	        pres.c('status').t(options.message).up();
 	    }
 	    this.sendCommand(pres.tree());
-	};
-
-	connection.prototype.createRoom = function (options) {
-	    var suc = options.success || _utils.emptyfn;
-	    var err = options.error || _utils.emptyfn;
-	    var roomiq;
-
-	    roomiq = $iq({
-	        to: options.roomName,
-	        type: 'set'
-	    }).c('query', { xmlns: Strophe.NS.MUC_OWNER }).c('x', { xmlns: 'jabber:x:data', type: 'submit' });
-
-	    return this.context.stropheConn.sendIQ(roomiq.tree(), suc, err);
 	};
 
 	connection.prototype.joinPublicGroup = function (options) {
@@ -2968,7 +3022,7 @@
 
 	connection.prototype.clear = function () {
 	    var key = this.context.appKey;
-	    if (this.errorType != WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
+	    if (this.errorType != _code.WEBIM_CONNCTION_DISCONNECTED) {
 	        this.context = {
 	            status: _code.STATUS_INIT,
 	            appKey: key
@@ -2980,8 +3034,14 @@
 	    this.restIndex = 0;
 	    this.xmppIndex = 0;
 
-	    if (this.errorType == WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
-	        Demo.api.init();
+	    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
+	        var message = {
+	            data: {
+	                data: "clear"
+	            },
+	            type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
+	        };
+	        this.onError(message);
 	    }
 	};
 
@@ -3061,7 +3121,7 @@
 	    var iq = $pres({
 	        from: this.context.jid,
 	        to: room_nick
-	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -3081,24 +3141,37 @@
 	        from: this.context.jid,
 	        to: room_nick,
 	        type: 'unavailable'
-	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
 
 	connection.prototype._onReceiveInviteFromGroup = function (info) {
 	    info = eval('(' + info + ')');
+	    var self = this;
 	    var options = {
 	        title: "Group invitation",
 	        msg: info.user + " invites you to join into group:" + info.group_id,
 	        agree: function agree() {
 	            WebIM.doQuery('{"type":"acceptInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
-	                Demo.api.NotifyError("acceptInvitationFromGroup error:" + msg);
+	                var message = {
+	                    data: {
+	                        data: "acceptInvitationFromGroup error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP
+	                };
+	                self.onError(message);
 	            });
 	        },
 	        reject: function reject() {
 	            WebIM.doQuery('{"type":"declineInvitationFromGroup","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
-	                Demo.api.NotifyError("declineInvitationFromGroup error:" + msg);
+	                var message = {
+	                    data: {
+	                        data: "declineInvitationFromGroup error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP
+	                };
+	                self.onError(message);
 	            });
 	        }
 	    };
@@ -3143,17 +3216,30 @@
 	};
 	connection.prototype._onReceiveJoinGroupApplication = function (info) {
 	    info = eval('(' + info + ')');
+	    var self = this;
 	    var options = {
 	        title: "Group join application",
 	        msg: info.user + " applys to join into group:" + info.group_id,
 	        agree: function agree() {
 	            WebIM.doQuery('{"type":"acceptJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
-	                Demo.api.NotifyError("acceptJoinGroupApplication error:" + msg);
+	                var message = {
+	                    data: {
+	                        data: "acceptJoinGroupApplication error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_ACCEPT_JOIN_GROUP
+	                };
+	                self.onError(message);
 	            });
 	        },
 	        reject: function reject() {
 	            WebIM.doQuery('{"type":"declineJoinGroupApplication","id":"' + info.group_id + '","user":"' + info.user + '"}', function (response) {}, function (code, msg) {
-	                Demo.api.NotifyError("declineJoinGroupApplication error:" + msg);
+	                var message = {
+	                    data: {
+	                        data: "declineJoinGroupApplication error:" + msg
+	                    },
+	                    type: _code.WEBIM_CONNECTION_DECLINE_JOIN_GROUP
+	                };
+	                self.onError(message);
 	            });
 	        }
 	    };
@@ -3190,8 +3276,15 @@
 	    }, (this.autoReconnectNumTotal == 0 ? 0 : this.autoReconnectInterval) * 1000);
 	    this.autoReconnectNumTotal++;
 	};
+
 	connection.prototype.closed = function () {
-	    Demo.api.init();
+	    var message = {
+	        data: {
+	            data: "Closed error"
+	        },
+	        type: _code.WEBIM_CONNECTION_CLOSED
+	    };
+	    this.onError(message);
 	};
 
 	// used for blacklist
@@ -3220,7 +3313,7 @@
 	    return list;
 	};
 
-	// get blacklist
+	// used for blacklist
 	connection.prototype.getBlacklist = function (options) {
 	    options = options || {};
 	    var iq = $iq({ type: 'get' });
@@ -3239,7 +3332,7 @@
 	    });
 	};
 
-	// add group member to blacklist
+	// used for blacklist
 	connection.prototype.addToBlackList = function (options) {
 	    var iq = $iq({ type: 'set' });
 	    var blacklist = options.list || {};
@@ -3300,7 +3393,7 @@
 	    return appKey + '_' + to + '@conference.' + this.domain;
 	};
 
-	// add member to blacklist
+	// used for blacklist
 	connection.prototype.addToGroupBlackList = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3342,7 +3435,7 @@
 	    return list;
 	}
 
-	// get group blacklist
+	// used for blacklist
 	connection.prototype.getGroupBlacklist = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3364,7 +3457,7 @@
 	    });
 	};
 
-	// remove group member from blacklist
+	// used for blacklist
 	connection.prototype.removeGroupMemberFromBlacklist = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3375,7 +3468,7 @@
 	    var iq = $iq({ type: 'set', to: to });
 
 	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('item', {
-	        affiliation: 'member',
+	        affiliation: 'none',
 	        jid: jid
 	    });
 
@@ -3387,11 +3480,11 @@
 	};
 
 	/**
-	 * changeGroupSubject update to group subject
+	 * changeGroupSubject 修改群名称
 	 *
 	 * @param options
 	 */
-	// <iq to='hyphenatedemo#chatdemoui_roomid@conference.hyphenate.io' type='set' id='3940489311' xmlns='jabber:client'>
+	// <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
 	//     <query xmlns='http://jabber.org/protocol/muc#owner'>
 	//         <x type='submit' xmlns='jabber:x:data'>
 	//             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
@@ -3408,7 +3501,7 @@
 	    var to = this._getGroupJid(options.roomId);
 	    var iq = $iq({ type: 'set', to: to });
 
-	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('x', { type: 'submit', xmlns: 'jabber:x:data' }).c('field', { var: 'FORM_TYPE' }).c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up().c('field', { var: 'muc#roomconfig_roomname' }).c('value').t(options.subject).up().up().c('field', { var: 'muc#roomconfig_roomdesc' }).c('value').t(options.description);
+	    iq.c('query', { xmlns: 'http://jabber.org/protocol/muc#' + affiliation }).c('x', { type: 'submit', xmlns: 'jabber:x:data' }).c('field', { 'var': 'FORM_TYPE' }).c('value').t('http://jabber.org/protocol/muc#roomconfig').up().up().c('field', { 'var': 'muc#roomconfig_roomname' }).c('value').t(options.subject).up().up().c('field', { 'var': 'muc#roomconfig_roomdesc' }).c('value').t(options.description);
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msginfo) {
 	        sucFn();
@@ -3418,11 +3511,11 @@
 	};
 
 	/**
-	 * destroyGroup destroy group
+	 * destroyGroup 删除群组
 	 *
 	 * @param options
 	 */
-	// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="hyphenatedemo#chatdemoui_1477462231499@conference.hyphenate.io" type="set">
+	// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
 	//     <query xmlns="http://jabber.org/protocol/muc#owner">
 	//         <destroy>
 	//             <reason>xxx destory group yyy</reason>
@@ -3448,13 +3541,13 @@
 	};
 
 	/**
-     * leaveGroupBySelf leave group by self
+	 * leaveGroupBySelf 主动离开群组
 	 *
 	 * @param options
 	 */
-	// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_hyphenate_occupants_change_affiliation" to="hyphenatedemo#chatdemoui_1477481609392@conference.hyphenate.io" type="set">
+	// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
 	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
+	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
 	//     </query>
 	// </iq>
 	connection.prototype.leaveGroupBySelf = function (options) {
@@ -3480,16 +3573,16 @@
 	};
 
 	/**
-     * leaveGroup leave or removed by admin from group
+	 * leaveGroup 被踢出群组
 	 *
 	 * @param options
 	 */
-	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="hyphenatedemo#chatdemoui_1477481597120@conference.hyphenate.io" type="set" xmlns="jabber:client">
+	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
 	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io"/>
-	//         <item jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io" role="none"/>
-	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
-	//         <item jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io" role="none"/>
+	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+	//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
 	//     </query>
 	// </iq>
 	connection.prototype.leaveGroup = function (options) {
@@ -3524,23 +3617,23 @@
 	};
 
 	/**
-	 * addGroupMembers add group member
+	 * addGroupMembers 添加群组成员
 	 *
 	 * @param options
 
-	 message sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
+	 Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
 	 <!-- 添加成员通知：send -->
-	 <message to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io'>
+	 <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
 	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <invite to='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'>
+	 <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
 	 <reason>liuwz invite you to join group '谢谢'</reason>
 	 </invite>
 	 </x>
 	 </message>
-	 <!-- add user：send -->
-	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_hyphenate_occupants_change_affiliation' to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io' type='set'>
+	 <!-- 添加成员：send -->
+	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
 	 <query xmlns='http://jabber.org/protocol/muc#admin'>
-	 <item affiliation='member' jid='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'/>
+	 <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
 	 </query>
 	 </iq>
 	 */
@@ -3601,9 +3694,9 @@
 	 *
 	 * throw request for now 暂时不处理，直接丢弃
 	 *
-	 <message to='hyphenatedemo#chatdemoui_mt002@hyphenate.io' from='easmeob-demo#chatdemoui_mt001@hyphenate.io' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+	 <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
 	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <apply to='hyphenatedemo#chatdemoui_groupid1@conference.hyphenate.io' from='easmeob-demo#chatdemoui_mt001@hyphenate.io' toNick='llllll'>
+	 <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
 	 <reason>reject</reason>
 	 </apply>
 	 </x>
@@ -3627,130 +3720,117 @@
 	    // this.sendCommand(dom.tree());
 	};
 
-        /**
-         * createGroup create group
-         *
-         * 1. create group request -> obtain group admin
-         * 2. obtain group admin info -> obtain group form
-         * 3. complete group form -> group created successfully
-         * 4. add user to group
-         * 5. notify group member
-         * @param options
-         */
+	connection.prototype.createGroupAsync = function (p) {
+	    var roomId = p.from;
+	    var me = this;
+	    var toRoom = this._getGroupJid(roomId);
+	    var to = toRoom + '/' + this.context.userId;
+	    var options = this.groupOption;
+	    var suc = p.success || _utils.emptyfn;
+
+	    // Creating a Reserved Room
+	    var iq = $iq({ type: 'get', to: toRoom }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' });
+
+	    // Strophe.info('step 1 ----------');
+	    // Strophe.info(options);
+	    me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	        // log(msgInfo);
+
+	        // for ie hack
+	        if ('setAttribute' in msgInfo) {
+	            // Strophe.info('step 3 ----------');
+	            var x = msgInfo.getElementsByTagName('x')[0];
+	            x.setAttribute('type', 'submit');
+	        } else {
+	            // Strophe.info('step 4 ----------');
+	            Strophe.forEachChild(msgInfo, 'x', function (field) {
+	                field.setAttribute('type', 'submit');
+	            });
+	        }
+
+	        Strophe.info('step 5 ----------');
+	        Strophe.forEachChild(x, 'field', function (field) {
+	            var fieldVar = field.getAttribute('var');
+	            var valueDom = field.getElementsByTagName('value')[0];
+	            Strophe.info(fieldVar);
+	            switch (fieldVar) {
+	                case 'muc#roomconfig_roomname':
+	                    _setText(valueDom, options.subject || '');
+	                    break;
+	                case 'muc#roomconfig_roomdesc':
+	                    _setText(valueDom, options.description || '');
+	                    break;
+	                case 'muc#roomconfig_publicroom':
+	                    // public 1
+	                    _setText(valueDom, +options.optionsPublic);
+	                    break;
+	                case 'muc#roomconfig_membersonly':
+	                    _setText(valueDom, +options.optionsMembersOnly);
+	                    break;
+	                case 'muc#roomconfig_moderatedroom':
+	                    _setText(valueDom, +options.optionsModerate);
+	                    break;
+	                case 'muc#roomconfig_persistentroom':
+	                    _setText(valueDom, 1);
+	                    break;
+	                case 'muc#roomconfig_allowinvites':
+	                    _setText(valueDom, +options.optionsAllowInvites);
+	                    break;
+	                case 'muc#roomconfig_allowvisitornickchange':
+	                    _setText(valueDom, 0);
+	                    break;
+	                case 'muc#roomconfig_allowvisitorstatus':
+	                    _setText(valueDom, 0);
+	                    break;
+	                case 'allow_private_messages':
+	                    _setText(valueDom, 0);
+	                    break;
+	                case 'allow_private_messages_from_visitors':
+	                    _setText(valueDom, 'nobody');
+	                    break;
+	                default:
+	                    break;
+	            }
+	        });
+
+	        var iq = $iq({ to: toRoom, type: 'set' }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' }).cnode(x);
+
+	        me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
+	            me.addGroupMembers({
+	                list: options.members,
+	                roomId: roomId
+	            });
+
+	            suc(options);
+	        }, function (errInfo) {
+	            // errFn(errInfo);
+	        });
+	        // sucFn(msgInfo);
+	    }, function (errInfo) {
+	        // errFn(errInfo);
+	    });
+	};
+
+	/**
+	 * createGroup 创建群组
+	 *
+	 * 1. 创建申请 -> 得到房主身份
+	 * 2. 获取房主信息 -> 得到房间form
+	 * 3. 完善房间form -> 创建成功
+	 * 4. 添加房间成员
+	 * 5. 消息通知成员
+	 * @param options
+	 */
 	connection.prototype.createGroup = function (options) {
+	    this.groupOption = options;
 	    var roomId = +new Date();
 	    var toRoom = this._getGroupJid(roomId);
 	    var to = toRoom + '/' + this.context.userId;
 
 	    var pres = $pres({ to: to }).c('x', { xmlns: 'http://jabber.org/protocol/muc' }).up().c('create', { xmlns: 'http://jabber.org/protocol/muc' }).up();
-	    // .c('c', {
-	    //     hash: 'sha-1',
-	    //     node: 'https://github.com/robbiehanson/XMPPFramework',
-	    //     ver: 'k6gP4Ua5m4uu9YorAG0LRXM+kZY=',
-	    //     xmlns: 'http://jabber.org/protocol/caps'
-	    // }).up();
 
 	    // createGroupACK
 	    this.sendCommand(pres.tree());
-
-	    var me = this;
-	    // timeout hack for create group async
-	    setTimeout(function () {
-	        // Creating a Reserved Room
-	        var iq = $iq({ type: 'get', to: toRoom }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' });
-
-	        // Strophe.info('step 1 ----------');
-	        // Strophe.info(options);
-	        me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	            // log(msgInfo);
-
-	            // for ie hack
-	            if ('setAttribute' in msgInfo) {
-	                // Strophe.info('step 3 ----------');
-	                var x = msgInfo.getElementsByTagName('x')[0];
-	                x.setAttribute('type', 'submit');
-	            } else {
-	                // Strophe.info('step 4 ----------');
-	                Strophe.forEachChild(msgInfo, 'x', function (field) {
-	                    field.setAttribute('type', 'submit');
-	                });
-	            }
-
-	            // var rcv = msgInfo.getElementsByTagName('x');
-	            // var v;
-	            // if (rcv.length > 0) {
-	            //     if (rcv[0].childNodes && rcv[0].childNodes.length > 0) {
-	            //         v = rcv[0].childNodes[0].nodeValue;
-	            //     } else {
-	            //         v = rcv[0].innerHTML || rcv[0].innerText
-	            //     }
-	            //     mid = rcv[0].getAttribute('mid');
-	            // }
-	            Strophe.info('step 5 ----------');
-	            Strophe.forEachChild(x, 'field', function (field) {
-	                var fieldVar = field.getAttribute('var');
-	                var valueDom = field.getElementsByTagName('value')[0];
-	                Strophe.info(fieldVar);
-	                switch (fieldVar) {
-	                    case 'muc#roomconfig_roomname':
-	                        _setText(valueDom, options.subject || '');
-	                        break;
-	                    case 'muc#roomconfig_roomdesc':
-	                        _setText(valueDom, options.description || '');
-	                        break;
-	                    case 'muc#roomconfig_publicroom':
-	                        // public 1
-	                        _setText(valueDom, +options.optionsPublic);
-	                        break;
-	                    case 'muc#roomconfig_membersonly':
-	                        _setText(valueDom, +options.optionsMembersOnly);
-	                        break;
-	                    case 'muc#roomconfig_moderatedroom':
-	                        _setText(valueDom, +options.optionsModerate);
-	                        break;
-	                    case 'muc#roomconfig_persistentroom':
-	                        _setText(valueDom, 1);
-	                        break;
-	                    case 'muc#roomconfig_allowinvites':
-	                        _setText(valueDom, +options.optionsAllowInvites);
-	                        break;
-	                    case 'muc#roomconfig_allowvisitornickchange':
-	                        _setText(valueDom, 0);
-	                        break;
-	                    case 'muc#roomconfig_allowvisitorstatus':
-	                        _setText(valueDom, 0);
-	                        break;
-	                    case 'allow_private_messages':
-	                        _setText(valueDom, 0);
-	                        break;
-	                    case 'allow_private_messages_from_visitors':
-	                        _setText(valueDom, 'nobody');
-	                        break;
-	                    default:
-	                        break;
-	                }
-	                // log(valueDom);
-	            });
-
-	            var iq = $iq({ to: toRoom, type: 'set' }).c('query', { xmlns: 'http://jabber.org/protocol/muc#owner' }).cnode(x);
-
-	            // log(iq.tree());
-
-	            me.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
-	                // sucFn(msgInfo);
-
-	                me.addGroupMembers({
-	                    list: options.members,
-	                    roomId: roomId
-	                });
-	            }, function (errInfo) {
-	                // errFn(errInfo);
-	            });
-	            // sucFn(msgInfo);
-	        }, function (errInfo) {
-	            // errFn(errInfo);
-	        });
-	    }, 1000);
 	};
 
 	function _setText(valueDom, v) {
@@ -4026,7 +4106,7 @@
 	            }).c('body').t(jsonstr);
 
 	            if (message.roomType) {
-	                dom.up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
+	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
 	            }
 
 	            setTimeout(function () {
@@ -4058,7 +4138,7 @@
 	                me.msg.body = {
 	                    type: me.msg.type || 'file',
 
-	                    url: (location.protocol != 'https:' && WebIM.config.isHttpDNS ? WebIM.config.apiURL + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0]['uuid'],
+	                    url: (location.protocol != 'https:' && conn.isHttpDNS ? conn.apiUrl + data.uri.substr(data.uri.indexOf("/", 9)) : data.uri) + '/' + data.entities[0]['uuid'],
 	                    secret: data.entities[0]['share-secret'],
 	                    filename: me.msg.file.filename || me.msg.filename,
 	                    size: {
@@ -4069,7 +4149,6 @@
 	                    file_length: me.msg.file_length || 0,
 	                    filetype: me.msg.filetype
 	                };
-
 	                _send(me.msg);
 	                _tmpComplete instanceof Function && _tmpComplete(data, me.msg.id);
 	            };

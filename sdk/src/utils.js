@@ -863,8 +863,8 @@
 
         sprintf: function(){
             var arg = arguments,
-                str = arg[0] || '',
-                i, len;
+            str = arg[0] || '',
+            i, len;
             for(i = 1, len = arg.length ; i < len ; i++){
                 str = str.replace(/%s/, arg[i]);
             }

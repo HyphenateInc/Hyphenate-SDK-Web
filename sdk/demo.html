@@ -4,6 +4,8 @@
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
     <script src="./dist/websdk-1.4.6.js"></script>
+    <script src="../webrtc/dist/adapter.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.6.js"></script>
 </head>
 <body>
 
@@ -23,6 +25,7 @@
         <button id="privateImg">PrivateImg</button>
     </div>
     <br>
+    <video id="privateVideo" style="border: 1px solid black" autoplay controls></video>
 </div>
 
 <h2>ChatRoom</h2>
@@ -61,16 +64,27 @@
     <button id="removeFromBlackList">RemoveFromBlackList</button>
 </div>
 
+<h3>WebRTC</h3>
+<div>
+    <button id="rtCall">Call</button>
+    <button id="rtAcceptCall">AcceptCall</button>
+    <button id="rtEndCall">EndCall</button>
+    <div>
+        <video id="video" style="border: 1px solid red" autoplay>
+
+        </video>
+        <video id="localVideo" style="border: 1px solid blue" autoplay>
+
+        </video>
+    </div>
+</div>
+
 <script>
     /**
      * Created by clock on 16-11-25.
      */
-
-    /*
-    	Connection
-    */
-     
-    var conn = new WebIM.connection({
+    var conn = {};
+    conn = new WebIM.connection({
         isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
         https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol === 'https:',
         url: WebIM.config.xmppURL,
@@ -112,6 +126,7 @@
             options.onFileDownloadError = function () {
                 console.log('Image download failed!');
             };
+            WebIM.utils.download.call(conn, options);       // 意义待查
 
         }, // image message received
         onCmdMessage: function (message) {
@@ -127,8 +142,22 @@
             console.log("File");
         }, // file received
         onVideoMessage: function (message) {
-            console.log("Video");
-        }, // video message received
+            var node = document.getElementById('privateVideo');
+            var option = {
+                url: message.url,
+                headers: {
+                  'Accept': 'audio/mp4'
+                },
+                onFileDownloadComplete: function (response) {
+                    var objectURL = WebIM.utils.parseDownloadResponse.call(conn, response);
+                    node.src = objectURL;
+                },
+                onFileDownloadError: function () {
+                    console.log('File down load error.')
+                }
+            };
+            WebIM.utils.download.call(conn, option);
+        },   //收到视频消息
         onPresence: function (message) {
             switch (message.type) {
                 case 'subscribe':                           // receiving user receives friend request
@@ -190,8 +219,45 @@
             console.log(list);
         } // update blacklist succeed
     });
-</script>
+    // 初始化WebRTC Call
+    var rtcCall = new WebIM.WebRTC.Call({
+        connection: conn,
 
+        mediaStreamConstaints: {
+            audio: true,
+            video: true
+        },
+
+        listener: {
+            onAcceptCall: function (from, options) {
+                console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
+            },
+            onGotRemoteStream: function (stream) {
+                console.log('onGotRemoteStream::', 'stream: ', stream);
+                var video = document.getElementById('video');
+                video.src = window.URL.createObjectURL(stream);
+            },
+            onGotLocalStream: function (stream) {
+                console.log('onGotLocalStream::', 'stream:', stream);
+                var video = document.getElementById('localVideo');
+                video.src = window.URL.createObjectURL(stream);
+            },
+            onRinging: function (caller) {
+                console.log('onRinging::', 'caller:', caller);
+            },
+            onTermCall: function (reason) {
+                console.log('onTermCall::');
+                console.log('reason:', reason);
+            },
+            onIceConnectionStateChange: function (iceState) {
+                console.log('onIceConnectionStateChange::', 'iceState:', iceState);
+            },
+            onError: function (e) {
+                console.log(e);
+            }
+        }
+    });
+</script>
 <script>
 	
 	// open, login
@@ -295,6 +361,20 @@
     var getRoasters = function () {
         var option = {
             success: function (roster) {
+                // roster是所有好友，格式为：
+                /*
+                 [
+                 {
+                 jid:"easemob#chatdemoui_test1@easemob.com",
+                 name:"test1",
+                 subscription: "both"
+                 // subscription的值的集合是{both, to, from, none},
+                 // both表示互相在对方的好友列表中，
+                 // to 和 from意义待定
+                 // 如果添加对方为好友被拒绝则为none
+                 }
+                 ]
+                 */
                 for (var o in roster) {
                     console.log("jid: ", roster[o].jid);
                     console.log("name: ", roster[o].name);
@@ -304,19 +384,6 @@
         };
         conn.getRoster(option);
     };
-	/* The format of roster
-	[
-		{
-			jid:"hyphenate#chatdemoui_apple@hyphenate.io",
-			name:"apple",
-			subscription: "both"	                 // both, to, from, none
-			// subscription values {both, to, from, none}
-			// both: users are friends
-			// to and from: undefined
-			// none: users are not friends
-		}
-	]
-	*/
 
     // Add friend
     var addFriends = function () {
@@ -474,22 +541,6 @@
         };
         conn.getChatRooms(option);
     }
-    
-    // query chat room member info, the same applies to query group member
-    // the resutl of querying structure, {affiliation: 'member', jid: "hyphenatedemo#chat@hyphenate.io"}
-    // It's in jid format. jid:'{api key}' + '_' + {username} + '@hyphenate.io'
-    var queryRoomMember = function () {
-        var member = '';
-        conn.queryRoomMember({
-            roomId: '114715680632209992',
-            success: function (members) {
-                for (var o in members) {
-                    member = members[o];
-                    console.log(member);
-                }
-            }
-        });
-    };
 
 
 	/* 
@@ -533,6 +584,20 @@
     var queryGroupInfo = function () {
         conn.queryRoomInfo({
             roomId: '1480747027186',
+            // settings 表示入群的权限，具体值待定
+            // members[0]里面包含群主信息，其结构为{affiliation: "owner", jid: appKey + "_" + username + "@easemob.com"}
+            // jid中的username就是群主ID
+            // fields的结构为：
+            /*
+             {
+             affiliations: "2",                  // 意义待查
+             description: "12311231313",         // 群简介
+             maxusers: "200",                    // 群最大成员容量
+             name: "123",                        // 群名称
+             occupants: "2",                     // 意义待查
+             owner: "easemob-demo#chatdemoui_mengyuanyuan"               // 群主jid
+             }
+             */
             success: function (settings, members, fields) {
                 console.log('settings: ', settings);
                 console.log('members: ', members);
@@ -543,34 +608,10 @@
             }
         });
     };
-    /*
-    // settings: The permission to join the group. (pending definition)
-    // members[0] contains the group owner info in the following structure
-    // {affiliation: "owner", jid: appKey + "_" + username + "@hyphenate.io"}
-    // jid username is admin's user ID
-    // field
-	 {
-		 affiliations: "2",                  
-		 description: "12311231313",         // Group description
-		 maxusers: "200",                    // Group capacity
-		 name: "123",                        // Group name
-		 occupants: "2",                     // number of group members
-		 owner: "hyphenatedemo#chat"         // Group ID as jid
-	 }
- 	*/
- 	
-    // add users to group
-    var addGroupMembers = function () {
-        var option = {
-            list: ['orange', 'apple'],
-            roomId: '1480841456167'
-        };
-        conn.addGroupMembers(option);
-    };
-    // member leaves group
+    // 成员主动离开群
     var leaveGroup = function () {
         var option = {
-            to: 'orange',
+            to: 'asdfghj',
             roomId: '1480747027186',
             success: function () {
                 console.log('You leave room succeed!');
@@ -581,7 +622,19 @@
         };
         conn.leaveGroupBySelf(option);
     };
-    // list all the groups
+    // 将成员踢出群(同将群成员拉入群黑名单)
+    var addToGroupBlackList = function () {
+        var option = {
+            affiliation: "owner",                       // 写死
+            roomId: "1480756943693",                    // 群组ID
+            success: function () {
+                console.log('add to black list succeed');
+            },
+            to: 'asdfghj'                               // 需要删除的成员ID
+        };
+        conn.addToGroupBlackList(option);
+    };
+    // 列出所有群组
     var listGroups = function () {
         var option = {
             success: function (rooms) {
@@ -592,21 +645,6 @@
             }
         };
         conn.listRooms(option);
-    };
-    // query chat room member info, the same applies to query group member
-    // the resutl of querying structure, {affiliation: 'member', jid: "hyphenatedemo#chat@hyphenate.io"}
-    // It's in jid format. jid:'{api key}' + '_' + {username} + '@hyphenate.io'
-    var queryRoomMember = function () {
-        var member = '';
-        conn.queryRoomMember({
-            roomId: '114715680632209992',
-            success: function (members) {
-                for (var o in members) {
-                    member = members[o];
-                    console.log(member);
-                }
-            }
-        });
     };
     // update gorup info
     var changeGroupInfo = function () {
@@ -633,19 +671,25 @@
         };
         conn.getGroupBlacklist(option);
     };
-    // remove member from group and add the member to blacklist
-    var addToGroupBlackList = function () {
+    // 解散一个群组
+    var destroyGroup = function () {
         var option = {
-            affiliation: "owner",                       // default value. Do not alter. 
-            roomId: "1480756943693",                    // group ID
+            reason: 'Test Destroy Group',
+            roomId: '1480840256052',
             success: function () {
-                console.log('add to blacklist succeed');
-            },
-            to: 'orange'                               // user ID of the member to be removed
+                console.log('Destroy group success!');
+            }
         };
-        conn.addToGroupBlackList(option);
+        conn.destroyGroup(option);
     };
-    // remove users from blacklist
+    // 加好友入群
+    var addGroupMembers = function () {
+        var option = {
+            list: ['asdfghj', 'wjy6'],
+            roomId: '1480841456167'
+        };
+        conn.addGroupMembers(option);
+    };
     var removeFromGroupBlackList = function () {
         var option = {
             roomId: '1480841456167',
@@ -656,21 +700,44 @@
         };
         conn.removeGroupMemberFromBlacklist(option);
     };
-    // destroy group 
-    var destroyGroup = function () {
-        var option = {
-            reason: 'Test Destroy Group',
-            roomId: '1480840256052',
-            success: function () {
-                console.log('Destroy group succeed!');
+
+    // 查询群组成员，此方法亦可查询聊天室成员
+    // 查询出来的member的结构为{affiliation: 'member', jid: "easemob-demo#chatdemoui_wjy6@easemob.com"}
+    // 注意，这里的jid格式，成员的用户名是chatdemoui_之后，@easemob.com之前的字符串，如本例的wjy6是用户名
+    var queryRoomMember = function () {
+        var member = '';
+        conn.queryRoomMember({
+            roomId: '114715680632209992',
+            success: function (members) {
+                for (var o in members) {
+                    member = members[o];
+                    console.log(member);
+                }
             }
-        };
-        conn.destroyGroup(option);
+        });
     };
 
+    /*
+     * WebRTC
+     */
+    // 视频呼叫对方
+    var call = function () {
+        rtcCall.caller = 'mengyuanyuan';
+        rtcCall.makeVideoCall('asdfghj');
+    };
+    // 关掉/拒绝视频
+    var endCall = function () {
+        rtcCall.endCall();
+    }
+    // 接受对方呼叫
+    var acceptCall = function () {
+        rtcCall.acceptCall();
+    }
 </script>
-
 <script>
+    /**
+     * Created by clock on 16-11-30.
+     */
     window.onload = function () {
         document.getElementById('register').onclick = register;
         document.getElementById('privateText').onclick = sendPrivateText;
@@ -678,7 +745,7 @@
         document.getElementById('privateImg').onclick = sendPrivateImg;
         document.getElementById('getBlackList').onclick = getBlackList;
         document.getElementById('addToBlackList').onclick = addToBlackList;
-        document.getElementById('removeFromBlackList').onclick = removeFromBlackList;
+        document.getElementById('removeFromBlackList').onclick = removeBlackList;
 
         document.getElementById('roomText').onclick = sendRoomText;
         document.getElementById('roomJoin').onclick = joinRoom;
@@ -701,6 +768,11 @@
         document.getElementById('getRoasters').onclick = getRoasters;
         document.getElementById('addFriends').onclick = addFriends;
         document.getElementById('removeRoster').onclick = removeFriends;
+
+        document.getElementById('rtCall').onclick = call;
+        document.getElementById('rtEndCall').onclick = endCall;
+        document.getElementById('rtAcceptCall').onclick = acceptCall;
+
     };
 </script>
 

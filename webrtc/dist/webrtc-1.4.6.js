@@ -74,7 +74,7 @@
 	}
 
 	/**
-	 * check if support pranswer
+	 * 判断是否支持pranswer
 	 */
 	if (/Chrome/.test(navigator.userAgent)) {
 	    WebIM.WebRTC.supportPRAnswer = navigator.userAgent.split("Chrome/")[1].split(".")[0] >= 50 ? true : false;
@@ -558,7 +558,7 @@
 	        var self = this;
 
 	        if (typeof self.connection === "undefined") {
-	            throw "Caller need a instance of Hyphenate.im.Connection";
+	            throw "Caller need a instance of Easemob.im.Connection";
 	        }
 
 	        self.api = self.api || new Api({
@@ -832,6 +832,10 @@
 	        if (rtcOptions.op == 107) {
 	            self._connectedSid = '';
 	            self._fromSessionID = {};
+
+	            var reasonObj = msginfo.getElementsByTagName('reason');
+	            //var endReason = msginfo.getElementsByTagName('reason')[0].innerHTML;
+	            reasonObj && reasonObj.length > 0 && (rtcOptions.reason = reasonObj[0].innerHTML);
 	        }
 
 	        if (rtcOptions.sdp) {
@@ -987,7 +991,7 @@
 	        }).c("MediaReqExt").c('rtkey').t(rtKey).up().c('rtflag').t(rtflag).up().c('stream_type').t(streamType).up().c('sid').t(sid).up().c('content').t(_util.stringifyJSON(options.data));
 
 	        if (options.data.op == 107 && options.reason) {
-	            iq.up().c('reaseon').t(options.reason);
+	            iq.up().c('reason').t(options.reason);
 	        }
 	        _logger.debug("Send [op = " + options.data.op + "] : \r\n", iq.tree());
 
@@ -2139,6 +2143,9 @@
 
 	        _logger.debug('[WebRTC-API] setRemoteDescription start. ');
 
+	        desc.sdp = desc.sdp.replace(/UDP\/TLS\/RTP\/SAVPF/g, "RTP/SAVPF");
+	        _logger.debug('[WebRTC-API] setRemoteDescription.', desc);
+
 	        desc = new RTCSessionDescription(desc);
 
 	        return self.rtcPeerConnection.setRemoteDescription(desc).then(self.onSetRemoteSuccess, self.onSetSessionDescriptionError);
@@ -2257,6 +2264,9 @@
 
 	    consult: false,
 
+	    isCaller: false,
+	    accepted: false,
+
 	    init: function init() {
 	        var self = this;
 
@@ -2307,6 +2317,9 @@
 	    initC: function initC(mediaStreamConstaints, accessSid) {
 	        var self = this;
 	        self.sid = accessSid;
+
+	        self.isCaller = true;
+	        self.accepted = false;
 
 	        self.createLocalMedia(mediaStreamConstaints);
 	    },
@@ -2379,6 +2392,8 @@
 
 	        _logger.info("[WebRTC-API] _onAnsC : recv answer. ");
 
+	        self.accepted = true;
+
 	        options.sdp && self.webRtc.setRemoteDescription(options.sdp);
 	        options.cands && self._onTcklC(from, options);
 	    },
@@ -2387,6 +2402,9 @@
 	        var self = this;
 
 	        self.consult = false;
+
+	        self.isCaller = false;
+	        self.accepted = false;
 
 	        self.callee = from;
 	        self._rtcCfg2 = options.rtcCfg;
@@ -2465,6 +2483,8 @@
 	                } else {
 	                    self.api.acptC(rt, self._sessId, self._rtcId, answer, null, 1);
 	                }
+
+	                self.accepted = true;
 	            });
 	        }
 
@@ -2555,7 +2575,10 @@
 	            rtKey: self._rtKey
 	        });
 
-	        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, reason);
+	        var sendReason;
+	        reason || !self.isCaller && !self.accepted && (sendReason = 'decline') || (sendReason = 'success');
+
+	        self.hangup || self.api.termC(rt, self._sessId, self._rtcId, sendReason);
 
 	        self.webRtc.close();
 
@@ -2564,7 +2587,18 @@
 	        self.onTermCall(reason);
 	    },
 
+	    /**
+	     *
+	     * @param from
+	     * @param options
+	     * @param options.reason
+	     *               "ok"      -> 'HANGUP'     "success" -> 'HANGUP'   "timeout"          -> 'NORESPONSE'
+	     *               "decline" -> 'REJECT'     "busy"    -> 'BUSY'     "failed-transport" -> 'FAIL'
+	     * @private
+	     */
 	    _onTermC: function _onTermC(from, options) {
+	        _logger.debug("[_onTermC] options.reason = " + options.reason);
+
 	        var self = this;
 
 	        self.hangup = true;
