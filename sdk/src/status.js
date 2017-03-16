@@ -9,8 +9,8 @@
         WEBIM_CONNCTION_ATTACH_ERROR: 4,
         WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
         WEBIM_CONNCTION_REOPEN_ERROR: 6,
-        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7,          // 7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
-        WEBIM_CONNCTION_SERVER_ERROR: 8,                // 8: offline by multi login
+        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7,              // 7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+        WEBIM_CONNCTION_SERVER_ERROR: 8,                    // 8: offline by multi login
         WEBIM_CONNCTION_IQ_ERROR: 9,
 
         WEBIM_CONNCTION_PING_ERROR: 10,
@@ -19,7 +19,7 @@
         WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
         WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
         WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
-        WEBIM_CONNCTION_DISCONNECTED: 16,                // 16: server-side close the websocket connection
+        WEBIM_CONNCTION_DISCONNECTED: 16,                   // 16: server-side close the websocket connection
         WEBIM_CONNCTION_AJAX_ERROR: 17,
         WEBIM_CONNCTION_JOINROOM_ERROR: 18,
         WEBIM_CONNCTION_GETROOM_ERROR: 19,
@@ -36,10 +36,10 @@
         WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
 
         WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
-        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
-        WEBIM_CONNCTION_CLIENT_OFFLINE: 32,             // 32: client offline
-        WEBIM_CONNCTION_CLIENT_LOGOUT: 33,              // 33: client logout
-        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34,      // Over amount of the tabs a user opened in the same browser
+        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,           // 31: handle down streaming error with try/catch
+        WEBIM_CONNCTION_CLIENT_OFFLINE: 32,                 // 32: client offline
+        WEBIM_CONNCTION_CLIENT_LOGOUT: 33,                  // 33: client logout
+        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34,          // 34: Over amount of the tabs a user opened in the same browser
         WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
         WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
         WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,

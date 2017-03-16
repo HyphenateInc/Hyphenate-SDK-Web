@@ -413,6 +413,8 @@ var _loginCallback = function (status, msg, conn) {
         conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
         conn.addHandler(handleIq, null, 'iq', null, null, null);
 
+        conn.registerConfrIQHandler && (conn.registerConfrIQHandler());
+
         conn.context.status = _code.STATUS_OPENED;
 
         var supportRecMessage = [
@@ -603,7 +605,7 @@ var connection = function (options) {
     this.url = _getXmppUrl(options.url, this.https);
     this.hold = options.hold || 1;
     this.route = options.route || null;
-    this.domain = options.domain || 'hyphenate.io';
+    this.domain = options.domain || 'easemob.com';
     this.inactivity = options.inactivity || 30;
     this.heartBeatWait = options.heartBeatWait || 4500;
     this.maxRetries = options.maxRetries || 5;
@@ -619,7 +621,7 @@ var connection = function (options) {
     this.apiUrl = options.apiUrl || '';
     this.isWindowSDK = options.isWindowSDK || false;
 
-    this.dnsArr = ['https://rs.hyphenate.io', 'https://rsbak.hyphenate.io', 'http://182.92.174.78', 'http://112.126.66.111']; // http dns server hosts
+    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; // http dns server hosts
     this.dnsIndex = 0;     // the dns ip used in dnsArr currently
     this.dnsTotal = this.dnsArr.length;  //max number of getting dns retries
     this.restHosts = null; // rest server ips
@@ -632,7 +634,7 @@ var connection = function (options) {
     this.groupOption = {};
 };
 
-connection.prototype.registerUser = function (options){
+connection.prototype.registerUser = function (options) {
     if (location.protocol != 'https:' && this.isHttpDNS) {
         this.dnsIndex = 0;
         this.getHttpDNS(options, 'signup');
@@ -675,12 +677,13 @@ connection.prototype.listen = function (options) {
     _listenNetwork(this.onOnline, this.onOffline);
 };
 
-connection.prototype.heartBeat = function () {
+//webrtc需要强制心跳，加个默认为false的参数 向下兼容
+connection.prototype.heartBeat = function (forcing = false) {
     var me = this;
     //IE8: strophe auto switch from ws to BOSH, need heartbeat
     var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
 
-    if (this.heartBeatID || !isNeed) {
+    if (this.heartBeatID || (!forcing && !isNeed)) {
         return;
     }
 
@@ -825,7 +828,7 @@ connection.prototype.getHttpDNS = function (options, type) {
 
     };
     var options2 = {
-        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
+        url: this.dnsArr[this.dnsIndex] + '/hyphenate/server.xml',
         dataType: 'text',
         type: 'GET',
 
@@ -917,6 +920,7 @@ connection.prototype.login = function (options) {
 
     if (options.accessToken) {
         options.access_token = options.accessToken;
+        conn.context.restTokenData = options;
         _login(options, conn);
     } else {
         var apiUrl = options.apiUrl;
@@ -928,9 +932,13 @@ connection.prototype.login = function (options) {
         var suc = function (data, xhr) {
             conn.context.status = _code.STATUS_DOLOGIN_IM;
             conn.context.restTokenData = data;
+            if(options.success)
+                options.success(data);
             _login(data, conn);
         };
         var error = function (res, xhr, msg) {
+            if(options.error)
+                options.error();
             if (location.protocol != 'https:' && conn.isHttpDNS) {
                 if ((conn.restIndex + 1) < conn.restTotal) {
                     conn.restIndex++;
@@ -1150,7 +1158,7 @@ connection.prototype.handlePresence = function (msginfo) {
         }
         // Service Acknowledges Room Creation `createGroupACK`
         if (role == 'moderator' && info.code == '201') {
-            if(affiliation === 'owner'){
+            if (affiliation === 'owner') {
                 info.type = 'createGroupACK';
                 isCreate = true;
             }
@@ -1208,11 +1216,14 @@ connection.prototype.handlePresence = function (msginfo) {
             if (info.destroy) {// Group or Chat room Deleted.
                 info.type = 'deleteGroupChat';
             } else if (info.code == 307 || info.code == 321) {// Dismissed by group.
-                info.type = 'leaveGroup';
+                var nick = msginfo.getAttribute('nick');
+                if (!nick)
+                    info.type = 'leaveGroup';
+                else
+                    info.type = 'removedFromGroup';
             }
         }
     }
-    console.log('msginfo: ', msginfo);
     this.onPresence(info, msginfo);
 };
 
@@ -2012,11 +2023,10 @@ connection.prototype.clear = function () {
     this.restIndex = 0;
     this.xmppIndex = 0;
 
-
     if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
         var message = {
             data: {
-                data: "clear"
+                data: "logout"
             },
             type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
         };
@@ -2105,7 +2115,7 @@ connection.prototype.joinChatRoom = function (options) {
         .c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'member', role: 'participant'})
         .up().up()
-        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+        .c('roomtype', {xmlns: 'hyphenate:x:roomtype', type: 'chatroom'});
 
     this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
@@ -2129,7 +2139,7 @@ connection.prototype.quitChatRoom = function (options) {
         .c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'none', role: 'none'})
         .up().up()
-        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+        .c('roomtype', {xmlns: 'hyphenate:x:roomtype', type: 'chatroom'});
 
     this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
@@ -2572,6 +2582,7 @@ connection.prototype.destroyGroup = function (options) {
 //     </query>
 // </iq>
 connection.prototype.leaveGroupBySelf = function (options) {
+    var self = this;
     var sucFn = options.success || _utils.emptyfn;
     var errFn = options.error || _utils.emptyfn;
 
@@ -2589,6 +2600,8 @@ connection.prototype.leaveGroupBySelf = function (options) {
 
     this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
         sucFn(msgInfo);
+        var pres = $pres({type: 'unavailable', to: to + '/' + self.context.userId});
+        self.sendCommand(pres.tree());
     }, function (errInfo) {
         errFn(errInfo);
     });

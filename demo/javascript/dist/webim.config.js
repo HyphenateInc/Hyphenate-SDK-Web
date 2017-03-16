@@ -11,7 +11,7 @@ WebIM.config = {
     /*
      * Hyphenate server REST API URL
      */
-    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.hyphenate.io',
+    apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
     /*
      * Application API Key
      */
@@ -30,15 +30,14 @@ WebIM.config = {
     /*
      * Set to auto sign-in
      */
-    isAutoLogin: true,
+    isAutoLogin: false,
     /**
      * Whether to use window.doQuery()
      * @parameter {Boolean} true or false
      */
     isWindowSDK: false,
     /**
-     * isSandBox=true:  xmppURL: 'api.sandbox.hyphenate.io',  apiURL: '//api.sdb.hyphenate.io',
-     * isSandBox=false: xmppURL: 'api.hyphenate.io',          apiURL: '//api.hyphenate.io',
+     * isSandBox=false: xmppURL: 'im-api.hyphenate.io',          apiURL: '//api.hyphenate.io',
      * @parameter {Boolean} true or false
      */
     isSandBox: false,
@@ -61,6 +60,10 @@ WebIM.config = {
      * webrtc supports WebKit and https only
      */
     isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
+    /**
+     * after login, send empty message to xmpp server like heartBeat every 45s, to keep the ws connection alive.
+     */
+    heartBeatWait: 4500,
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */

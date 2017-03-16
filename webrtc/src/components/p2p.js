@@ -34,6 +34,7 @@ var CommonPattern = {
 
     isCaller: false,
     accepted: false,
+    hangup: false,
 
 
     init: function () {
@@ -89,6 +90,9 @@ var CommonPattern = {
 
         self.isCaller = true;
         self.accepted = false;
+        self.hangup = false;
+
+        self.streamType = mediaStreamConstaints.audio && mediaStreamConstaints.video ? "VIDEO" : "VOICE";
 
         self.createLocalMedia(mediaStreamConstaints);
     },
@@ -120,7 +124,7 @@ var CommonPattern = {
             rtKey: self._rtKey
         });
 
-        self.api.initC(rt, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
+        self.api.initC(rt, self.streamType, null, null, self._sessId, self._rtcId, null, null, offer, null, self._rtcCfg2, null, function (from, rtcOptions) {
             _logger.debug("initc result", rtcOptions);
         });
 
@@ -176,6 +180,7 @@ var CommonPattern = {
 
         self.isCaller = false;
         self.accepted = false;
+        self.hangup = false;
 
         self.callee = from;
         self._rtcCfg2 = options.rtcCfg;
@@ -186,6 +191,8 @@ var CommonPattern = {
         self._rtcId = options.rtcId;
         self._sessId = options.sessId;
 
+        self.streamType = options.streamType;
+
         self.webRtc.createRtcPeerConnection(self._rtcCfg2);
 
         options.cands && self._onTcklC(from, options);
@@ -194,15 +201,15 @@ var CommonPattern = {
 
 
             /*
-             * support pranswer if Chrome version > 50
-             * does not support pranswer if < 50. Here default vibrate
+             * chrome 版本 大于 50时，可以使用pranswer。
+             * 小于50 不支持pranswer，此时处理逻辑是，直接进入振铃状态
              *
              */
             if (WebIM.WebRTC.supportPRAnswer) {
                 self.webRtc.createPRAnswer(function (prAnswer) {
                     self._onGotWebRtcPRAnswer(prAnswer);
 
-                    setTimeout(function () { // if Chrome is using pranswer, then ice status is just checking, there's no vibration when connected as SDK.
+                    setTimeout(function () { //由于 chrome 在 pranswer时，ice状态只是 checking，并不能像sdk那样 期待 connected 振铃；所以目前改为 发送完pranswer后，直接振铃
                         _logger.info("[WebRTC-API] onRinging : after send pranswer. ", self.callee);
                         self.onRinging(self.callee);
                     }, 500);
@@ -262,7 +269,14 @@ var CommonPattern = {
             });
         }
 
-        self.webRtc.createMedia(function (webrtc, stream) {
+        var constaints = {
+            audio: true
+        };
+        if(self.streamType == "VIDEO"){
+            constaints.video = true;
+        }
+
+        self.webRtc.createMedia(constaints, function (webrtc, stream) {
             webrtc.setLocalVideoSrcObject(stream);
 
             createAndSendAnswer();

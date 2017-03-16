@@ -45,23 +45,23 @@
 /***/ 0:
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(230);
+	module.exports = __webpack_require__(224);
 
 
 /***/ },
 
-/***/ 223:
+/***/ 217:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 	;
 	(function () {
 
 	    var EMPTYFN = function EMPTYFN() {};
-	    var _code = __webpack_require__(224).code;
+	    var _code = __webpack_require__(218).code;
 	    var WEBIM_FILESIZE_LIMIT = 10485760;
 
 	    var _createStandardXHR = function _createStandardXHR() {
@@ -130,6 +130,112 @@
 	        }
 	        return 0;
 	    }();
+
+	    var _base64 = function _base64() {
+
+	        var self = this;
+
+	        // private property
+	        var _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+	        // public method for encoding
+	        this.encode = function (input) {
+	            var output = "";
+	            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	            var i = 0;
+	            input = self._utf8_encode(input);
+	            while (i < input.length) {
+	                chr1 = input.charCodeAt(i++);
+	                chr2 = input.charCodeAt(i++);
+	                chr3 = input.charCodeAt(i++);
+	                enc1 = chr1 >> 2;
+	                enc2 = (chr1 & 3) << 4 | chr2 >> 4;
+	                enc3 = (chr2 & 15) << 2 | chr3 >> 6;
+	                enc4 = chr3 & 63;
+	                if (isNaN(chr2)) {
+	                    enc3 = enc4 = 64;
+	                } else if (isNaN(chr3)) {
+	                    enc4 = 64;
+	                }
+	                output = output + _keyStr.charAt(enc1) + _keyStr.charAt(enc2) + _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+	            }
+	            return output;
+	        };
+
+	        // public method for decoding
+	        this.decode = function (input) {
+	            var output = "";
+	            var chr1, chr2, chr3;
+	            var enc1, enc2, enc3, enc4;
+	            var i = 0;
+	            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+	            while (i < input.length) {
+	                enc1 = _keyStr.indexOf(input.charAt(i++));
+	                enc2 = _keyStr.indexOf(input.charAt(i++));
+	                enc3 = _keyStr.indexOf(input.charAt(i++));
+	                enc4 = _keyStr.indexOf(input.charAt(i++));
+	                chr1 = enc1 << 2 | enc2 >> 4;
+	                chr2 = (enc2 & 15) << 4 | enc3 >> 2;
+	                chr3 = (enc3 & 3) << 6 | enc4;
+	                output = output + String.fromCharCode(chr1);
+	                if (enc3 != 64) {
+	                    output = output + String.fromCharCode(chr2);
+	                }
+	                if (enc4 != 64) {
+	                    output = output + String.fromCharCode(chr3);
+	                }
+	            }
+	            output = self._utf8_decode(output);
+	            return output;
+	        };
+
+	        // private method for UTF-8 encoding
+	        this._utf8_encode = function (string) {
+	            string = string.replace(/\r\n/g, "\n");
+	            var utftext = "";
+	            for (var n = 0; n < string.length; n++) {
+	                var c = string.charCodeAt(n);
+	                if (c < 128) {
+	                    utftext += String.fromCharCode(c);
+	                } else if (c > 127 && c < 2048) {
+	                    utftext += String.fromCharCode(c >> 6 | 192);
+	                    utftext += String.fromCharCode(c & 63 | 128);
+	                } else {
+	                    utftext += String.fromCharCode(c >> 12 | 224);
+	                    utftext += String.fromCharCode(c >> 6 & 63 | 128);
+	                    utftext += String.fromCharCode(c & 63 | 128);
+	                }
+	            }
+	            return utftext;
+	        };
+
+	        // private method for UTF-8 decoding
+	        this._utf8_decode = function (utftext) {
+	            var string = "";
+	            var i = 0;
+	            var c = 0;
+	            var c1 = 0;
+	            var c2 = 0;
+	            var c3 = 0;
+	            while (i < utftext.length) {
+	                c = utftext.charCodeAt(i);
+	                if (c < 128) {
+	                    string += String.fromCharCode(c);
+	                    i++;
+	                } else if (c > 191 && c < 224) {
+	                    c2 = utftext.charCodeAt(i + 1);
+	                    string += String.fromCharCode((c & 31) << 6 | c2 & 63);
+	                    i += 2;
+	                } else {
+	                    c2 = utftext.charCodeAt(i + 1);
+	                    c3 = utftext.charCodeAt(i + 2);
+	                    string += String.fromCharCode((c & 15) << 12 | (c2 & 63) << 6 | c3 & 63);
+	                    i += 3;
+	                }
+	            }
+	            return string;
+	        };
+	    };
 
 	    var _tmpUtilXHR = _xmlrequest(),
 	        _hasFormData = typeof FormData !== 'undefined',
@@ -592,7 +698,7 @@
 	            xhr.open('POST', uploadUrl);
 
 	            xhr.setRequestHeader('restrict-access', 'true');
-	            xhr.setRequestHeader('Accept', '*/*'); // Android QQ browser has some problem with this attribute.
+	            xhr.setRequestHeader('Accept', '*/*'); 	// Android QQ browser has some problem with this attribute.
 	            xhr.setRequestHeader('Authorization', 'Bearer ' + acc);
 
 	            var formData = new FormData();
@@ -873,10 +979,10 @@
 	        },
 	        ts: function ts() {
 	            var d = new Date();
-	            var Hours = d.getHours(); //获取当前小时数(0-23)
-	            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
-	            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
-	            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+	            var Hours = d.getHours(); 		// get current hour (0-23)
+	            var Minutes = d.getMinutes(); 	// get current min (0-59)
+	            var Seconds = d.getSeconds(); 	// get current sec (0-59)
+	            var Milliseconds = d.getMilliseconds(); 	// get current ms
 	            return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
 	        },
 
@@ -900,39 +1006,45 @@
 	            return str;
 	        },
 
-	        clone: function clone(obj) {
-	            var o;
-	            switch (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) {
-	                case 'undefined':
-	                    break;
-	                case 'string':
-	                    o = obj + '';break;
-	                case 'number':
-	                    o = obj - 0;break;
-	                case 'boolean':
-	                    o = obj;break;
-	                case 'object':
-	                    if (obj === null) {
-	                        o = null;
-	                    } else {
-	                        if (obj instanceof Array) {
-	                            o = [];
-	                            for (var i = 0, len = obj.length; i < len; i++) {
-	                                o.push(this.clone(obj[i]));
-	                            }
-	                        } else {
-	                            o = {};
-	                            for (var k in obj) {
-	                                o[k] = this.clone(obj[k]);
-	                            }
-	                        }
-	                    }
-	                    break;
-	                default:
-	                    o = obj;
-	                    break;
+	        encrypt: function encrypt(str) {
+	            var base64 = new _base64();
+	            var encrypt = base64.encode(str);
+	            return encrypt;
+	        },
+
+	        decrypt: function decrypt(str) {
+	            var base64 = new _base64();
+	            var decrypt = base64.decode(str);
+	            decrypt = escape(decrypt);
+	            decrypt = decrypt.replace(/%00/g, '');
+	            decrypt = unescape(decrypt);
+	            return decrypt;
+	        },
+
+	        setCookie: function setCookie(name, value, days) {
+	            var cookie = name + '=' + encodeURIComponent(value);
+	            if (typeof days == 'number') {
+	                cookie += '; max-age: ' + days * 60 * 60 * 24;
 	            }
-	            return o;
+	            document.cookie = cookie;
+	        },
+
+	        getCookie: function getCookie() {
+	            var allCookie = {};
+	            var all = document.cookie;
+	            if (all === "") {
+	                return allCookie;
+	            }
+	            var list = all.split("; ");
+	            for (var i = 0; i < list.length; i++) {
+	                var cookie = list[i];
+	                var p = cookie.indexOf('=');
+	                var name = cookie.substring(0, p);
+	                var value = cookie.substring(p + 1);
+	                value = decodeURIComponent(value);
+	                allCookie[name] = value;
+	            }
+	            return allCookie;
 	        }
 	    };
 
@@ -941,7 +1053,7 @@
 
 /***/ },
 
-/***/ 224:
+/***/ 218:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -957,8 +1069,8 @@
 	        WEBIM_CONNCTION_ATTACH_ERROR: 4,
 	        WEBIM_CONNCTION_ATTACH_USERGRID_ERROR: 5,
 	        WEBIM_CONNCTION_REOPEN_ERROR: 6,
-	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7, //7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
-	        WEBIM_CONNCTION_SERVER_ERROR: 8, //8: offline by multi login
+	        WEBIM_CONNCTION_SERVER_CLOSE_ERROR: 7,			// 7: client-side network offline (net::ERR_INTERNET_DISCONNECTED)
+	        WEBIM_CONNCTION_SERVER_ERROR: 8,				// 8: offline by multi login
 	        WEBIM_CONNCTION_IQ_ERROR: 9,
 
 	        WEBIM_CONNCTION_PING_ERROR: 10,
@@ -967,7 +1079,7 @@
 	        WEBIM_CONNCTION_CROSSDOMAIN_ERROR: 13,
 	        WEBIM_CONNCTION_LISTENING_OUTOF_MAXRETRIES: 14,
 	        WEBIM_CONNCTION_RECEIVEMSG_CONTENTERROR: 15,
-	        WEBIM_CONNCTION_DISCONNECTED: 16, //16: server-side close the websocket connection
+	        WEBIM_CONNCTION_DISCONNECTED: 16,				// 16: server-side close the websocket connection
 	        WEBIM_CONNCTION_AJAX_ERROR: 17,
 	        WEBIM_CONNCTION_JOINROOM_ERROR: 18,
 	        WEBIM_CONNCTION_GETROOM_ERROR: 19,
@@ -984,10 +1096,10 @@
 	        WEBIM_CONNCTION_SESSIONID_NOT_ASSIGN_ERROR: 29,
 
 	        WEBIM_CONNCTION_RID_NOT_ASSIGN_ERROR: 30,
-	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,
-	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32, //32: client offline
-	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33, //33: client logout
-	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34, // Over amount of the tabs a user opened in the same browser
+	        WEBIM_CONNCTION_CALLBACK_INNER_ERROR: 31,		// 31: handle downloading error with try/catch
+	        WEBIM_CONNCTION_CLIENT_OFFLINE: 32,				// 32: client offline
+	        WEBIM_CONNCTION_CLIENT_LOGOUT: 33,				// 33: client logout
+	        WEBIM_CONNCTION_CLIENT_TOO_MUCH_ERROR: 34,		// 34: Over amount of the tabs a user opened in the same browser
 	        WEBIM_CONNECTION_ACCEPT_INVITATION_FROM_GROUP: 35,
 	        WEBIM_CONNECTION_DECLINE_INVITATION_FROM_GROUP: 36,
 	        WEBIM_CONNECTION_ACCEPT_JOIN_GROUP: 37,
@@ -1034,27 +1146,27 @@
 
 /***/ },
 
-/***/ 230:
+/***/ 224:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(231);
+	module.exports = __webpack_require__(225);
 
 /***/ },
 
-/***/ 231:
+/***/ 225:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _version = '1.4.2';
-	var _code = __webpack_require__(224).code;
-	var _utils = __webpack_require__(223).utils;
-	var _msg = __webpack_require__(232);
+	var _code = __webpack_require__(218).code;
+	var _utils = __webpack_require__(217).utils;
+	var _msg = __webpack_require__(226);
 	var _message = _msg._msg;
 	var _msgHash = {};
-	var Queue = __webpack_require__(233).Queue;
+	var Queue = __webpack_require__(227).Queue;
 
 	window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
@@ -1094,7 +1206,7 @@
 	 * Strophe.Websocket has a bug while logout:
 	 * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
 	 * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
-	 * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+	 * WebSocket connection to 'ws://im-api.hyphenate.io/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
 	 * 3 "Websocket error [object Event]"
 	 * _changeConnectStatus
 	 * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
@@ -1398,7 +1510,7 @@
 	    }
 
 	    if (status == Strophe.Status.CONNFAIL) {
-	        //client offline, ping/pong timeout, server quit, server offline
+	        // client offline, ping/pong timeout, server quit, server offline
 	        error = {
 	            type: _code.WEBIM_CONNCTION_SERVER_CLOSE_ERROR,
 	            msg: msg,
@@ -1408,7 +1520,7 @@
 	        conflict && (error.conflict = true);
 	        conn.onError(error);
 	    } else if (status == Strophe.Status.ATTACHED || status == Strophe.Status.CONNECTED) {
-	        // client should limit the speed of sending ack messages  up to 5/s
+	        // client should limit the speed of sending ack messages, up to 5 requests per sec
 	        conn.autoReconnectNumTotal = 0;
 	        conn.intervalId = setInterval(function () {
 	            conn.handelSendQueue();
@@ -1454,6 +1566,8 @@
 	        conn.addHandler(handleIqRoster, 'jabber:iq:roster', 'iq', 'set', null, null);
 	        conn.addHandler(handleIqPrivacy, 'jabber:iq:privacy', 'iq', 'set', null, null);
 	        conn.addHandler(handleIq, null, 'iq', null, null, null);
+
+	        conn.registerConfrIQHandler && conn.registerConfrIQHandler();
 
 	        conn.context.status = _code.STATUS_OPENED;
 
@@ -1653,20 +1767,20 @@
 	    this.autoReconnectNumTotal = 0;
 	    this.autoReconnectInterval = options.autoReconnectInterval || 0;
 	    this.context = { status: _code.STATUS_INIT };
-	    this.sendQueue = new Queue(); //instead of sending message immediately,cache them in this queue
-	    this.intervalId = null; //clearInterval return value
+	    this.sendQueue = new Queue(); 			// instead of sending message immediately,cache them in this queue
+	    this.intervalId = null; 				// clearInterval return value
 	    this.apiUrl = options.apiUrl || '';
 	    this.isWindowSDK = options.isWindowSDK || false;
 
 	    this.dnsArr = ['https://rs.easemob.com', 'https://rsbak.easemob.com', 'http://182.92.174.78', 'http://112.126.66.111']; //http dns server hosts
-	    this.dnsIndex = 0; //the dns ip used in dnsArr currently
-	    this.dnsTotal = this.dnsArr.length; //max number of getting dns retries
-	    this.restHosts = null; //rest server ips
-	    this.restIndex = 0; //the rest ip used in restHosts currently
-	    this.restTotal = 0; //max number of getting rest token retries
-	    this.xmppHosts = null; //xmpp server ips
-	    this.xmppIndex = 0; //the xmpp ip used in xmppHosts currently
-	    this.xmppTotal = 0; //max number of creating xmpp server connection(ws/bosh) retries
+	    this.dnsIndex = 0; 						// the dns ip used in dnsArr currently
+	    this.dnsTotal = this.dnsArr.length; 	// max number of getting dns retries
+	    this.restHosts = null; 					// rest server ips
+	    this.restIndex = 0; 					// the rest ip used in restHosts currently
+	    this.restTotal = 0; 					// max number of getting rest token retries
+	    this.xmppHosts = null; 					// xmpp server ips
+	    this.xmppIndex = 0; 					// the xmpp ip used in xmppHosts currently
+	    this.xmppTotal = 0; 					// max number of creating xmpp server connection(ws/bosh) retries
 
 	    this.groupOption = {};
 	};
@@ -1714,12 +1828,15 @@
 	    _listenNetwork(this.onOnline, this.onOffline);
 	};
 
+	// webrtc need heartbeat, default false to be compatible with lower version 
 	connection.prototype.heartBeat = function () {
+	    var forcing = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
 	    var me = this;
-	    //IE8: strophe auto switch from ws to BOSH, need heartbeat
+	    // IE8: strophe auto switch from ws to BOSH, need heartbeat
 	    var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
 
-	    if (this.heartBeatID || !isNeed) {
+	    if (this.heartBeatID || !forcing && !isNeed) {
 	        return;
 	    }
 
@@ -1756,7 +1873,7 @@
 
 	connection.prototype.getStrophe = function () {
 	    if (location.protocol != 'https:' && this.isHttpDNS) {
-	        //TODO: try this.xmppTotal times on fail
+	        // TODO: try this.xmpp, Total times on fail
 	        var url = '';
 	        var host = this.xmppHosts[this.xmppIndex];
 	        var domain = _utils.getXmlFirstChild(host, 'domain');
@@ -1784,6 +1901,7 @@
 	    });
 	    return stropheConn;
 	};
+	
 	connection.prototype.getHostsByTag = function (data, tagName) {
 	    var tag = _utils.getXmlFirstChild(data, tagName);
 	    if (!tag) {
@@ -1797,6 +1915,7 @@
 	    }
 	    return hosts[0].getElementsByTagName('host');
 	};
+	
 	connection.prototype.getRestFromHttpDNS = function (options, type) {
 	    if (this.restIndex > this.restTotal) {
 	        console.log('rest hosts all tried,quit');
@@ -1833,7 +1952,7 @@
 	    var self = this;
 	    var suc = function suc(data, xhr) {
 	        data = new DOMParser().parseFromString(data, "text/xml").documentElement;
-	        //get rest ips
+	        // get rest ips
 	        var restHosts = self.getHostsByTag(data, 'rest');
 	        if (!restHosts) {
 	            console.log('rest hosts error3');
@@ -1842,7 +1961,7 @@
 	        self.restHosts = restHosts;
 	        self.restTotal = restHosts.length;
 
-	        //get xmpp ips
+	        // get xmpp ips
 	        var xmppHosts = self.getHostsByTag(data, 'xmpp');
 	        if (!xmppHosts) {
 	            console.log('xmpp hosts error3');
@@ -1862,11 +1981,11 @@
 	        }
 	    };
 	    var options2 = {
-	        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
+	        url: this.dnsArr[this.dnsIndex] + '/hyphenate/server.xml',
 	        dataType: 'text',
 	        type: 'GET',
 
-	        // url: 'http://www.easemob.com/easemob/server.xml',
+	        // url: 'http://www.hyphenate.io/hyphenate/server.xml',
 	        // dataType: 'xml',
 	        data: { app_key: encodeURIComponent(options.appKey) },
 	        success: suc || _utils.emptyfn,
@@ -1953,6 +2072,7 @@
 
 	    if (options.accessToken) {
 	        options.access_token = options.accessToken;
+	        conn.context.restTokenData = options;
 	        _login(options, conn);
 	    } else {
 	        var apiUrl = options.apiUrl;
@@ -1964,9 +2084,11 @@
 	        var suc = function suc(data, xhr) {
 	            conn.context.status = _code.STATUS_DOLOGIN_IM;
 	            conn.context.restTokenData = data;
+	            if (options.success) options.success(data);
 	            _login(data, conn);
 	        };
 	        var error = function error(res, xhr, msg) {
+	            if (options.error) options.error();
 	            if (location.protocol != 'https:' && conn.isHttpDNS) {
 	                if (conn.restIndex + 1 < conn.restTotal) {
 	                    conn.restIndex++;
@@ -2089,7 +2211,7 @@
 	        from: this.context.jid || '',
 	        to: this.domain,
 	        type: 'result'
-	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('easemob').up().c('version').t(_version).up().c('os').t('webim');
+	    }).c('query', { xmlns: 'jabber:iq:version' }).c('name').t('hyphenate').up().c('version').t(_version).up().c('os').t('webim');
 
 	    var suc = suc || _utils.emptyfn;
 	    var error = fail || this.onError;
@@ -2238,11 +2360,11 @@
 	                info.type = 'deleteGroupChat';
 	            } else if (info.code == 307 || info.code == 321) {
 	                // Dismissed by group.
-	                info.type = 'leaveGroup';
+	                var nick = msginfo.getAttribute('nick');
+	                if (!nick) info.type = 'leaveGroup';else info.type = 'removedFromGroup';
 	            }
 	        }
 	    }
-	    console.log('msginfo: ', msginfo);
 	    this.onPresence(info, msginfo);
 	};
 
@@ -3037,7 +3159,7 @@
 	    if (this.errorType == _code.WEBIM_CONNCTION_CLIENT_LOGOUT || this.errorType == -1) {
 	        var message = {
 	            data: {
-	                data: "clear"
+	                data: "logout"
 	            },
 	            type: _code.WEBIM_CONNCTION_CLIENT_LOGOUT
 	        };
@@ -3121,7 +3243,7 @@
 	    var iq = $pres({
 	        from: this.context.jid,
 	        to: room_nick
-	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'member', role: 'participant' }).up().up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -3141,7 +3263,7 @@
 	        from: this.context.jid,
 	        to: room_nick,
 	        type: 'unavailable'
-	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	    }).c('x', { xmlns: Strophe.NS.MUC + '#user' }).c('item', { affiliation: 'none', role: 'none' }).up().up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
 
 	    this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 	};
@@ -3332,7 +3454,7 @@
 	    });
 	};
 
-	// used for blacklist
+	// add user to blacklist
 	connection.prototype.addToBlackList = function (options) {
 	    var iq = $iq({ type: 'set' });
 	    var blacklist = options.list || {};
@@ -3360,7 +3482,7 @@
 	    this.context.stropheConn.sendIQ(piece.tree(), sucFn, errFn);
 	};
 
-	// used for blacklist
+	// remove user from blacklist
 	connection.prototype.removeFromBlackList = function (options) {
 
 	    var iq = $iq({ type: 'set' });
@@ -3393,7 +3515,7 @@
 	    return appKey + '_' + to + '@conference.' + this.domain;
 	};
 
-	// used for blacklist
+	// add user to blacklist
 	connection.prototype.addToGroupBlackList = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3435,7 +3557,7 @@
 	    return list;
 	}
 
-	// used for blacklist
+	// get blacklist of group
 	connection.prototype.getGroupBlacklist = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3457,7 +3579,7 @@
 	    });
 	};
 
-	// used for blacklist
+	// remove group member from blacklist
 	connection.prototype.removeGroupMemberFromBlacklist = function (options) {
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
@@ -3480,11 +3602,11 @@
 	};
 
 	/**
-	 * changeGroupSubject 修改群名称
+	 * changeGroupSubject update group subject
 	 *
 	 * @param options
 	 */
-	// <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
+	// <iq to='hyphenatedemo#chatdemoui_roomid@conference.hyphenate.io' type='set' id='3940489311' xmlns='jabber:client'>
 	//     <query xmlns='http://jabber.org/protocol/muc#owner'>
 	//         <x type='submit' xmlns='jabber:x:data'>
 	//             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
@@ -3511,11 +3633,11 @@
 	};
 
 	/**
-	 * destroyGroup 删除群组
+	 * destroyGroup destroy group
 	 *
 	 * @param options
 	 */
-	// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+	// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="hyphenatedemo#chatdemoui_1477462231499@conference.hyphenate.io" type="set">
 	//     <query xmlns="http://jabber.org/protocol/muc#owner">
 	//         <destroy>
 	//             <reason>xxx destory group yyy</reason>
@@ -3541,16 +3663,19 @@
 	};
 
 	/**
-	 * leaveGroupBySelf 主动离开群组
+	 * leaveGroupBySelf member leaves the group voluntarily
 	 *
 	 * @param options
 	 */
-	// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+	// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_hyphenate_occupants_change_affiliation" to="hyphenatedemo#chatdemoui_1477481609392@conference.hyphenate.io" type="set">
 	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
 	//     </query>
 	// </iq>
+	// <presence to="hyphenatedemo#chatdemoui_1479811172349@conference.hyphenate.io/mt002" type="unavailable"/>
+
 	connection.prototype.leaveGroupBySelf = function (options) {
+	    var self = this;
 	    var sucFn = options.success || _utils.emptyfn;
 	    var errFn = options.error || _utils.emptyfn;
 
@@ -3567,22 +3692,24 @@
 
 	    this.context.stropheConn.sendIQ(iq.tree(), function (msgInfo) {
 	        sucFn(msgInfo);
+	        var pres = $pres({ type: 'unavailable', to: to + '/' + self.context.userId });
+	        self.sendCommand(pres.tree());
 	    }, function (errInfo) {
 	        errFn(errInfo);
 	    });
 	};
 
 	/**
-	 * leaveGroup 被踢出群组
+	 * leaveGroup member is removed from group by admin
 	 *
 	 * @param options
 	 */
-	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+	// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="hyphenatedemo#chatdemoui_1477481597120@conference.hyphenate.io" type="set" xmlns="jabber:client">
 	//     <query xmlns="http://jabber.org/protocol/muc#admin">
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
-	//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
-	//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
-	//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io"/>
+	//         <item jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io" role="none"/>
+	//         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
+	//         <item jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io" role="none"/>
 	//     </query>
 	// </iq>
 	connection.prototype.leaveGroup = function (options) {
@@ -3617,23 +3744,23 @@
 	};
 
 	/**
-	 * addGroupMembers 添加群组成员
+	 * addGroupMembers add group member
 	 *
 	 * @param options
 
-	 Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
-	 <!-- 添加成员通知：send -->
-	 <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
+	 Attention the sequence: message first (each group member send a single message), iq second (multiple member use a single iq for messages)
+	 <!-- member added notification event: send -->
+	 <message to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io'>
 	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
-	 <reason>liuwz invite you to join group '谢谢'</reason>
+	 <invite to='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'>
+	 <reason>liuwz invite you to join group 'thanks'</reason>
 	 </invite>
 	 </x>
 	 </message>
-	 <!-- 添加成员：send -->
-	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
+	 <!-- add member event: send -->
+	 <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_hyphenate_occupants_change_affiliation' to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io' type='set'>
 	 <query xmlns='http://jabber.org/protocol/muc#admin'>
-	 <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
+	 <item affiliation='member' jid='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'/>
 	 </query>
 	 </iq>
 	 */
@@ -3677,7 +3804,7 @@
 	};
 
 	/**
-	 * acceptInviteFromGroup 接受加入申请
+	 * acceptInviteFromGroup accept group invitation
 	 *
 	 * @param options
 	 */
@@ -3690,13 +3817,13 @@
 	};
 
 	/**
-	 * rejectInviteFromGroup 拒绝入群申请
+	 * rejectInviteFromGroup decline group invitation 
 	 *
-	 * throw request for now 暂时不处理，直接丢弃
+	 * ignore request for now 
 	 *
-	 <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+	 <message to='hyphenatedemo#chatdemoui_mt002@hyphenate.io' from='hyphenatedemo#chatdemoui_mt001@hyphenate.io' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
 	 <x xmlns='http://jabber.org/protocol/muc#user'>
-	 <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+	 <apply to='hyphenatedemo#chatdemoui_groupid1@conference.hyphenate.io' from='hyphenatedemo#chatdemoui_mt001@hyphenate.io' toNick='llllll'>
 	 <reason>reject</reason>
 	 </apply>
 	 </x>
@@ -3812,13 +3939,13 @@
 	};
 
 	/**
-	 * createGroup 创建群组
+	 * createGroup group group
 	 *
-	 * 1. 创建申请 -> 得到房主身份
-	 * 2. 获取房主信息 -> 得到房间form
-	 * 3. 完善房间form -> 创建成功
-	 * 4. 添加房间成员
-	 * 5. 消息通知成员
+	 * 1. create group -> obtain group owner ID
+	 * 2. obtain group owner ID -> obtain group form
+	 * 3. finish group form -> group created successfully
+	 * 4. add group member
+	 * 5. notifiby the users
 	 * @param options
 	 */
 	connection.prototype.createGroup = function (options) {
@@ -3869,7 +3996,7 @@
 
 /***/ },
 
-/***/ 232:
+/***/ 226:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3877,7 +4004,7 @@
 	;(function () {
 	    'use strict';
 
-	    var _utils = __webpack_require__(223).utils;
+	    var _utils = __webpack_require__(217).utils;
 	    var Message = function Message(type, id) {
 	        if (!this instanceof Message) {
 	            return new Message(type);
@@ -3943,7 +4070,7 @@
 	    };
 
 	    /*
-	     * loc message
+	     * location message
 	     */
 	    Message.location = function (id) {
 	        this.id = id;
@@ -3963,7 +4090,7 @@
 	    };
 
 	    /*
-	     * img message
+	     * image message
 	     */
 	    Message.img = function (id) {
 	        this.id = id;
@@ -4106,7 +4233,7 @@
 	            }).c('body').t(jsonstr);
 
 	            if (message.roomType) {
-	                dom.up().c('roomtype', { xmlns: 'easemob:x:roomtype', type: 'chatroom' });
+	                dom.up().c('roomtype', { xmlns: 'hyphenate:x:roomtype', type: 'chatroom' });
 	            }
 
 	            setTimeout(function () {
@@ -4178,7 +4305,7 @@
 
 /***/ },
 
-/***/ 233:
+/***/ 227:
 /***/ function(module, exports) {
 
 	"use strict";
@@ -4190,9 +4317,9 @@
 
 	    Array_h.prototype = {
 	        /**
-	         * 返回数组长度
+	         * return array length
 	         *
-	         * @return {Number} length [数组长度]
+	         * @return {Number} length [length of the array]
 	         */
 	        length: function length() {
 	            return this.array.length;
@@ -4207,21 +4334,21 @@
 	        },
 
 	        /**
-	         * 向数组的末尾添加一个或多个元素，并返回新的长度。
+	         * add a or multiple new objects to the end of array, then return new length
 	         *
 	         * @param  {*} obj [description]
-	         * @return {Number} length [新数组的长度]
+	         * @return {Number} length [length of the array]
 	         */
 	        push: function push(obj) {
 	            return this.array.push(obj);
 	        },
 
 	        /**
-	         * 返回数组中选定的元素
+	         * return the object in the array with specified index
 	         *
-	         * @param  {Number} start [开始索引值]
-	         * @param  {Number} end [结束索引值]
-	         * @return {Array} newArray  [新的数组]
+	         * @param  {Number} start [start index]
+	         * @param  {Number} end [end index]
+	         * @return {Array} newArray  [new array]
 	         */
 	        slice: function slice(start, end) {
 	            return this.array = this.array.slice(start, end);
@@ -4246,9 +4373,9 @@
 	    };
 
 	    /**
-	     * 先进先出队列 (First Input First Output)
+	     * First Input First Output queue
 	     *
-	     * 一种先进先出的数据缓存器
+	     * FIFO queue
 	     */
 	    var Queue = function Queue() {
 	        this._array_h = new Array_h();
@@ -4258,7 +4385,7 @@
 	        _index: 0,
 
 	        /**
-	         * 排队
+	         * queue
 	         *
 	         * @param  {Object} obj [description]
 	         * @return {[type]}     [description]
@@ -4268,7 +4395,7 @@
 	        },
 
 	        /**
-	         * 出队
+	         * de-queue
 	         *
 	         * @return {Object} [description]
 	         */
@@ -4285,7 +4412,7 @@
 	        },
 
 	        /**
-	         * 返回队列中头部(即最新添加的)的动态对象
+	         * return the most recent object
 	         *
 	         * @return {Object} [description]
 	         */
@@ -4299,7 +4426,7 @@
 	        },
 
 	        /**
-	         * 返回队列中尾部(即最早添加的)的动态对象
+	         * return the first added or oddest object of FIFO
 	         *
 	         * @return {Object} [description]
 	         */
@@ -4313,7 +4440,7 @@
 	        },
 
 	        /**
-	         * 返回数据队列长度
+	         * return length of the array
 	         *
 	         * @return {Number} [description]
 	         */
@@ -4322,7 +4449,7 @@
 	        },
 
 	        /**
-	         * 队列是否为空
+	         * if array is tempty
 	         *
 	         * @return {Boolean} [description]
 	         */
