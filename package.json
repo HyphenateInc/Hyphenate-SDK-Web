@@ -1,6 +1,6 @@
 {
   "name": "hyphenate-web",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "description": "You can leverage the demo app to integrate chat features with Hyphenate Mobile Instant Messaging (MIM) platform to mobile or web app. Some of the cool features available:",
   "main": "index.js",
   "devDependencies": {
