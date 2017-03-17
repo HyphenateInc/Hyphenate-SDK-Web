@@ -43,13 +43,12 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/HyphenateInc/Hyphenate-SDK-Web.git"
   },
   "author": "Hyphenate <info@hyphenate.io> (https://hyphenate.io)",
   "license": "ISC",
   "dependencies": {
     "antd": "^2.1.0",
-    "hyphenate-web": "^1.4.10",
     "underscore": "^1.8.3"
   },
   "keywords": [

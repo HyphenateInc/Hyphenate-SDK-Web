@@ -1,4 +1,3 @@
-;
 (function () {
 
     var EMPTYFN = function () {
@@ -1021,7 +1020,6 @@
             return allCookie;
         }
     };
-
 
     exports.utils = utils;
 }());
