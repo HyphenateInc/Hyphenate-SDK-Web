@@ -1,4 +1,4 @@
-;(function () {
+(function () {
     function Array_h(length) {
         this.array = length === undefined ? [] : new Array(length);
     }
