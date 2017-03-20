@@ -245,7 +245,7 @@ var _parseNameFromJidFn = function (jid, domain) {
 };
 
 var _parseFriend = function (queryTag, conn, from) {
-    var rouster = [];
+    var roster = [];
     var items = queryTag.getElementsByTagName('item');
     if (items) {
         for (var i = 0; i < items.length; i++) {
@@ -275,8 +275,8 @@ var _parseFriend = function (queryTag, conn, from) {
                 groups.push(Strophe.getText(group));
             });
             friend.groups = groups;
-            rouster.push(friend);
-            // B同意之后 -> B订阅A
+            roster.push(friend);
+            // after B agreed -> B subscribes A
             if (conn && (subscription == 'from')) {
                 conn.subscribe({
                     toJid: jid
@@ -290,7 +290,7 @@ var _parseFriend = function (queryTag, conn, from) {
             }
         }
     }
-    return rouster;
+    return roster;
 };
 
 var _login = function (options, conn) {
@@ -1268,8 +1268,8 @@ connection.prototype.handleIqRoster = function (e) {
     var msgBodies = e.getElementsByTagName('query');
     if (msgBodies && msgBodies.length > 0) {
         var queryTag = msgBodies[0];
-        var rouster = _parseFriend(queryTag, this, from);
-        this.onRoster(rouster);
+        var roster = _parseFriend(queryTag, this, from);
+        this.onRoster(roster);
     }
     return true;
 };
@@ -1679,13 +1679,13 @@ connection.prototype.getRoster = function (options) {
     var options = options || {};
     var suc = options.success || this.onRoster;
     var completeFn = function (ele) {
-        var rouster = [];
+        var roster = [];
         var msgBodies = ele.getElementsByTagName('query');
         if (msgBodies && msgBodies.length > 0) {
             var queryTag = msgBodies[0];
-            rouster = _parseFriend(queryTag);
+            roster = _parseFriend(queryTag);
         }
-        suc(rouster, ele);
+        suc(roster, ele);
     };
     var error = options.error || this.onError;
     var failFn = function (ele) {
