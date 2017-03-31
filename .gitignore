@@ -6,3 +6,4 @@ node_modules
 publish/*
 web-im
 web-im-*.zip
+*.iml
