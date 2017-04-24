@@ -1981,11 +1981,10 @@
 	        }
 	    };
 	    var options2 = {
-	        url: this.dnsArr[this.dnsIndex] + '/hyphenate/server.xml',
+	        url: this.dnsArr[this.dnsIndex] + '/easemob/server.xml',
 	        dataType: 'text',
 	        type: 'GET',
 
-	        // url: 'http://www.hyphenate.io/hyphenate/server.xml',
 	        // dataType: 'xml',
 	        data: { app_key: encodeURIComponent(options.appKey) },
 	        success: suc || _utils.emptyfn,
