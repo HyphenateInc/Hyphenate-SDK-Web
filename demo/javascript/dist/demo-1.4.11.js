@@ -71,8 +71,8 @@
 	};
 
 	// import language package
-	// Demo.lan = Language.English;
-	Demo.lan = Language.Chinese;
+	Demo.lan = Language.English;
+	// Demo.lan = Language.Chinese;
 
 	// for webview in client
 	Demo.api = Api;
@@ -29096,13 +29096,13 @@
 	        var nid = this.props.nid;
 	        switch (status) {
 	            case 'Undelivered':
-	                status = '未送达';
-	                break;
+                    status = Demo.lan.undelivered;
+                    break;
 	            case 'Delivered':
-	                status = '已送达';
+	                status = Demo.lan.delivered;
 	                break;
 	            case 'Read':
-	                status = '已读';
+	                status = Demo.lan.read;
 	            default:
 
 	        }
