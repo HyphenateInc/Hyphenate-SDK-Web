@@ -21957,9 +21957,9 @@
 	                if (WebIM.config.isWindowSDK) {
 	                    message = eval('(' + message + ')');
 	                }
-	                // 发送已送达回执
+	                // message sent
 	                if (Demo.selected == message.from) {
-	                    // 发送已读回执
+	                    // message is read
 	                    Demo.api.sendRead(message);
 	                }
 	                Demo.api.addToChatRecord(message, 'txt');
@@ -21970,7 +21970,7 @@
 	                    message = eval('(' + message + ')');
 	                }
 	                if (Demo.selected == message.from) {
-	                    // 发送已读回执
+	                    // message is read
 	                    Demo.api.sendRead(message);
 	                }
 	                Demo.api.addToChatRecord(message, 'emoji');
@@ -21982,7 +21982,7 @@
 	                }
 
 	                if (Demo.selected == message.from) {
-	                    // 发送已读回执
+	                    // message is read
 	                    Demo.api.sendRead(message);
 	                }
 	                Demo.api.addToChatRecord(message, 'img');
@@ -22017,7 +22017,7 @@
 	                }
 
 	                if (Demo.selected == message.from) {
-	                    // 发送已读回执
+                        // send message read ack
 	                    Demo.api.sendRead(message);
 	                }
 	                Demo.api.addToChatRecord(message, 'file');
@@ -22052,7 +22052,7 @@
 	                if (WebIM.config.isWindowSDK) {
 	                    Demo.api.NotifyError("Network connection is broken. reconnecting...");
 	                } else {
-	                    //webRTC:断线处理
+	                    // webRTC: handle disconnection
 	                    if (WebIM.config.isWebRTC) {
 	                        var closeButton = document.getElementById('webrtc_close');
 	                        closeButton && closeButton.click();
@@ -22097,7 +22097,7 @@
 	                    }
 	                }
 
-	                //webRTC:断线处理
+	                // webRTC: handle disconnection
 	                if (WebIM.config.isWebRTC) {
 	                    var closeButton = document.getElementById('webrtc_close');
 	                    closeButton && closeButton.click();
@@ -22108,7 +22108,7 @@
 	            onBlacklistUpdate: function onBlacklistUpdate(list) {
 	                Demo.api.blacklist.parse(list);
 	                me.setState({ blacklist: list });
-	                // TODO 增量更新
+	                // TODO adding incrementally
 	                Demo.api.updateRoster();
 	            },
 	            onReceivedMessage: function onReceivedMessage(message) {
@@ -22125,9 +22125,9 @@
 	            onDeliveredMessage: function onDeliveredMessage(message) {
 	                var msg = document.getElementsByName(message.mid);
 	                if (msg) {
-	                    if (msg[0]) msg[0].innerHTML = '已送达';
+	                    if (msg[0]) msg[0].innerHTML = Demo.lan.delivered;
 	                }
-	                // 记录消息的状态
+	                // record message status
 	                for (var targetId in Demo.chatRecord) {
 	                    if (Demo.chatRecord[targetId].messages[message.mid]) {
 	                        Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
@@ -22137,9 +22137,9 @@
 	            onReadMessage: function onReadMessage(message) {
 	                var msg = document.getElementsByName(message.mid);
 	                if (msg) {
-	                    if (msg[0]) msg[0].innerHTML = '已读';
+	                    if (msg[0]) msg[0].innerHTML = Demo.lan.read;
 	                }
-	                // 记录消息的状态
+	                // record message status
 	                for (var targetId in Demo.chatRecord) {
 	                    if (Demo.chatRecord[targetId].messages[message.mid]) {
 	                        Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
@@ -22151,7 +22151,7 @@
 	                me.getGroup();
 	            },
 	            onMutedMessage: function onMutedMessage(message) {
-	                // 如果被禁言，删除本条消息并弹出提示
+	                // if muted, delete this message and show warning pop up
 	                var msg = document.getElementsByName(message.mid);
 	                if (msg) {
 	                    delete Demo.chatRecord[Demo.selected].messages[message.mid];
@@ -22182,7 +22182,7 @@
 	    confirmPop: function confirmPop(options) {
 	        ConfirmPop.show(options);
 	    },
-	    //for WindosSDK
+	    // for Windows SDK
 	    updateMyRoster: function updateMyRoster(options) {
 	        var friends = [];
 	        var roster = eval('(' + options + ')');
@@ -22434,10 +22434,10 @@
 	                Demo.api.NotifySuccess('Fail to Join the group');
 	                break;
 	            case 'memberJoinPublicGroupSuccess':
-	                Demo.api.NotifySuccess(msg.mid + '已成功加入' + msg.from);
+	                Demo.api.NotifySuccess(msg.mid + ' joined ' + msg.from + ' successfully');
 	                break;
 	            case 'joinPublicGroupDeclined':
-	                Demo.api.NotifyError(msg.owner + '拒绝了您加入' + msg.gid + '的请求');
+	                Demo.api.NotifyError(msg.owner + ' declined your request to join ' + msg.gid);
 	                break;
 	            case 'leaveChatRoom':
 	                // Leave the chat room
@@ -22472,16 +22472,16 @@
 	                Demo.api.NotifySuccess(options.msg);
 	                break;
 	            case 'addAdmin':
-	                Demo.api.NotifySuccess(msg.owner + '将您设为了组' + msg.gid + '的管理员');
+	                Demo.api.NotifySuccess(msg.owner + ' added you as admin to the group ' + msg.gid);
 	                break;
 	            case 'removeAdmin':
-	                Demo.api.NotifyError(msg.owner + '取消了您在' + msg.gid + '的管理员');
+	                Demo.api.NotifyError(msg.owner + ' removed you as admin from the group ' + msg.gid);
 	                break;
 	            case 'addMute':
-	                Demo.api.NotifyError(msg.owner + '将您在组' + msg.gid + '中禁言');
+	                Demo.api.NotifyError(msg.owner + ' muted you in the group ' + msg.gid);
 	                break;
 	            case 'removeMute':
-	                Demo.api.NotifySuccess(msg.owner + '取消了您在' + msg.gid + '的禁言');
+	                Demo.api.NotifySuccess(msg.owner + ' unmuted you in the group ' + msg.gid);
 	                break;
 	        }
 	    },
@@ -22600,7 +22600,7 @@
 	                success: function success(list) {
 	                    var states = {};
 	                    if (list.data) {
-	                        //TODO: 等接口返回totalnum这个参数之后，就不要再计算totalnum了。 直接states.chatrooms_totalnum=list.totalnum
+	                        // TODO: don't need to calculate totalnum once api returns the value totalnum. use states.chatrooms_totalnum=list.totalnum
 	                        if (list.data.length > 0) {
 	                            states.chatrooms_totalnum = (parseInt(list.params.pagenum[0]) + 1) * Demo.api.pagesize;
 	                            states.chatrooms = me.state.chatrooms.concat(list.data);
@@ -29223,13 +29223,13 @@
 	        var nid = this.props.nid;
 	        switch (status) {
 	            case 'Undelivered':
-	                status = '未送达';
+	                status = Demo.lan.undelivered;
 	                break;
 	            case 'Delivered':
-	                status = '已送达';
+	                status = Demo.lan.delivered;
 	                break;
 	            case 'Read':
-	                status = '已读';
+	                status = Demo.lan.read;
 	            default:
 
 	        }
@@ -29375,13 +29375,13 @@
 	        var nid = this.props.nid;
 	        switch (status) {
 	            case 'Undelivered':
-	                status = '未送达';
+	                status = Demo.lan.undelivered;
 	                break;
 	            case 'Delivered':
-	                status = '已送达';
+	                status = Demo.lan.delivered;
 	                break;
 	            case 'Read':
-	                status = '已读';
+	                status = Demo.lan.read;
 	            default:
 	        }
 	        if (WebIM.config.isWindowSDK) {

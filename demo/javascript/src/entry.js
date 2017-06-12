@@ -3,7 +3,6 @@ require('../../stylesheet/demo.scss');
 
 var Api = require('./api');
 var Emoji = require('./components/chat/emoji');
-var Language = require('./components/language');
 
 // import emoji
 WebIM.Emoji = Emoji;
@@ -16,6 +15,7 @@ window.Demo = {
 };
 
 // import language package
+var Language = require('./components/language');
 Demo.lan = Language.English;
 // Demo.lan = Language.Chinese;
 

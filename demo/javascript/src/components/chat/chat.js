@@ -8,6 +8,11 @@ var ConfirmPop = require('./confirmPop');
 var _ = require('underscore');
 var ConfirmGroupInfo = require('../group/confirmGroupInfo');
 
+// import language package
+var Language = require('./components/language');
+Demo.lan = Language.English;
+// Demo.lan = Language.Chinese;
+
 module.exports = React.createClass({
 
     // Switch the left bar doesn't release chat records
@@ -86,7 +91,7 @@ module.exports = React.createClass({
                     sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -102,7 +107,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -118,7 +123,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -133,7 +138,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -149,7 +154,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -165,7 +170,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -181,7 +186,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -197,7 +202,7 @@ module.exports = React.createClass({
                         sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
-                    // 发送已读回执
+                    // send message read ack
                     Demo.api.sendRead(message);
                 }
             },
@@ -222,7 +227,7 @@ module.exports = React.createClass({
                 if (WebIM.config.isWindowSDK) {
                     Demo.api.NotifyError("Network connection is broken. reconnecting...");
                 } else {
-                    //webRTC:断线处理
+                    // webRTC: handle disconnection
                     if (WebIM.config.isWebRTC) {
                         var closeButton = document.getElementById('webrtc_close');
                         closeButton && closeButton.click();
@@ -238,7 +243,6 @@ module.exports = React.createClass({
                     if (message.code == '206') {
                         Demo.api.logout();
                     }
-                    //do nothing
                 } else {
                     if (message.type == WebIM.statusCode.WEBIM_CONNCTION_DISCONNECTED) {
                         if (Demo.conn.autoReconnectNumTotal < Demo.conn.autoReconnectNumMax) {
@@ -275,7 +279,7 @@ module.exports = React.createClass({
                     }
                 }
 
-                //webRTC:断线处理
+                // webRTC: handle disconnection
                 if (WebIM.config.isWebRTC) {
                     var closeButton = document.getElementById('webrtc_close');
                     closeButton && closeButton.click();
@@ -286,7 +290,7 @@ module.exports = React.createClass({
             onBlacklistUpdate: function (list) {
                 Demo.api.blacklist.parse(list);
                 me.setState({blacklist: list});
-                // TODO 增量更新
+                // TODO adding incrementally
                 Demo.api.updateRoster();
             },
             onReceivedMessage: function (message) {
@@ -302,13 +306,13 @@ module.exports = React.createClass({
             },
             onDeliveredMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
-                // 记录消息的状态
+                // record message status
                 for (var targetId in Demo.chatRecord) {
                     if (Demo.chatRecord[targetId].messages[message.mid]
                         && Demo.chatRecord[targetId].messages[message.mid].status != 'Read') {
                         if (msg) {
                             if (msg[0])
-                                msg[0].innerHTML = '已送达';
+                                msg[0].innerHTML = Demo.lan.delivered;
                         }
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
@@ -318,10 +322,10 @@ module.exports = React.createClass({
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
                     if (msg[0]){
-                        msg[0].innerHTML = '已读';
+                        msg[0].innerHTML = Demo.lan.read;
                     }
                 }
-                // 记录消息的状态
+                // record message status
                 for (var targetId in Demo.chatRecord) {
                     if (Demo.chatRecord[targetId].messages[message.mid]) {
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Read';
@@ -333,7 +337,7 @@ module.exports = React.createClass({
                 me.getGroup();
             },
             onMutedMessage: function (message) {
-                // 如果被禁言，删除本条消息并弹出提示
+                // if muted, delete this message and pop up warning view
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
                     delete Demo.chatRecord[Demo.selected].messages[message.mid];
@@ -364,7 +368,7 @@ module.exports = React.createClass({
     confirmPop: function (options) {
         ConfirmPop.show(options);
     },
-    //for WindosSDK
+    // for Windows SDK
     updateMyRoster: function (options) {
         var friends = [];
         var roster = eval('(' + options + ')');

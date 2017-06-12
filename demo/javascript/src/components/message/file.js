@@ -3,6 +3,11 @@ var ReactDOM = require('react-dom');
 var Avatar = require('../common/avatar');
 var _utils = require('../../../../../sdk/src/utils').utils;
 
+// import language package
+var Language = require('./components/language');
+Demo.lan = Language.English;
+// Demo.lan = Language.Chinese;
+
 var FileMsg = React.createClass({
     getInitialState: function () {
         var me = this;
@@ -46,13 +51,13 @@ var FileMsg = React.createClass({
         var nid = this.props.nid;
         switch(status){
             case 'Undelivered':
-                status = '未送达';
+                status = Demo.lan.undelivered;
                 break;
             case 'Delivered':
-                status = '已送达';
+                status = Demo.lan.delivered;
                 break;
             case 'Read':
-                status = '已读';
+                status = Demo.lan.read;
             default:
         }
         if (WebIM.config.isWindowSDK) {

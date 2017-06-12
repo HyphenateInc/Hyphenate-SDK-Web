@@ -9735,10 +9735,10 @@
 	        msgtype = 'invite';
 	    } else if (deliveryinfo && deliveryinfo.length > 0) {
 
-	        msgtype = 'delivery'; // 消息送达
+	        msgtype = 'delivery';	// message delivered
 	    } else if (acked && acked.length) {
 
-	        msgtype = 'acked'; // 消息已读
+	        msgtype = 'acked'; 		// message read
 	    } else if (error && error.length) {
 
 	        var errorItem = error[0],
