@@ -1,5 +1,8 @@
 /**
- * webim.config.js is web app configurations and urls to connect to Hyphenate server
+ * git do not control webim.config.js
+ * everyone should copy webim.config.js.demo to webim.config.js
+ * and have their own configs.
+ * In this way , others won't be influenced by this config while git pull.
  *
  */
 var WebIM = {};
@@ -30,7 +33,7 @@ WebIM.config = {
     /*
      * Set to auto sign-in
      */
-    isAutoLogin: false,
+    isAutoLogin: true,
     /**
      * Whether to use window.doQuery()
      * @parameter {Boolean} true or false
@@ -52,14 +55,14 @@ WebIM.config = {
      */
     autoReconnectNumMax: 2,
     /**
-     * the interval secons between each atuo reconnectting.
+     * the interval seconds between each auto reconnectting.
      * works only if autoReconnectMaxNum >= 2.
      */
     autoReconnectInterval: 2,
     /**
      * webrtc supports WebKit and https only
      */
-    isWebRTC: /WebKit/.test(navigator.userAgent) && /^https\:$/.test(window.location.protocol),
+    isWebRTC: (/Firefox/.test(navigator.userAgent) || /WebKit/.test(navigator.userAgent)) && /^https\:$/.test(window.location.protocol),
     /**
      * after login, send empty message to xmpp server like heartBeat every 45s, to keep the ws connection alive.
      */
@@ -67,5 +70,30 @@ WebIM.config = {
     /**
      * while http access,use ip directly,instead of ServerName,avoiding DNS problem.
      */
-    isHttpDNS: false
+    isHttpDNS: false,
+
+    /**
+     * When a message arrived, the receiver send an ack message to the
+     * sender, in order to tell the sender the message has delivered.
+     * See call back function onReceivedMessage
+     */
+    delivery: true,
+
+    /**
+     * When a message read, the receiver send an ack message to the
+     * sender, in order to tell the sender the message has been read.
+     * See call back function onReadMessage
+     */
+    read: true,
+
+    /**
+     * Will encrypt text message and emoji message
+     * {type:'none'}   no encrypt
+     * {type:'base64'} encrypt with base64
+     * {type:'aes',mode: 'ebc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(ebc)
+     * {type:'aes',mode: 'cbc',key: '123456789easemob',iv: '0000000000000000'} encrypt with aes(cbc)
+     */
+    encrypt: {
+        type: 'none'
+    }
 };
