@@ -4,9 +4,7 @@ var Avatar = require('../common/avatar');
 var _utils = require('../../../../../sdk/src/utils').utils;
 
 // import language package
-var Language = require('./components/language');
-Demo.lan = Language.English;
-// Demo.lan = Language.Chinese;
+var Language = require('../language').default;
 
 var FileMsg = React.createClass({
     getInitialState: function () {
@@ -49,28 +47,28 @@ var FileMsg = React.createClass({
         var id = this.props.id;
         var status = this.props.status;
         var nid = this.props.nid;
-        switch(status){
+        switch (status) {
             case 'Undelivered':
-                status = Demo.lan.undelivered;
+                status = Language.undelivered;
                 break;
             case 'Delivered':
-                status = Demo.lan.delivered;
+                status = Language.delivered;
                 break;
             case 'Read':
-                status = Demo.lan.read;
+                status = Language.read;
             default:
         }
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
-                links.push(<a key='0' href="javascript:void(0)">{Demo.lan.FileLoading}</a>);
+                links.push(<a key='0' href="javascript:void(0)">{Language.FileLoading}</a>);
             } else {
                 var dirPath = this.state.value.replace("file:", "location:");
-                links.push(<a target='_blank' key='0' href={this.state.value}>{Demo.lan.openFile}</a>);
-                links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Demo.lan.openDir}</a>);
+                links.push(<a target='_blank' key='0' href={this.state.value}>{Language.openFile}</a>);
+                links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Language.openDir}</a>);
             }
 
         } else {
-            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
+            links.push(<a target='_blank' key='0' href={this.props.value}>{Language.download}</a>);
         }
 
         return (
@@ -84,7 +82,7 @@ var FileMsg = React.createClass({
                     <div className='webim-msg-value' style={{minWidth: '200px'}}>
                         <span className='webim-msg-icon font'>{icon}</span>
                         <div>
-                            <p className='webim-msg-header'>{Demo.lan.file}</p>
+                            <p className='webim-msg-header'>{Language.file}</p>
                             <div id={'file_' + this.props.id}>
                                 <span className='webim-msg-header-icon font small'>S</span>
                                 <span className='webim-msg-name'> {this.props.filename}</span>
@@ -116,7 +114,7 @@ module.exports = function (options, sentByMe) {
         nid: options.nid || ''
     };
 
-    if(options.fileSize){
+    if (options.fileSize) {
         props.fileSize = options.fileSize;
     }
 

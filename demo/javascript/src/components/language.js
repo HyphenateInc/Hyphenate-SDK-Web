@@ -1,4 +1,4 @@
-exports.English = {
+let English = {
     signIn: 'Sign In',
     username: 'Username',
     password: 'Password',
@@ -96,7 +96,7 @@ exports.English = {
     last: ''
 };
 
-exports.Chinese = {
+let Chinese = {
     signIn: '登录',
     username: '用户名',
     password: '密码',
@@ -195,3 +195,11 @@ exports.Chinese = {
     rmAdministrator: '移除管理员',
     last: ''
 };
+
+export {
+    English,
+    Chinese
+}
+
+// default language
+export default English

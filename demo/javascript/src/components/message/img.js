@@ -3,9 +3,7 @@ var ReactDOM = require('react-dom');
 var Avatar = require('../common/avatar');
 
 // import language package
-var Language = require('./components/language');
-Demo.lan = Language.English;
-// Demo.lan = Language.Chinese;
+var Language = require('../language').default;
 
 var ImgMsg = React.createClass({
     getInitialState: function () {
@@ -40,21 +38,21 @@ var ImgMsg = React.createClass({
         var id = this.props.id;
         var status = this.props.status;
         var nid = this.props.nid;
-        switch(status){
+        switch (status) {
             case 'Undelivered':
-                status = Demo.lan.undelivered;
+                status = Language.undelivered;
                 break;
             case 'Delivered':
-                status = Demo.lan.delivered;
+                status = Language.delivered;
                 break;
             case 'Read':
-                status = Demo.lan.read;
+                status = Language.read;
             default:
 
         }
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
-                imgs.push(<span key='0'>{Demo.lan.image}{Demo.lan.FileLoading}</span>);
+                imgs.push(<span key='0'>{Language.image}{Language.FileLoading}</span>);
             } else {
                 imgs.push(<img key='0' ref='img' className='webim-msg-img' src={this.state.value}
                                onClick={this.show}/>);

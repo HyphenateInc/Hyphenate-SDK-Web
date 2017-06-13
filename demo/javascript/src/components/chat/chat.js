@@ -9,9 +9,7 @@ var _ = require('underscore');
 var ConfirmGroupInfo = require('../group/confirmGroupInfo');
 
 // import language package
-var Language = require('./components/language');
-Demo.lan = Language.English;
-// Demo.lan = Language.Chinese;
+var Language = require('../language').default;
 
 module.exports = React.createClass({
 
@@ -39,12 +37,12 @@ module.exports = React.createClass({
                 delFriend: me.delContactItem
             };
             Demo.chatState['friends'].chatWindow.push(
-                <ChatWindow id = {'wrapper' +curNode}
-                            key = {curNode}
+                <ChatWindow id={'wrapper' + curNode}
+                            key={curNode}
                             {...props}
-                            chatType = 'singleChat'
-                            updateNode = {this.updateNode}
-                            className = {''} />
+                            chatType='singleChat'
+                            updateNode={this.updateNode}
+                            className={''}/>
             );
             windows = Demo.chatState['friends'].chatWindow;
         }
@@ -88,7 +86,7 @@ module.exports = React.createClass({
 
                 if (Demo.selected == message.from) {
                     var id = message.id,
-                    sentByMe = message.from === Demo.user;
+                        sentByMe = message.from === Demo.user;
                     var targetId = sentByMe || message.type !== 'chat' ? message.to : message.from;
                     Demo.chatRecord[targetId].messages[id].read = true;
                     // send message read ack
@@ -216,7 +214,7 @@ module.exports = React.createClass({
                 me.getRoster('doNotUpdateGroup');
             },
             onInviteMessage: function (message) {
-                var notify = WebIM.utils.sprintf(Demo.lan.inviteToGroup, message.from);
+                var notify = WebIM.utils.sprintf(Language.inviteToGroup, message.from);
                 message.type === "invite" && Demo.api.NotifySuccess(notify);
                 me.getGroup();
             },
@@ -270,7 +268,7 @@ module.exports = React.createClass({
                         return;
                     } else {
                         if (text == 'logout' || text == 'WEBIM_CONNCTION_SERVER_ERROR  type=8') {
-                            text = Demo.lan.logoutSuc;
+                            text = Language.logoutSuc;
                             window.history.pushState({}, 0, 'index.html');
                             Demo.api.NotifySuccess(text);
                         } else {
@@ -312,7 +310,7 @@ module.exports = React.createClass({
                         && Demo.chatRecord[targetId].messages[message.mid].status != 'Read') {
                         if (msg) {
                             if (msg[0])
-                                msg[0].innerHTML = Demo.lan.delivered;
+                                msg[0].innerHTML = Language.delivered;
                         }
                         Demo.chatRecord[targetId].messages[message.mid].status = 'Delivered';
                     }
@@ -321,8 +319,8 @@ module.exports = React.createClass({
             onReadMessage: function (message) {
                 var msg = document.getElementsByName(message.mid);
                 if (msg) {
-                    if (msg[0]){
-                        msg[0].innerHTML = Demo.lan.read;
+                    if (msg[0]) {
+                        msg[0].innerHTML = Language.read;
                     }
                 }
                 // record message status
@@ -347,7 +345,7 @@ module.exports = React.createClass({
                         _parentElement.removeChild(msgItem);
                     }
                 }
-                Demo.api.NotifySuccess(Demo.lan.onMuted);
+                Demo.api.NotifySuccess(Language.onMuted);
             }
         });
 
@@ -564,7 +562,7 @@ module.exports = React.createClass({
                     from: msg.from,
                     success: function (option) {
                         Demo.api.updateGroup();
-                        var str = WebIM.utils.sprintf(Demo.lan.createGroupSuc, option.subject);
+                        var str = WebIM.utils.sprintf(Language.createGroupSuc, option.subject);
                         Demo.api.NotifySuccess(str);
                     }
                 });
@@ -591,7 +589,7 @@ module.exports = React.createClass({
             case 'unsubscribe':// The sender deletes a friend.
             case 'unsubscribed':// The other party has removed you from the friend list.
                 if ('code' in msg) {
-                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Demo.lan.refuse, msg.from));
+                    Demo.api.NotifySuccess(WebIM.utils.sprintf(Language.refuse, msg.from));
                 } else {
                     // 被删除
                     if (msg.from == Demo.selected && !msg.kicked) {
@@ -751,7 +749,7 @@ module.exports = React.createClass({
             var options = {
                 success: function (resp) {
                     var data = resp.data;
-                    for(var i in data){
+                    for (var i in data) {
                         data[i]['name'] = data[i]['groupname'];
                         data[i]['roomId'] = data[i]['groupid'];
                         delete data[i]['groupname'];
@@ -867,12 +865,12 @@ module.exports = React.createClass({
                     props.name = id;
                     props.delFriend = this.delContactItem;
                     Demo.chatState[cate].chatWindow.push(
-                        <ChatWindow id = {'wrapper' +id}
-                                    key = {id}
+                        <ChatWindow id={'wrapper' + id}
+                                    key={id}
                                     {...props}
-                                    chatType = 'singleChat'
-                                    updateNode = {this.updateNode}
-                                    className = {''} />
+                                    chatType='singleChat'
+                                    updateNode={this.updateNode}
+                                    className={''}/>
                     );
                     break;
                 case 'groups':
@@ -889,12 +887,12 @@ module.exports = React.createClass({
                                 Demo.createGroupName = '';
                             }
                             Demo.chatState[cate].chatWindow.push(
-                                <ChatWindow roomId = {id}
-                                            id = {'wrapper' +id}
-                                            key = {id}
+                                <ChatWindow roomId={id}
+                                            id={'wrapper' + id}
+                                            key={id}
                                             {...props}
-                                            chatType = 'groupChat'
-                                            className = {''} />
+                                            chatType='groupChat'
+                                            className={''}/>
                             );
                             break;
                         }
@@ -905,12 +903,12 @@ module.exports = React.createClass({
                         if (id == this.state.chatrooms[i].id) {
                             props.name = this.state.chatrooms[i].name;
                             Demo.chatState[cate].chatWindow.push(
-                                <ChatWindow roomId = {id}
-                                            id = {'wrapper' +id}
-                                            key = {id}
+                                <ChatWindow roomId={id}
+                                            id={'wrapper' + id}
+                                            key={id}
                                             {...props}
-                                            chatType = 'chatRoom'
-                                            className = {''} />
+                                            chatType='chatRoom'
+                                            className={''}/>
                             );
                         }
                     }
@@ -918,12 +916,12 @@ module.exports = React.createClass({
                 case 'strangers':
                     props.name = id;
                     Demo.chatState[cate].chatWindow.push(
-                        <ChatWindow id = {'wrapper' +id}
-                            key = {id}
-                            {...props}
-                            className = {''} />
+                        <ChatWindow id={'wrapper' + id}
+                                    key={id}
+                                    {...props}
+                                    className={''}/>
                     );
-            break;
+                    break;
                 default:
                     console.log('Default: ', cate);
             }
@@ -978,7 +976,7 @@ module.exports = React.createClass({
 
         if (!Demo.IMGTYPE[file.filetype.toLowerCase()]) {
             me.refs.picture.value = null;
-            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
+            Demo.api.NotifyError(Language.invalidType + ': ' + file.filetype);
             return;
         }
 
@@ -995,7 +993,7 @@ module.exports = React.createClass({
                 me.refs.picture.value = null;
 
                 var option = {
-                    data: Demo.lan.sendImageFailed,
+                    data: Language.sendImageFailed,
                     from: Demo.user,
                     to: Demo.selected
                 };
@@ -1052,7 +1050,7 @@ module.exports = React.createClass({
                 me.refs.audio.value = null;
 
                 var option = {
-                    data: Demo.lan.sendAudioFailed,
+                    data: Language.sendAudioFailed,
                     from: Demo.user,
                     to: Demo.selected
                 };
@@ -1097,7 +1095,7 @@ module.exports = React.createClass({
 
         if (!Demo.AUDIOTYPE[file.filetype.toLowerCase()]) {
             me.refs.audio.value = null;
-            Demo.api.NotifyError(Demo.lan.invalidType + ': ' + file.filetype);
+            Demo.api.NotifyError(Language.invalidType + ': ' + file.filetype);
             return;
         }
 
@@ -1155,7 +1153,7 @@ module.exports = React.createClass({
             filename = file.filename;
 
         if (!fileSize) {
-            Demo.api.NotifyError(Demo.lan.fileOverSize);
+            Demo.api.NotifyError(Language.fileOverSize);
             return false;
         }
 
@@ -1177,7 +1175,7 @@ module.exports = React.createClass({
             onFileUploadError: function (error) {
                 me.refs.file.value = null;
                 var option = {
-                    data: Demo.lan.sendFileFailed,
+                    data: Language.sendFileFailed,
                     from: Demo.user,
                     to: Demo.selected
                 };
@@ -1213,37 +1211,37 @@ module.exports = React.createClass({
 
     render: function () {
         return (
-            <div className = {this.props.show ? 'webim-chat' : 'webim-chat hide'}>
-                <LeftBar cur = {this.state.cur}
-                         update = {this.update}/>
-                <Contact cur = {this.state.cur}
-                         curNode = {this.state.curNode}
-                         updateNode = {this.updateNode}
-                         update = {this.update}
-                         friends = {this.state.friends}
-                         blacklist = {this.state.blacklist}
-                         groups = {this.state.groups}
-                         chatrooms = {this.state.chatrooms}
-                         strangers = {this.state.strangers}
-                         getChatroom = {this.getChatroom}
-                         loading = {this.state.contact_loading_show}/>
-                    {this.state.windows}
-                <input ref = 'picture'
-                        onChange = {this.pictureChange}
-                        type = 'file'
-                        className = 'hide' />
-                <input ref = 'audio'
-                        onChange = {this.audioChange}
-                        type = 'file'
-                        className = 'hide' />
-                <input ref = 'file'
-                        onChange = {this.fileChange}
-                        type = 'file'
-                        className = 'hide' />
-                <input id = 'uploadShim'
-                        type = 'file'
-                        className = 'hide' />
-                <div ref = 'rtcWrapper'></div>
+            <div className={this.props.show ? 'webim-chat' : 'webim-chat hide'}>
+                <LeftBar cur={this.state.cur}
+                         update={this.update}/>
+                <Contact cur={this.state.cur}
+                         curNode={this.state.curNode}
+                         updateNode={this.updateNode}
+                         update={this.update}
+                         friends={this.state.friends}
+                         blacklist={this.state.blacklist}
+                         groups={this.state.groups}
+                         chatrooms={this.state.chatrooms}
+                         strangers={this.state.strangers}
+                         getChatroom={this.getChatroom}
+                         loading={this.state.contact_loading_show}/>
+                {this.state.windows}
+                <input ref='picture'
+                       onChange={this.pictureChange}
+                       type='file'
+                       className='hide'/>
+                <input ref='audio'
+                       onChange={this.audioChange}
+                       type='file'
+                       className='hide'/>
+                <input ref='file'
+                       onChange={this.fileChange}
+                       type='file'
+                       className='hide'/>
+                <input id='uploadShim'
+                       type='file'
+                       className='hide'/>
+                <div ref='rtcWrapper'></div>
             </div>
         );
     }

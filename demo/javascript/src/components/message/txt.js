@@ -3,28 +3,27 @@ var ReactDOM = require('react-dom');
 var Avatar = require('../common/avatar');
 
 // import language package
-var Language = require('./components/language');
-Demo.lan = Language.English;
-// Demo.lan = Language.Chinese;
+var Language = require('../language').default;
 
 var TextMsg = React.createClass({
 
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var statusClass = this.props.className == 'left'
-            || Demo.selectedCate !== 'friends' ? 'hide' : '';
+        || Demo.selectedCate !== 'friends' ? 'hide' : '';
         var id = this.props.id;
         var status = this.props.status;
         var nid = this.props.nid;
-        switch(status){
+        console.log(Language)
+        switch (status) {
             case 'Undelivered':
-                status = Demo.lan.undelivered;
+                status = Language.undelivered;
                 break;
             case 'Delivered':
-                status = Demo.lan.delivered;
+                status = Language.delivered;
                 break;
             case 'Read':
-                status = Demo.lan.read;
+                status = Language.read;
             default:
 
         }
