@@ -1,24 +1,26 @@
+<!--本Demo登陆测试帐号：mengyuanyuan，密码：123456, 测试对方账号：asdfghj，密码：123456-->
 <html>
 <head>
-    <title>Clock</title>
+    <meta charset="UTF-8">
+    <title>环信测试demo</title>
     <script src="../demo/javascript/dist/webim.config.js"></script>
     <script src="./dist/strophe-1.2.8.min.js"></script>
-    <script src="./dist/websdk-1.4.10.js"></script>
+    <script src="./dist/websdk-1.4.11.js"></script>
     <script src="../webrtc/dist/adapter.js"></script>
-    <script src="../webrtc/dist/webrtc-1.4.10.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.11.js"></script>
 </head>
 <body>
-
 <h2>Text Box</h2>
 <div>
     <input type="text" id="text">
 </div>
-
 <h2>Private</h2>
 <div>
     <button id="register">Register</button>
     <button id="privateText">PrivateText</button>
     <button id="privateCmd">PrivateCmd</button>
+    <button id="logout">logout</button>
+    <button id="reConn">reConn</button>
     <div>
         <br>
         image: <input type="file" id="image">
@@ -69,6 +71,7 @@
     <button id="rtCall">Call</button>
     <button id="rtAcceptCall">AcceptCall</button>
     <button id="rtEndCall">EndCall</button>
+    <button id="rtAudioCall">AudioCall</button>
     <div>
         <video id="video" style="border: 1px solid red" autoplay>
 
@@ -99,7 +102,7 @@
         onOpened: function (message) {          // connection established callback. Can only send message if connection established
             // If set isAutoLogin=false, then must re-login manually
             // Manually login using conn.setPresence(); in this example, conn init has isAutoLogin=true so no need to call conn.setPresence();
-            console.log("opened");
+            console.log("%c [opened] 连接已成功建立", "color: green")
         },
         onTextMessage: function (message) {
             // process the message respect to its message.type. one-to-one chat, group chat, or chat room
@@ -112,7 +115,7 @@
             // If type='emoji', data represent the path to emoji. If type='txt', data is text message
             console.log('Emoji');
             var data = message.data;
-            for(var i = 0 , l = data.length ; i < l ; i++){
+            for (var i = 0, l = data.length; i < l; i++) {
                 console.log(data[i]);
             }
         }, // Emoji message received
@@ -121,9 +124,11 @@
 
             var options = {url: message.url};
             options.onFileDownloadComplete = function () {
+                // 图片下载成功
                 console.log('Image download complete!');
             };
             options.onFileDownloadError = function () {
+                // 图片下载失败
                 console.log('Image download failed!');
             };
             WebIM.utils.download.call(conn, options);       // TODO: check
@@ -213,61 +218,72 @@
         }, // connection dropped
         onError: function (message) {
             console.log('Error');
-        }, // callback failed
+            console.log(message);
+            if (message && message.type == 1) {
+                console.warn('连接建立失败！请确认您的登录账号是否和appKey匹配。')
+            }
+        },           //失败回调
         onBlacklistUpdate: function (list) {
             // list contains list of user info from the blacklist
             console.log(list);
         } // update blacklist succeed
     });
-    // init WebRTC Call
-    var rtcCall = new WebIM.WebRTC.Call({
-        connection: conn,
+    // 初始化WebRTC Call
+    var rtcCall = null
+    if (WebIM.WebRTC) {
+        rtcCall = new WebIM.WebRTC.Call({
+            connection: conn,
 
-        mediaStreamConstaints: {
-            audio: true,
-            video: true
-        },
+            mediaStreamConstaints: {
+                audio: true,
+                video: true
+            },
 
-        listener: {
-            onAcceptCall: function (from, options) {
-                console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
-            },
-            onGotRemoteStream: function (stream) {
-                console.log('onGotRemoteStream::', 'stream: ', stream);
-                var video = document.getElementById('video');
-                video.src = window.URL.createObjectURL(stream);
-            },
-            onGotLocalStream: function (stream) {
-                console.log('onGotLocalStream::', 'stream:', stream);
-                var video = document.getElementById('localVideo');
-                video.src = window.URL.createObjectURL(stream);
-            },
-            onRinging: function (caller) {
-                console.log('onRinging::', 'caller:', caller);
-            },
-            onTermCall: function (reason) {
-                console.log('onTermCall::');
-                console.log('reason:', reason);
-            },
-            onIceConnectionStateChange: function (iceState) {
-                console.log('onIceConnectionStateChange::', 'iceState:', iceState);
-            },
-            onError: function (e) {
-                console.log(e);
+            listener: {
+                onAcceptCall: function (from, options) {
+                    console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
+                },
+                onGotRemoteStream: function (stream, streamType) {
+                    console.log('onGotRemoteStream::', 'stream: ', stream, 'streamType: ', streamType);
+                    var video = document.getElementById('video');
+                    video.srcObject = stream;
+                },
+                onGotLocalStream: function (stream, streamType) {
+                    console.log('onGotLocalStream::', 'stream:', stream, 'streamType: ', streamType);
+                    var video = document.getElementById('localVideo');
+                    video.srcObject = stream;
+                },
+                onRinging: function (caller) {
+                    console.log('onRinging::', 'caller:', caller);
+                },
+                onTermCall: function (reason) {
+                    console.log('onTermCall::');
+                    console.log('reason:', reason);
+                },
+                onIceConnectionStateChange: function (iceState) {
+                    console.log('onIceConnectionStateChange::', 'iceState:', iceState);
+                },
+                onError: function (e) {
+                    console.log(e);
+                }
             }
-        }
-    });
+        });
+    } else {
+        console.warn('不能进行视频通话！您的浏览器不支持webrtc或者协议不是https。')
+    }
 </script>
 <script>
-
-    // open, login
+    /**
+     * Created by clock on 16-11-30.
+     */
+        // open，登录
     var options = {
-        apiUrl: WebIM.config.apiURL,
-        user: "orange",
-        pwd: "password",
-        appKey: WebIM.config.appkey
-    };
-    conn.open(options);
+            apiUrl: WebIM.config.apiURL,
+            user: "mengyuanyuan",
+            pwd: "123456",
+            appKey: WebIM.config.appkey
+        };
+
 
     var register = function () {
         var option = {
@@ -434,8 +450,9 @@
      type: 'jid'
      }
      }
+     jid, username, subscription均在获取好友列表时已获取到，用户可根据好友列表动态获取这些参数，
+     order不重复即可
      */
-
     var addToBlackList = function () {
         var list = {
             // user_1
@@ -731,9 +748,43 @@
     var acceptCall = function () {
         rtcCall.acceptCall();
     }
-</script>
 
+    // 语音呼叫对方
+    var audioCall = function () {
+        console.log('Audio Call');
+        rtcCall.caller = 'wenke123';
+        rtcCall.makeVoiceCall('asdfghj');
+    };
+
+    //
+    var logout = function () {
+//        conn.clear();
+        conn.close('logout');
+        conn.errorType = WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT;
+
+
+    }
+
+    var reConn = function () {
+        //appkey： easemob-demo#vip5
+        //xmppURL: 'im-api-vip5.easemob.com',
+        //apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip5.easemob.com',
+        //账号：10vip5/123456 ,11vip5/123456
+        options = {
+            xmppURL: 'im-api-vip5.easemob.com',
+            apiUrl: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip5.easemob.com',
+            appKey: "easemob-demo#vip5",
+            user: "10vip5",
+            pwd: "123456"
+        };
+        conn.open(options)
+
+    }
+</script>
 <script>
+    /**
+     * Created by clock on 16-11-30.
+     */
     window.onload = function () {
         document.getElementById('register').onclick = register;
         document.getElementById('privateText').onclick = sendPrivateText;
@@ -768,42 +819,51 @@
         document.getElementById('rtCall').onclick = call;
         document.getElementById('rtEndCall').onclick = endCall;
         document.getElementById('rtAcceptCall').onclick = acceptCall;
+        document.getElementById('rtAudioCall').onclick = audioCall;
 
-    };
-</script>
+        document.getElementById('logout').onclick = logout;
+        document.getElementById('reConn').onclick = reConn;
 
-<script>
-    // send image
-    document.addEventListener('paste', function (e) {
-        if (e.clipboardData && e.clipboardData.types) {
-            if (e.clipboardData.items.length > 0) {
-                if (/^image\/\w+$/.test(e.clipboardData.items[0].type)) {
-                    var blob = e.clipboardData.items[0].getAsFile();
-                    var url = window.URL.createObjectURL(blob);
-                    var id = conn.getUniqueId(); 		// create local message id
+        // 贴图发送（放到消息模块里）
+        document.addEventListener('paste', function (e) {
+            if (e.clipboardData && e.clipboardData.types) {
+                if (e.clipboardData.items.length > 0) {
+                    if (/^image\/\w+$/.test(e.clipboardData.items[0].type)) {
+                        var blob = e.clipboardData.items[0].getAsFile();
+                        var url = window.URL.createObjectURL(blob);
+                        var id = conn.getUniqueId();//生成本地消息id
 
-                    var msg = new WebIM.message('img', id);
-                    msg.set({
-                        apiUrl: WebIM.config.apiURL,
-                        file: {data: blob, url: url},
-                        to: 'orange',
-                        roomType: false,
-                        chatType: 'singleChat',
-                        onFileUploadError: function (error) {
-                            console.log("Error");
-                        },
-                        onFileUploadComplete: function (data) {
-                            console.log("Complete");
-                        },
-                        success: function (id) {
-                            console.log("Success");
-                        }
-                    });
-                    conn.send(msg.body);
+                        var msg = new WebIM.message('img', id);
+                        msg.set({
+                            apiUrl: WebIM.config.apiURL,
+                            file: {data: blob, url: url},
+                            to: 'asdfghj',
+                            roomType: false,
+                            chatType: 'singleChat',
+                            onFileUploadError: function (error) {
+                                console.log("Error");
+                            },
+                            onFileUploadComplete: function (data) {
+                                console.log("Complete", data);
+                            },
+                            success: function (id) {
+                                console.log("Success");
+                            }
+                        });
+                        conn.send(msg.body);
+                    }
                 }
             }
-        }
-    });
+        });
+
+        options = {
+            apiUrl: WebIM.config.apiURL,
+            user: "zzf2",
+            pwd: "z",
+            appKey: WebIM.config.appkey
+        };
+        conn.open(options);
+    };
 </script>
 </body>
 </html>

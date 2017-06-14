@@ -3,6 +3,9 @@ var ReactDOM = require('react-dom');
 var Avatar = require('../common/avatar');
 var _utils = require('../../../../../sdk/src/utils').utils;
 
+// import language package
+var Language = require('../language').default;
+
 var FileMsg = React.createClass({
     getInitialState: function () {
         var me = this;
@@ -40,18 +43,32 @@ var FileMsg = React.createClass({
     render: function () {
         var icon = this.props.className === 'left' ? 'H' : 'I';
         var links = [];
+        var statusClass = this.props.className == 'left' ? 'hide' : '';
+        var id = this.props.id;
+        var status = this.props.status;
+        var nid = this.props.nid;
+        switch (status) {
+            case 'Undelivered':
+                status = Language.undelivered;
+                break;
+            case 'Delivered':
+                status = Language.delivered;
+                break;
+            case 'Read':
+                status = Language.read;
+            default:
+        }
         if (WebIM.config.isWindowSDK) {
             if (this.state.value == "") {
-                links.push(<a key='0' href="javascript:void(0)">{Demo.lan.FileLoading}</a>);
+                links.push(<a key='0' href="javascript:void(0)">{Language.FileLoading}</a>);
             } else {
                 var dirPath = this.state.value.replace("file:", "location:");
-                links.push(<a target='_blank' key='0' href={this.state.value}>{Demo.lan.openFile}</a>);
-                links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Demo.lan.openDir}</a>);
+                links.push(<a target='_blank' key='0' href={this.state.value}>{Language.openFile}</a>);
+                links.push(<a target='_blank' key='1' href={dirPath} className='dir'>{Language.openDir}</a>);
             }
 
         } else {
-            links.push(<a target='_blank' key='0' href={this.props.value}>{Demo.lan.download}</a>);
-            //links.push(<a key='0' href="javascript:void(0)" onClick={this.download}>{Demo.lan.download}</a>);
+            links.push(<a target='_blank' key='0' href={this.props.value}>{Language.download}</a>);
         }
 
         return (
@@ -59,10 +76,13 @@ var FileMsg = React.createClass({
                 <Avatar src={this.props.src} className={this.props.className + ' small'}/>
                 <p className={this.props.className}>{this.props.name} {this.props.time}</p>
                 <div className="clearfix" style={{minWidth: '280px'}}>
+                    <div className={"webim-msg-delivered " + statusClass} id={id} name={nid}>
+                        {status}
+                    </div>
                     <div className='webim-msg-value' style={{minWidth: '200px'}}>
                         <span className='webim-msg-icon font'>{icon}</span>
                         <div>
-                            <p className='webim-msg-header'>{Demo.lan.file}</p>
+                            <p className='webim-msg-header'>{Language.file}</p>
                             <div id={'file_' + this.props.id}>
                                 <span className='webim-msg-header-icon font small'>S</span>
                                 <span className='webim-msg-name'> {this.props.filename}</span>
@@ -89,12 +109,13 @@ module.exports = function (options, sentByMe) {
         name: options.name,
         filename: options.filename || '',
         error: options.error,
-        errorText: options.errorText
+        errorText: options.errorText,
+        status: options.status || 'Undelivered',
+        nid: options.nid || ''
     };
 
-    if(options.fileSize){
+    if (options.fileSize) {
         props.fileSize = options.fileSize;
-        console.log('props.fileSize: ', options.fileSize);
     }
 
     var node = document.createElement('div');

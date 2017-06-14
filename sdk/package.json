@@ -1,7 +1,7 @@
 {
-  "name": "hyphenate-web",
+  "name": "easemob-websdk",
   "version": "1.4.11",
-  "description": "Hyphenate web sdk",
+  "description": "Easemob IM websdk",
   "main": "index.js",
   "scripts": {
     "build": "gulp",
@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HyphenateInc/Hyphenate-SDK-Web.git"
+    "url": "git+https://github.com/easemob/web-im.git"
   },
   "keywords": [
     "realtime",
     "im",
-    "hyphenate",
+    "easemob",
     "xmpp",
     "strophe",
     "webrtc"
@@ -30,7 +30,7 @@
     "webpack-stream": "^3.2.0"
   },
   "author": {
-    "name": "Hyphenate"
+    "name": "easemob"
   },
   "license": "MIT"
 }

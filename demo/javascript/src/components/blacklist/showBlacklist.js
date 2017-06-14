@@ -18,7 +18,6 @@ var ShowBlacklist = React.createClass({
 
     // member removed from blacklist (user unblocked)
     onRemoveFromBlackList: function (value) {
-        // TODO: by lwz reconstruction
         var me = this;
         if (WebIM.config.isWindowSDK) {
             WebIM.doQuery('{"type":"removeFromBlackList", "username": "' + value + '"}',
