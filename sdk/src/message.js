@@ -277,7 +277,12 @@ var CryptoJS = require('crypto-js');
                 dom.up().c('delivery').t(_utils.stringify(delivery));
             }
             if (message.ackId) {
-                dom.up().c('body').t(message.ackId);
+                dom = $msg({
+                    type: message.group || 'chat'
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.ackId);
                 var read = {
                     xmlns: 'urn:xmpp:receipts'
                     , id: message.ackId
