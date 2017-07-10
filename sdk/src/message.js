@@ -270,8 +270,7 @@ var CryptoJS = require('crypto-js');
             }
             if (message.bodyId) {
                 dom = $msg({
-                    type: message.group || 'chat'
-                    , to: message.toJid
+                    to: message.toJid
                     , id: message.id
                     , xmlns: 'jabber:client'
                 }).c('body').t(message.bodyId);
@@ -283,8 +282,7 @@ var CryptoJS = require('crypto-js');
             }
             if (message.ackId) {
                 dom = $msg({
-                    type: message.group || 'chat'
-                    , to: message.toJid
+                    to: message.toJid
                     , id: message.id
                     , xmlns: 'jabber:client'
                 }).c('body').t(message.ackId);
