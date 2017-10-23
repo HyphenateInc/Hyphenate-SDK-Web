@@ -78,7 +78,7 @@ var config = {
      *  cn: chinese
      *  us: english
      */
-    i18n: "cn",
+    i18n: "us",
     /*
      * Set to auto sign-in
      */
