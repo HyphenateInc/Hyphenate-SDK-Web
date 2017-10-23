@@ -46,28 +46,8 @@ Run and deploy the version under /demo/build
 
  
 ## FAQ
-  
-### 1. npm i issue
 
-```
-> phantomjs-prebuilt@2.1.14 install /Users/will/work/my-project/node_modules/phantomjs-prebuilt
-> node install.js
-
-PhantomJS not found on PATH
-Downloading https://github.com/Medium/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-macosx.zip
-Saving to /var/folders/mh/2ptfthxj2qb49jscj1b0gjsm0000gn/T/phantomjs/phantomjs-2.1.1-macosx.zip
-Receiving...
-
-Error making request.
-Error: connect ETIMEDOUT 54.231.113.227:443
-    at Object.exports._errnoException (util.js:1018:11)
-    at exports._exceptionWithHostPort (util.js:1041:20)
-    at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1090:14)
-```
-
-FIX: Try PHANTOMJS_CDNURL=https://npm.taobao.org/mirrors/phantomjs/ npm install --save-dev phantomjs-prebuilt来解决
-
-### 2. npm start related issue
+### npm start related issue
 
 ```
 ./src/config/WebIM.js
@@ -75,7 +55,7 @@ Module not found: Can't resolve 'easemob-websdk/dist/strophe-1.2.8-g.js' in '<Yo
 ```
 FIX: run `npm link easemob-websdk`
 
-### 3. npm start related issue
+### npm start related issue
 
 ```
 > node scripts/start.js
@@ -96,7 +76,7 @@ SyntaxError: Unexpected token {
 ```
 FIX: check node version if v6.0+ 
 
-### 4. Redux State data strcuture
+### Redux State data strcuture
 
 ```
 {
