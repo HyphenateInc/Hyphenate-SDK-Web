@@ -1,19 +1,38 @@
-## 说明
-WebIM 2 (webim-h5) 在1.x的基础上, 主要做了以下更新:
-1. 响应式布局, 一套Demo同时支持PC和H5,自适应不同终端屏幕尺寸
-2. 完全基于Reac + Redux的单向数据流
-3. 引入ant-design组件库，方便开发者后续开发
-4. 支持所有的现代浏览器(不支持IE6-11)
+# Hyphenate-SDK-Web
 
-## 安装
+The demo app demonstrates how to use the Hyphenate Mobile Instant Messaging (MIM) platform, SDK and backend API to build and deploy a mobile app with integrated chat features. Developers can leverage this app as a reference example to build their own apps integrated with the Hyphenate MIM service. Some of the cool features available:
 
-1. 初始化安装
-	- 在/demo下执行 `npm i`
-2. 如果需要同时编辑sdk  `cd sdk && npm link && cd .. && npm link easemob-websdk`
+- Demo is based on React.
+- Sign in multiple sessions/devices simutaneously ```isMultiLoginSessions:true```
+- Perform extra layer of security check for HTTP/IP to prevent DNS hijacking. ```isHttpDNS:true```
+- Real-time one-to-one and group chat 
+- File, photo/video, and location sharing with your friends
+- Video/Voice calling for browsers support https+Webkit. 
 
-3. 如果需要同时编辑webrtc `cd webrtc && npm link && cd .. && npm link easemob-webrtc`
+Live demo app
+https://demo.hyphenate.io/
 
-4. 运行demo
+Further details
+[Hyphenate web SDK](https://docs.hyphenate.io/docs/web-install-sdk)
+
+
+
+## Intro
+1. Single demo support both PC broswer and H5. Adjust to display resolution dynamically. 
+2. Based on React framework annd Redux
+3. Use ant-design component library for easy customization
+4. Support most browsers, except IE6-11
+
+
+## Installation
+
+1. Init installation
+	- run `npm i` under the folder /demo 
+2. To edit sdk  `cd sdk && npm link && cd .. && npm link easemob-websdk`
+
+3. To edit webrtc `cd webrtc && npm link && cd .. && npm link easemob-webrtc`
+
+4. Run demo
 	- `cd demo && npm start` （requires node@>=6）
 	
 	   http://localhost:3001
@@ -21,14 +40,14 @@ WebIM 2 (webim-h5) 在1.x的基础上, 主要做了以下更新:
 	
 	   https://localhost:3001
 
-5. 发布demo
+5. Deploy demo
 `cd demo && npm run build `
-/demo/build 目录下的就是可以运行和部署的版本
+Run and deploy the version under /demo/build
 
  
 ## FAQ
   
-### 1. 如果在npm i的过程中遇到
+### 1. npm i issue
 
 ```
 > phantomjs-prebuilt@2.1.14 install /Users/will/work/my-project/node_modules/phantomjs-prebuilt
@@ -46,17 +65,17 @@ Error: connect ETIMEDOUT 54.231.113.227:443
     at TCPConnectWrap.afterConnect [as oncomplete] (net.js:1090:14)
 ```
 
-FIX: 这个问题，可以尝试PHANTOMJS_CDNURL=https://npm.taobao.org/mirrors/phantomjs/ npm install --save-dev phantomjs-prebuilt来解决
+FIX: Try PHANTOMJS_CDNURL=https://npm.taobao.org/mirrors/phantomjs/ npm install --save-dev phantomjs-prebuilt来解决
 
-### 2. 执行npm start时如果出现
+### 2. npm start related issue
 
-    ```
-    ./src/config/WebIM.js
-    Module not found: Can't resolve 'easemob-websdk/dist/strophe-1.2.8-g.js' in '<YourRootDir>/demo/src/config'
-    ```
-FIX: 没有执行 npm link easemob-websdk
+```
+./src/config/WebIM.js
+Module not found: Can't resolve 'easemob-websdk/dist/strophe-1.2.8-g.js' in '<YourRootDir>/demo/src/config'
+```
+FIX: run `npm link easemob-websdk`
 
-### 3. 执行npm start时如果出现
+### 3. npm start related issue
 
 ```
 > node scripts/start.js
@@ -75,15 +94,14 @@ SyntaxError: Unexpected token {
     at startup (node.js:139:18)
     at node.js:974:3
 ```
-FIX: 请检查node版本是否是v6.0+ 
+FIX: check node version if v6.0+ 
 
-### 4. Redux State 的数据结构如下：
-
+### 4. Redux State data strcuture
 
 ```
 {
 	// ---------------------------------
-	// 响应式断点
+	// resolution 
 	// ---------------------------------
 	//xs: "480px"
 	//sm: "768px"
@@ -99,17 +117,17 @@ FIX: 请检查node版本是否是v6.0+
 	},
 	
 	// ---------------------------------
-	// UI相关
+	// UI related
 	// ---------------------------------
 	common: {
 		fetching: false,
 		isGetGroupAlready: true,
 		isGetChatRoomAlready: false,
-		showGroupRequestModal: false   //群主管理加入群消息
+		showGroupRequestModal: false   // message when member reques to join group
 	},
 	
 	// ---------------------------------	
-	// 用户登录信息
+	// User login notification
 	// ---------------------------------
 	login: {
 		username: 'sunylt',
@@ -121,22 +139,22 @@ FIX: 请检查node版本是否是v6.0+
 	},
 	
 	// ---------------------------------
-	// 多语言
+	// Multi-languages
 	// ---------------------------------
 	i18n: {
 	
-		// 已配置语言
+		// languages
 		translations: {
 			cn: {},
 			us: {},
 		},
 		
-		// 当前语言
-		locale: "cn"
+		// current language
+		locale: "us"
 	},
 	
 	
-	// 注册信息，没进行注册操作为{}
+	// Registration info. Empty {} if no operation
 	register: {
 		username: "123abcdbb",
 		password: "123",
@@ -144,38 +162,38 @@ FIX: 请检查node版本是否是v6.0+
 		registerError: null
 	},
 	
-	// 预留 暂无用
+	// placeholder, current not used
 	contacts: {}
 	
-	// 预留 暂无用
+	// placeholder, current not used
     im: {}
 
 	// ---------------------------------	
-	// 数据实体
+	// data structure
 	// ---------------------------------
 	entities: {
-	    // 好友
+	    	// contacts
 		roster: {
 			byName: {
 				name: { subscription,jid, ask, name, groups }
 				...
 			},
 			names: ['lwz2' ...],
-			// 好友列表在此，因为好友列表来源于roster，息息相关
+			// contact list, which is based on roster
 			friends: [],
 		},
-		// 群组
+		// groups
 		group: {
 			loadingFailed: <Boolean>,
 			isLoading: <Booleadn>,
-			rightSiderOffset: <Number>, //控制右侧群组管理面板
+			rightSiderOffset: <Number>, // right side control panel
 			byId: {
 				groupId: {groupid, groupname},
 				....
 			},
 			names: [groupName_#-#_groupId, ....]
 		},
-		// 聊天室
+		// chat room
 		chatroom: {
 			byId: {
 				chatId: {chatId, name, owner, affiliations_count}
@@ -183,44 +201,44 @@ FIX: 请检查node版本是否是v6.0+
 			},
 			names: [chatName_#-#_chatId, ....]
 		},
-		// 陌生人
+		// stranger
 		stranger: {
 		},
 		
-		// 群组成员信息
+		// group info
 		groupMember: {
 			groupId: {
-				muted: {byName: {}},//群主可见，禁言列表
+				muted: {byName: {}}, // Only group admin able to see the muted user list
 				byName: {
 					name: {name: <String: name>, affiliation: 'member'}
 				},
 				names: [],
-				admins: [],  //群管理员可见
+				admins: [],  // Only group admin able to see the list
 			},
 			...
 		}
 		
-		// 订阅通知
+		// subscribe notification
 		subscribe: {
 			byFrom: {}
 		},
 		
-		// 黑名单列表
+		// blacklist
 		blacklist: {
 			byName: {}
 			name: []
 		},
 		
-		// 消息
+		// message
 		message: {
 		
-			// 所有消息
+			// all the messages
 			byId: {
 				mid: {"type":"chat|groupchat|chatroom|stranger|error", "chatId": <String: chatId>},
 				...
 			}
 			
-			// 单聊消息列表
+			// list of one-to-one chat
 			chat: {
 				chatId: [
                          {message},
@@ -228,7 +246,7 @@ FIX: 请检查node版本是否是v6.0+
                         ]
 			},
 			
-			// 群组消息列表
+			// list of group chat
 			groupChat: {
 				chatId: [
                          {message},
@@ -236,7 +254,7 @@ FIX: 请检查node版本是否是v6.0+
                         ]
 			},
 			
-			// 聊天室消息列表
+			// list of chat room chat 
 			chatroom: {
 				chatId: [
                          {message},
@@ -244,7 +262,7 @@ FIX: 请检查node版本是否是v6.0+
                         ]
 			},
 			
-			// 陌生人消息列表
+			// list of strangers
 			stranger: {
 				chatId: [
                          {message},
@@ -252,41 +270,41 @@ FIX: 请检查node版本是否是v6.0+
                         ]
 			},
 			
-			// 预留 暂无用
+			// placeholder, currently not used
 			extra: {}
 			
-			// 未读消息记录
+			// unread messages
 			unread: {
-			    // 好友
+			    	// contact
 				chat: {
 					chatId: <Number: unreadNum>,
 					...
 				},
-				// 群组
+				// group
 				groupchat: {
 					chatId: <Number: unreadNum>,
 					...
 				},
-				// 聊天室
+				// chat room
 				chatroom: {
 					chatId: <Number: unreadNum>,
 					...
 				},
-				// 陌生人
+				// stranger
 				stranger: {
 					chatId: <Number: unreadNum>,
 					...
 				}
 			}
 			
-			// 自己发的消息mid跟本地id对照
+			// compare the message mid sent from self with local message id
 			byMid: {
 				messageId: {id: <String: localId>},
 				...
 			},
 		},
 		
-		// 加入群申请
+		// request to join group
 		groupRequest: {
 			byGid: {}
 		}
