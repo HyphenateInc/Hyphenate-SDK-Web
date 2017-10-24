@@ -340,7 +340,7 @@ var _parseFriend = function (queryTag, conn, from) {
             });
             friend.groups = groups;
             rouster.push(friend);
-            // B同意之后 -> B订阅A
+            // after B agreed -> B subscribes A
             // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
             if (conn && (subscription == 'from') && !ask) {
                 conn.subscribe({
@@ -412,11 +412,11 @@ var _parseMessageType = function (msginfo) {
 
     } else if (deliveryinfo && deliveryinfo.length > 0) {
 
-        msgtype = 'delivery';           // 消息送达
+        msgtype = 'delivery';           // message delivered to server
 
     } else if (acked && acked.length) {
 
-        msgtype = 'acked';              // 消息已读
+        msgtype = 'acked';              // message read
 
     } else if (error && error.length) {
 
@@ -802,7 +802,7 @@ connection.prototype.listen = function (options) {
     _listenNetwork(this.onOnline, this.onOffline);
 };
 
-//webrtc需要强制心跳，加个默认为false的参数 向下兼容
+// webrtc requires forced heartbeat and default false for backward compability
 connection.prototype.heartBeat = function (forcing) {
     if (forcing !== true) {
         forcing = false;
