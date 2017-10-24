@@ -8,13 +8,13 @@ var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
 
-var Strophe = window.Strophe
+var Strophe = window.Strophe;
 var isStropheLog;
 
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 var logMessage = function (message) {
-}
+};
 
 if (window.XDomainRequest) {
     // not support ie8 send is not a function , canot 
@@ -1315,20 +1315,28 @@ connection.prototype.handlePresence = function (msginfo) {
     var x = msginfo.getElementsByTagName('x');
     if (x && x.length > 0) {
         // 加群申请
+        // request to join group
         var apply = x[0].getElementsByTagName('apply');
         // 加群成功
+        // join group successfully
         var accept = x[0].getElementsByTagName('accept');
         // 同意加群后用户进群通知
+        // user joining group request accepted
         var item = x[0].getElementsByTagName('item');
         // 加群被拒绝
+        // user joining group request declined
         var decline = x[0].getElementsByTagName('decline');
         // 被设为管理员
+        // user added to group admin
         var addAdmin = x[0].getElementsByTagName('add_admin');
         // 被取消管理员
+        // user removed from group admin
         var removeAdmin = x[0].getElementsByTagName('remove_admin');
         // 被禁言
+        // user is muted from group
         var addMute = x[0].getElementsByTagName('add_mute');
         // 取消禁言
+        // user is unmuted from group
         var removeMute = x[0].getElementsByTagName('remove_mute');
 
         if (apply && apply.length > 0) {
@@ -2511,6 +2519,7 @@ connection.prototype._onReceiveInviteFromGroup = function (info) {
 
     this.onConfirmPop(options);
 };
+
 connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2521,6 +2530,7 @@ connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+
 connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2531,6 +2541,7 @@ connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+
 connection.prototype._onAutoAcceptInvitationFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2551,6 +2562,7 @@ connection.prototype._onLeaveGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+
 connection.prototype._onReceiveJoinGroupApplication = function (info) {
     info = eval('(' + info + ')');
     var self = this;
@@ -2584,6 +2596,7 @@ connection.prototype._onReceiveJoinGroupApplication = function (info) {
     };
     this.onConfirmPop(options);
 };
+
 connection.prototype._onReceiveAcceptionFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2594,6 +2607,7 @@ connection.prototype._onReceiveAcceptionFromGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+
 connection.prototype._onReceiveRejectionFromGroup = function () {
     info = eval('(' + info + ')');
     var options = {
@@ -2604,12 +2618,15 @@ connection.prototype._onReceiveRejectionFromGroup = function () {
     };
     this.onConfirmPop(options);
 };
+
 connection.prototype._onUpdateMyGroupList = function (options) {
     this.onUpdateMyGroupList(options);
 };
+
 connection.prototype._onUpdateMyRoster = function (options) {
     this.onUpdateMyRoster(options);
 };
+
 connection.prototype.reconnect = function () {
     var that = this;
     setTimeout(function () {
@@ -2829,6 +2846,7 @@ connection.prototype.removeGroupMemberFromBlacklist = function (options) {
 
 /**
  * changeGroupSubject 修改群名称
+ * changeGroupSubject update group subject
  *
  * @param options
  */
@@ -2873,13 +2891,14 @@ connection.prototype.changeGroupSubject = function (options) {
 
 /**
  * destroyGroup 删除群组
+ * destroyGroup destroy group
  *
  * @param options
  */
 // <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
 //     <query xmlns="http://jabber.org/protocol/muc#owner">
 //         <destroy>
-//             <reason>xxx destory group yyy</reason>
+//             <reason>xxx destroy group yyy</reason>
 //         </destroy>
 //     </query>
 // </iq>
@@ -2905,6 +2924,7 @@ connection.prototype.destroyGroup = function (options) {
 
 /**
  * leaveGroupBySelf 主动离开群组
+ * leaveGroupBySelf group member leaves the group voluntarily
  *
  * @param options
  */
@@ -2943,6 +2963,7 @@ connection.prototype.leaveGroupBySelf = function (options) {
 
 /**
  * leaveGroup 被踢出群组
+ * leaveGroup group member dismissed from the group by admin
  *
  * @param options
  */
@@ -2987,19 +3008,23 @@ connection.prototype.leaveGroup = function (options) {
 
 /**
  * addGroupMembers 添加群组成员
+ * addGroupMembers add user to group
  *
  * @param options
 
  Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
  <!-- 添加成员通知：send -->
+ Attention the sequence: message first (send a message to individual group member), iq second (send one iq for multiple members at the same time)
+ <!-- notification when new group member added: send -->
  <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
  <x xmlns='http://jabber.org/protocol/muc#user'>
  <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
- <reason>liuwz invite you to join group '谢谢'</reason>
+ <reason>apple invites you to join group 'thanks'</reason>
  </invite>
  </x>
  </message>
  <!-- 添加成员：send -->
+ <!-- add group member：send -->
  <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
  <query xmlns='http://jabber.org/protocol/muc#admin'>
  <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
@@ -3048,6 +3073,7 @@ connection.prototype.addGroupMembers = function (options) {
 
 /**
  * acceptInviteFromGroup 接受加入申请
+ * acceptInviteFromGroup accept joining group invitation
  *
  * @param options
  */
@@ -3061,8 +3087,10 @@ connection.prototype.acceptInviteFromGroup = function (options) {
 
 /**
  * rejectInviteFromGroup 拒绝入群申请
+ * rejectInviteFromGroup reject joining group invitation
  *
  * throw request for now 暂时不处理，直接丢弃
+ * throw request for now (currently not handled, but discarded)
  *
  <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
  <x xmlns='http://jabber.org/protocol/muc#user'>
@@ -3091,7 +3119,7 @@ connection.prototype.rejectInviteFromGroup = function (options) {
 };
 
 connection.prototype.createGroupAsync = function (p) {
-    var roomId = p.from
+    var roomId = p.from;
     var me = this;
     var toRoom = this._getGroupJid(roomId);
     var to = toRoom + '/' + this.context.userId;
@@ -3188,12 +3216,18 @@ connection.prototype.createGroupAsync = function (p) {
 
 /**
  * createGroup 创建群组
+ * createGroup create group
  *
  * 1. 创建申请 -> 得到房主身份
  * 2. 获取房主信息 -> 得到房间form
  * 3. 完善房间form -> 创建成功
  * 4. 添加房间成员
  * 5. 消息通知成员
+ * 1. create group request -> obtain group admin
+ * 2. obtain group admin info -> obtain group form
+ * 3. complete group form -> group created successfully
+ * 4. add user to group
+ * 5. notify group member
  * @param options
  */
 connection.prototype.createGroup = function (options) {
@@ -3209,7 +3243,9 @@ connection.prototype.createGroup = function (options) {
     // createGroupACK
     this.sendCommand(pres.tree());
 };
+
 // 通过Rest接口创建群组
+// create group via REST API
 connection.prototype.createGroupNew = function (opt) {
     opt.data.owner = this.user;
     var options = {
@@ -3232,11 +3268,13 @@ connection.prototype.createGroupNew = function (opt) {
 
 /**
  * shieldGroup 屏蔽群组
+ * shieldGroup shield group
  * @param valueDom
  * @param v
  * @private
  */
 // 通过Rest屏蔽群组
+// shield the group via REST API
 connection.prototype.blockGroup = function (opt) {
     var groupId = opt.groupId;
     groupId = 'notification_ignore_' + groupId;
@@ -3259,7 +3297,9 @@ connection.prototype.blockGroup = function (opt) {
     options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
+
 // 通过Rest发出入群申请
+// request to join group via REST API
 connection.prototype.joinGroup = function (opt) {
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/'
@@ -3275,7 +3315,9 @@ connection.prototype.joinGroup = function (opt) {
     options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
+
 // 通过Rest获取群组列表
+// get a list of public group via REST API
 connection.prototype.listGroups = function (opt) {
     var requestData = [];
     requestData['limit'] = opt.limit;
@@ -3302,6 +3344,7 @@ connection.prototype.listGroups = function (opt) {
 };
 
 // 通过Rest根据groupid获取群组详情
+// get group info by group id via REST API
 connection.prototype.getGroupInfo = function (opt) {
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
@@ -3318,6 +3361,7 @@ connection.prototype.getGroupInfo = function (opt) {
 };
 
 // 通过Rest列出某用户所加入的所有群组
+// get a list of all the groups of the user joined via REST API
 connection.prototype.getGroup = function (opt) {
     var options = {
         url: this.apiUrl + '/' + this.orgName +
@@ -3336,6 +3380,7 @@ connection.prototype.getGroup = function (opt) {
 };
 
 // 通过Rest列出群组的所有成员
+// get a list of all the group members of the group via REST API
 connection.prototype.listGroupMember = function (opt) {
     if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
         throw 'The parameter \"pageNum\" should be a positive number';
@@ -3368,6 +3413,7 @@ connection.prototype.listGroupMember = function (opt) {
 };
 
 // 通过Rest禁止群用户发言
+// mute the group member from talking via REST API
 connection.prototype.mute = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3391,6 +3437,7 @@ connection.prototype.mute = function (opt) {
 };
 
 // 通过Rest取消对用户禁言
+// unmute the group member form talking via REST API
 connection.prototype.removeMute = function (opt) {
     var groupId = opt.groupId,
         username = opt.username;
@@ -3410,6 +3457,7 @@ connection.prototype.removeMute = function (opt) {
 };
 
 // 通过Rest获取群组下所有管理员
+// get a list of group admin of the group via REST API
 connection.prototype.getGroupAdmin = function (opt) {
     var groupId = opt.groupId;
     var options = {
@@ -3428,6 +3476,7 @@ connection.prototype.getGroupAdmin = function (opt) {
 };
 
 // 通过Rest获取群组下所有被禁言成员
+// get a list of all the muted group members of the group via REST API
 connection.prototype.getMuted = function (opt) {
     var groupId = opt.groupId;
     var options = {
@@ -3446,6 +3495,7 @@ connection.prototype.getMuted = function (opt) {
 };
 
 // 通过Rest设置群管理员
+// add group admin for the group via REST API
 connection.prototype.setAdmin = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3468,6 +3518,7 @@ connection.prototype.setAdmin = function (opt) {
 };
 
 // 通过Rest取消群管理员
+// remove group admin of the group via REST API
 connection.prototype.removeAdmin = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3487,6 +3538,7 @@ connection.prototype.removeAdmin = function (opt) {
 };
 
 // 通过Rest同意用户加入群
+// accept user's join group request via REST API
 connection.prototype.agreeJoinGroup = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3511,6 +3563,7 @@ connection.prototype.agreeJoinGroup = function (opt) {
 };
 
 // 通过Rest拒绝用户加入群
+// reject user's join group request via REST API
 connection.prototype.rejectJoinGroup = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3535,6 +3588,7 @@ connection.prototype.rejectJoinGroup = function (opt) {
 };
 
 // 通过Rest添加用户至群组黑名单(单个)
+// Block a Group Member via REST API
 connection.prototype.groupBlockSingle = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3555,6 +3609,7 @@ connection.prototype.groupBlockSingle = function (opt) {
 };
 
 // 通过Rest添加用户至群组黑名单(批量)
+// Block Group Member(s) in batch via REST API
 connection.prototype.groupBlockMulti = function (opt) {
     var groupId = opt.groupId,
         usernames = opt.usernames,
@@ -3579,6 +3634,7 @@ connection.prototype.groupBlockMulti = function (opt) {
 };
 
 // 通过Rest将用户从群黑名单移除（单个）
+// Unblock a Group Member via REST API
 connection.prototype.removeGroupBlockSingle = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3599,6 +3655,7 @@ connection.prototype.removeGroupBlockSingle = function (opt) {
 };
 
 // 通过Rest将用户从群黑名单移除（批量）
+// Unblock Group Member(s) in batch via REST API
 connection.prototype.removeGroupBlockMulti = function (opt) {
     var groupId = opt.groupId,
         username = opt.username.join(','),
@@ -3619,6 +3676,7 @@ connection.prototype.removeGroupBlockMulti = function (opt) {
 };
 
 // 通过Rest解散群组
+// destroy/dissolve group via REST API
 connection.prototype.dissolveGroup = function (opt) {
     var groupId = opt.groupId,
         options = {
@@ -3637,6 +3695,7 @@ connection.prototype.dissolveGroup = function (opt) {
 };
 
 // 通过Rest获取群组
+// Get Blocked Members via REST API
 connection.prototype.getGroupBlacklistNew = function (opt) {
     var groupId = opt.groupId,
         options = {
@@ -3655,6 +3714,7 @@ connection.prototype.getGroupBlacklistNew = function (opt) {
 };
 
 // 通过Rest离开群组
+// Remove a Member from the Group via REST API
 connection.prototype.quitGroup = function (opt) {
     var groupId = opt.groupId,
         options = {
@@ -3672,6 +3732,7 @@ connection.prototype.quitGroup = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+// Update Group Details via REST API
 connection.prototype.modifyGroup = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3694,6 +3755,7 @@ connection.prototype.modifyGroup = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+// Remove a Member from the Group via REST API
 connection.prototype.removeSingleGroupMember = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3713,6 +3775,7 @@ connection.prototype.removeSingleGroupMember = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+// Remove Group Members in Batch
 connection.prototype.removeMultiGroupMember = function (opt) {
     var groupId = opt.groupId,
         users = opt.users.join(','),
@@ -3732,6 +3795,7 @@ connection.prototype.removeMultiGroupMember = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+// Invite user to join the group
 connection.prototype.inviteToGroup = function (opt) {
     var groupId = opt.groupId,
         users = opt.users,

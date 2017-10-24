@@ -566,7 +566,7 @@
             var formData = new FormData();
             formData.append('file', options.file.data);
             // fix: ie8 status error
-            window.XDomainRequest && (xhr.readyState = 2)
+            window.XDomainRequest && (xhr.readyState = 2);
             xhr.send(formData);
         },
 
@@ -651,7 +651,7 @@
                 }
             }
             // fix: ie8 status error
-            window.XDomainRequest && (xhr.readyState = 2)
+            window.XDomainRequest && (xhr.readyState = 2);
             xhr.send(null);
         },
 
@@ -886,10 +886,10 @@
         },
         ts: function () {
             var d = new Date();
-            var Hours = d.getHours(); //获取当前小时数(0-23)
-            var Minutes = d.getMinutes(); //获取当前分钟数(0-59)
-            var Seconds = d.getSeconds(); //获取当前秒数(0-59)
-            var Milliseconds = d.getMilliseconds(); //获取当前毫秒
+            var Hours = d.getHours();               // get current hour (0-23)
+            var Minutes = d.getMinutes();           // get current min (0-59)
+            var Seconds = d.getSeconds();           // get current sec(0-59)
+            var Milliseconds = d.getMilliseconds(); // get current ms
             return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
         },
 

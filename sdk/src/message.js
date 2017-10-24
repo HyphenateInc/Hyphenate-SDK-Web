@@ -99,7 +99,7 @@ var CryptoJS = require('crypto-js');
     };
 
     /*
-     * loc message
+     * location message
      */
     Message.location = function (id) {
         this.id = id;
@@ -119,7 +119,7 @@ var CryptoJS = require('crypto-js');
     };
 
     /*
-     * img message
+     * image message
      */
     Message.img = function (id) {
         this.id = id;
