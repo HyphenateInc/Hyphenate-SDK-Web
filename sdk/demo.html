@@ -569,7 +569,7 @@
         // list all the chat rooms with pagination
         var listRooms = function () {
             var option = {
-                apiUrl: 'https://a1.easemob.com',
+                apiUrl: 'https://api.hyphenate.io',
                 pagenum: 1,                                 // page index
                 pagesize: 20,                               // number of items on the page
                 success: function (list) {
@@ -793,27 +793,27 @@
             rtcCall.makeVoiceCall('asdfghj');
         };
 
-        //
+        // logout
         var logout = function () {
             //        conn.clear();
             conn.close('logout');
             conn.errorType = WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT;
         }
 
+		// connection options
         var reConn = function () {
-            // appkey： hyphenatedemo#demo
-            // xmppURL: 'im-api-vip5.easemob.com',
-            // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip5.easemob.com',
+            // appkey： hyphenatedemo#hyphenatedemo
+            // xmppURL: 'api.hyphenate.io',
+            // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
             // testing account：10vip5/123456 ,11vip5/123456
             options = {
-                xmppURL: 'im-api-vip5.easemob.com',
-                apiUrl: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1-vip5.easemob.com',
-                appKey: "hyphenatedemo#demo",
-                user: "10vip5",
-                pwd: "123456"
+                xmppURL: 'api.hyphenate.io',
+                apiUrl: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
+                appKey: "hyphenatedemo#hyphenatedemo",
+                user: "apple",
+                pwd: "apple"
             };
             conn.open(options)
-
         }
     </script>
     <script>

@@ -41,7 +41,7 @@ Further details
 	   https://localhost:3001
 
 5. Deploy demo
-`cd demo && npm run build `
+`cd demo && npm run build`
 Run and deploy the version under /demo/build
 
  

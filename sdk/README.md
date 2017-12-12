@@ -39,7 +39,7 @@
 
 * [sdk] Add a new friend will create spare subscription information
 * [sdk] Send messages continually will cause the problem of message id repetition
-* [sdk] Adapt size of pictures whild sdk and webim sending pictures to each other 
+* [sdk] Adapt size of pictures while sdk and webim sending pictures to each other 
 * [demo] Optimize sdk/demo.html, fix the problem that some of dependent files can't be found
 * [demo] Fix the problem that off-line messages count not right
 
@@ -52,7 +52,7 @@
 ### BugFix
 
 * [sdk] webrtc:Firefox error while close call
-* [sdk] webrtc:logical error after multitimes connection and close
+* [sdk] webrtc:logical error after multi-connection and close
 * [sdk] webrtc:shoud not warning offline after normal close
 * [sdk] webrtc:can't handle IQ message after reconnect
 
@@ -67,8 +67,8 @@
 ### Feature
 
 * [demo] Add a mute button to the video chat window
-* [demo] Create a chat window automaticly
-* [demo] Hide the chat window when switch a cate in leftbar
+* [demo] Create a chat window automatically
+* [demo] Hide the chat window when switch a cate in left bar
 * [demo] Not back to the login page when refresh the webpage if login succeed
 
 ### BugFix
@@ -106,11 +106,11 @@
 
 * GNU version number: `Major_Version_Number.Minor_Version_Number.Revision_Number`
 * support webrtc
-* while http access,use ip directly instead of ServerName,avoid DNS hijacking.  `isHttpDNS:true`
+* while http access, use ip directly instead of Server Name, avoid DNS hijacking.  `isHttpDNS:true`
 
 ### BugFix
 
-* does not update catact list UI after destory group
+* does not update contact list UI after destroy group
 * does not call the callback function after send out the cmd message
 
 ## 1.1.4
@@ -121,11 +121,11 @@
 
 # How to install
 
-npm install easemob-webim --save
+npm install hyphenate-webim --save
 
 
 ```
-require('easemob-websdk');
+require('hyphenate-websdk');
 ```
 
 
