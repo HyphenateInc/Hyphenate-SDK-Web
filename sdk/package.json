@@ -1,7 +1,7 @@
 {
-  "name": "easemob-websdk",
-  "version": "1.4.11",
-  "description": "Easemob IM websdk",
+  "name": "hyphenate-websdk",
+  "version": "1.4.20",
+  "description": "Hyphenate IM web SDK",
   "main": "index.js",
   "scripts": {
     "build": "gulp",
@@ -30,7 +30,7 @@
     "webpack-stream": "^3.2.0"
   },
   "author": {
-    "name": "easemob"
+    "name": "Hyphenate"
   },
   "license": "MIT"
 }

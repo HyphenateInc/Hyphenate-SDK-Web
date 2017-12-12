@@ -1,7 +1,7 @@
 {
-    "name": "easemob-webrtc",
+    "name": "hyphenate-webrtc",
     "version": "1.4.11",
-    "description": "Easemob IM webrtc",
+    "description": "Hyphenate IM WebRTC",
     "main": "index.js",
     "scripts": {
         "build": "gulp",
@@ -14,7 +14,7 @@
     "keywords": [
         "realtime",
         "im",
-        "easemob",
+        "hyphenate",
         "xmpp",
         "strophe",
         "webrtc"
@@ -30,7 +30,7 @@
         "webpack-stream": "^3.2.0"
     },
     "author": {
-        "name": "easemob"
+        "name": "Hyphenate"
     },
     "license": "MIT"
 }
