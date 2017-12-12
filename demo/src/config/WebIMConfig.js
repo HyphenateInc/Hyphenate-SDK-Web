@@ -6,7 +6,6 @@
  *
  */
 
-// for react native
 var location = {
     protocol: "https"
 }
@@ -20,8 +19,8 @@ var config = {
     /*
      * Backend REST API URL
      */
-    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
-    // ios must be https!!! by lwz
+    // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
+    // iOS MUST be HTTPS
     apiURL: "https://api.hyphenate.io",
     // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.3.155:8080',
     /*
@@ -45,8 +44,8 @@ var config = {
      */
     isWindowSDK: false,
     /**
-     * isSandBox=true:  xmppURL: 'im-api.sandbox.easemob.com',  apiURL: '//a1.sdb.easemob.com',
-     * isSandBox=false: xmppURL: 'im-api.easemob.com',          apiURL: '//a1.easemob.com',
+     * isSandBox=true:  xmppURL: 'im-api.sandbox.hyphenate.io',  apiURL: '//api.sdb.hyphenate.io',
+     * isSandBox=false: xmppURL: 'im-api.hyphenate.io',          apiURL: '//api.hyphenate.io',
      * @parameter {Boolean} true or false
      */
     isSandBox: false,
