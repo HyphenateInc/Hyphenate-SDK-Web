@@ -3,7 +3,7 @@
 The demo app demonstrates how to use the Hyphenate Mobile Instant Messaging (MIM) platform, SDK and backend API to build and deploy a mobile app with integrated chat features. Developers can leverage this app as a reference example to build their own apps integrated with the Hyphenate MIM service. Some of the cool features available:
 
 - Demo is based on React.
-- Sign in multiple sessions/devices simutaneously ```isMultiLoginSessions:true```
+- Sign in multiple sessions/devices simultaneously ```isMultiLoginSessions:true```
 - Perform extra layer of security check for HTTP/IP to prevent DNS hijacking. ```isHttpDNS:true```
 - Real-time one-to-one and group chat 
 - File, photo/video, and location sharing with your friends
@@ -18,8 +18,8 @@ Further details
 
 
 ## Intro
-1. Single demo support both PC broswer and H5. Adjust to display resolution dynamically. 
-2. Based on React framework annd Redux
+1. Single demo support both PC browser and H5. Adjust to display resolution dynamically. 
+2. Based on React framework and Redux
 3. Use ant-design component library for easy customization
 4. Support most browsers, except IE6-11
 
