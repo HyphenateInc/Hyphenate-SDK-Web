@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/easemob/web-im.git"
+    "url": "git+https://github.com/HyphenateInc/Hyphenate-SDK-Web.git"
   },
   "keywords": [
     "realtime",
