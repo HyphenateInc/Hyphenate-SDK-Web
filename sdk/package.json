@@ -1,6 +1,6 @@
 {
   "name": "hyphenate-websdk",
-  "version": "1.4.20",
+  "version": "1.4.11",
   "description": "Hyphenate IM web SDK",
   "main": "index.js",
   "scripts": {

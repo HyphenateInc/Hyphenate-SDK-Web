@@ -15,19 +15,19 @@ var config = {
     /*
      * XMPP server
      */
-    xmppURL: "im-api.easemob.com",
+    xmppURL: "im-api.hyphenate.io",
     // xmppURL: '172.17.2.139:5280',
     /*
      * Backend REST API URL
      */
     // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//a1.easemob.com',
     // ios must be https!!! by lwz
-    apiURL: "https://a1.easemob.com",
+    apiURL: "https://api.hyphenate.io",
     // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//172.17.3.155:8080',
     /*
      * Application AppKey
      */
-    appkey: "easemob-demo#chatdemoui",
+    appkey: "hyphenatedemo#hyphenatedemo",
     /*
      * Whether to use HTTPS
      * @parameter {Boolean} true or false
