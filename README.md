@@ -28,9 +28,9 @@ Further details
 
 1. Init installation
 	- run `npm i` under the folder /demo 
-2. To edit sdk  `cd sdk && npm link && cd .. && npm link easemob-websdk`
+2. To edit sdk  `cd sdk && npm link && cd .. && npm link hyphenate-websdk`
 
-3. To edit webrtc `cd webrtc && npm link && cd .. && npm link easemob-webrtc`
+3. To edit webrtc `cd webrtc && npm link && cd .. && npm link hyphenate-webrtc`
 
 4. Run demo
 	- `cd demo && npm start` （requires node@>=6）
