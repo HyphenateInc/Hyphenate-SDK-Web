@@ -116,7 +116,7 @@
                 // If set isAutoLogin=false, then must re-login manually
                 // Manually login using conn.setPresence(); in this example, conn init has isAutoLogin=true so no need to call conn.setPresence();
 
-                console.log("%c [opened] 连接已成功建立", "color: green")
+                console.log("%c [opened] connection established", "color: green")
             },
             onTextMessage: function (message) {
                 // process the message respect to its message.type. one-to-one chat, group chat, or chat room
@@ -147,7 +147,7 @@
                     // image downloading failed
                     console.log('Image download failed!');
                 };
-                WebIM.utils.download.call(conn, options); // 意义待查
+                WebIM.utils.download.call(conn, options);
 
             }, // image message received
             onCmdMessage: function (message) {
@@ -803,11 +803,11 @@
 		// connection options
         var reConn = function () {
             // appkey： hyphenatedemo#hyphenatedemo
-            // xmppURL: 'api.hyphenate.io',
+            // xmppURL: 'im-api.hyphenate.io',
             // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
             // testing account：10vip5/123456 ,11vip5/123456
             options = {
-                xmppURL: 'api.hyphenate.io',
+                xmppURL: 'im-api.hyphenate.io',
                 apiUrl: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
                 appKey: "hyphenatedemo#hyphenatedemo",
                 user: "apple",
