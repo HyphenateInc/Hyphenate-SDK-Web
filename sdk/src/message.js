@@ -76,7 +76,11 @@ var CryptoJS = require('crypto-js');
     };
 
     /*
+<<<<<<< HEAD
      * command message
+=======
+     * cmd message
+>>>>>>> origin/2.0
      */
     Message.cmd = function (id) {
         this.id = id;
@@ -269,7 +273,16 @@ var CryptoJS = require('crypto-js');
                 dom.up().c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
             }
             if (message.bodyId) {
+<<<<<<< HEAD
                 dom.up().c('body').t(message.bodyId);
+=======
+                dom = $msg({
+                    type: message.group || 'chat'
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.bodyId);
+>>>>>>> origin/2.0
                 var delivery = {
                     xmlns: 'urn:xmpp:receipts'
                     , id: message.bodyId
@@ -277,7 +290,16 @@ var CryptoJS = require('crypto-js');
                 dom.up().c('delivery').t(_utils.stringify(delivery));
             }
             if (message.ackId) {
+<<<<<<< HEAD
                 dom.up().c('body').t(message.ackId);
+=======
+                dom = $msg({
+                    type: message.group || 'chat'
+                    , to: message.toJid
+                    , id: message.id
+                    , xmlns: 'jabber:client'
+                }).c('body').t(message.ackId);
+>>>>>>> origin/2.0
                 var read = {
                     xmlns: 'urn:xmpp:receipts'
                     , id: message.ackId

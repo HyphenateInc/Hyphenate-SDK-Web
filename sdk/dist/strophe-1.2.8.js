@@ -2030,6 +2030,10 @@
                 try {
                     result = this.handler(elem);
                 } catch (e) {
+<<<<<<< HEAD
+=======
+                    console.log("Strophe runing callbacks error: ", e.message)
+>>>>>>> origin/2.0
                     if (e.sourceURL) {
                         Strophe.fatal("error: " + this.handler +
                             " " + e.sourceURL + ":" +
@@ -3080,7 +3084,11 @@
              */
             _dataRecv: function (req, raw) {
                 Strophe.info("_dataRecv called");
+<<<<<<< HEAD
                 WebIM && WebIM.config.isDebug && Strophe.info(JSON.stringify(req));
+=======
+                //WebIM && WebIM.config.isDebug && Strophe.info(JSON.stringify(req));
+>>>>>>> origin/2.0
                 var elem = this._proto._reqToData(req);
                 if (elem === null) {
                     return;
@@ -4921,6 +4929,10 @@
 
                     // Fires the XHR request -- may be invoked immediately
                     // or on a gradually expanding retry window for reconnects
+<<<<<<< HEAD
+=======
+                    var self = this
+>>>>>>> origin/2.0
                     var sendFunc = function () {
                         req.date = new Date();
                         if (self._conn.options.customHeaders) {
@@ -4931,6 +4943,11 @@
                                 }
                             }
                         }
+<<<<<<< HEAD
+=======
+                        // fix: ie8 req state error
+                        window.XDomainRequest && (req.xhr.readyState = 2)
+>>>>>>> origin/2.0
                         req.xhr.send(req.data);
                     };
 

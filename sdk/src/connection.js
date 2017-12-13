@@ -8,6 +8,7 @@ var Queue = require('./queue').Queue;
 var CryptoJS = require('crypto-js');
 var _ = require('underscore');
 
+<<<<<<< HEAD
 window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 if (window.XDomainRequest) {
@@ -16,6 +17,24 @@ if (window.XDomainRequest) {
         XDomainRequest.prototype.oldsend.apply(this, arguments);
         this.readyState = 2;
     };
+=======
+var Strophe = window.Strophe;
+var isStropheLog;
+
+window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+var logMessage = function (message) {
+};
+
+if (window.XDomainRequest) {
+    // not support ie8 send is not a function , canot 
+    // case send is object, doesn't has a attr of call
+    // XDomainRequest.prototype.oldsend = XDomainRequest.prototype.send;
+    // XDomainRequest.prototype.send = function () {
+    //     XDomainRequest.prototype.oldsend.call(this, arguments);
+    //     this.readyState = 2;
+    // };
+>>>>>>> origin/2.0
 }
 
 Strophe.Request.prototype._newXHR = function () {
@@ -42,13 +61,73 @@ Strophe.Websocket.prototype._closeSocket = function () {
     }
 };
 
+<<<<<<< HEAD
+=======
+/** Function: log
+ *  User overrideable logging function.
+ *
+ *  This function is called whenever the Strophe library calls any
+ *  of the logging functions.  The default implementation of this
+ *  function does nothing.  If client code wishes to handle the logging
+ *  messages, it should override this with
+ *  > Strophe.log = function (level, msg) {
+     *  >   (user code here)
+     *  > };
+ *
+ *  Please note that data sent and received over the wire is logged
+ *  via Strophe.Connection.rawInput() and Strophe.Connection.rawOutput().
+ *
+ *  The different levels and their meanings are
+ *
+ *    DEBUG - Messages useful for debugging purposes.
+ *    INFO - Informational messages.  This is mostly information like
+ *      'disconnect was called' or 'SASL auth succeeded'.
+ *    WARN - Warnings about potential problems.  This is mostly used
+ *      to report transient connection errors like request timeouts.
+ *    ERROR - Some error occurred.
+ *    FATAL - A non-recoverable fatal error occurred.
+ *
+ *  Parameters:
+ *    (Integer) level - The log level of the log message.  This will
+ *      be one of the values in Strophe.LogLevel.
+ *    (String) msg - The log message.
+ */
+/* jshint ignore:start */
+Strophe.log =  function (level, msg) {
+    if(!isStropheLog){
+        return
+    }
+    switch(level){
+        case this.LogLevel.DEBUG:
+            console.debug(msg)
+            break;
+        case this.LogLevel.INFO:
+            console.info(msg);
+            break;
+        case this.LogLevel.WARN:
+            console.warn(msg);
+            break;
+        case this.LogLevel.ERROR:
+        case this.LogLevel.FATAL:
+            console.error(msg);
+            break;
+        default:
+            console.log(msg);
+    }
+    return;
+}
+>>>>>>> origin/2.0
 
 /**
  *
  * Strophe.Websocket has a bug while logout:
  * 1.send: <presence xmlns='jabber:client' type='unavailable'/> is ok;
  * 2.send: <close xmlns='urn:ietf:params:xml:ns:xmpp-framing'/> will cause a problem,log as follows:
+<<<<<<< HEAD
  * WebSocket connection to 'ws://im-api.hyphenate.io/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+=======
+ * WebSocket connection to 'ws://im-api.easemob.com/ws/' failed: Data frame received after close_connect @ strophe.js:5292connect @ strophe.js:2491_login @ websdk-1.1.2.js:278suc @ websdk-1.1.2.js:636xhr.onreadystatechange @ websdk-1.1.2.js:2582
+>>>>>>> origin/2.0
  * 3 "Websocket error [object Event]"
  * _changeConnectStatus
  * onError Object {type: 7, msg: "The WebSocket connection could not be established or was disconnected.", reconnect: true}
@@ -248,7 +327,11 @@ var _parseNameFromJidFn = function (jid, domain) {
 };
 
 var _parseFriend = function (queryTag, conn, from) {
+<<<<<<< HEAD
     var roster = [];
+=======
+    var rouster = [];
+>>>>>>> origin/2.0
     var items = queryTag.getElementsByTagName('item');
     if (items) {
         for (var i = 0; i < items.length; i++) {
@@ -278,7 +361,11 @@ var _parseFriend = function (queryTag, conn, from) {
                 groups.push(Strophe.getText(group));
             });
             friend.groups = groups;
+<<<<<<< HEAD
             roster.push(friend);
+=======
+            rouster.push(friend);
+>>>>>>> origin/2.0
             // after B agreed -> B subscribes A
             // fix: 含有ask标示的好友代表已经发送过反向订阅消息，不需要再次发送。
             if (conn && (subscription == 'from') && !ask) {
@@ -294,7 +381,11 @@ var _parseFriend = function (queryTag, conn, from) {
             }
         }
     }
+<<<<<<< HEAD
     return roster;
+=======
+    return rouster;
+>>>>>>> origin/2.0
 };
 
 var _login = function (options, conn) {
@@ -311,7 +402,12 @@ var _login = function (options, conn) {
     conn.context.accessTokenExpires = options.expires_in;
     var stropheConn = null;
     if (conn.isOpening() && conn.context.stropheConn) {
+<<<<<<< HEAD
         stropheConn = conn.context.stropheConn;
+=======
+        // stropheConn = conn.context.stropheConn;
+        stropheConn = conn.getStrophe();
+>>>>>>> origin/2.0
     } else if (conn.isOpened() && conn.context.stropheConn) {
         // return;
         stropheConn = conn.getStrophe();
@@ -350,7 +446,11 @@ var _parseMessageType = function (msginfo) {
 
     } else if (deliveryinfo && deliveryinfo.length > 0) {
 
+<<<<<<< HEAD
         msgtype = 'delivery';           // message delivered
+=======
+        msgtype = 'delivery';           // message delivered to server
+>>>>>>> origin/2.0
 
     } else if (acked && acked.length) {
 
@@ -639,7 +739,11 @@ var _getXmppUrl = function (baseUrl, https) {
 };
 
 
+<<<<<<< HEAD
 // class
+=======
+//class
+>>>>>>> origin/2.0
 var connection = function (options) {
     if (!this instanceof connection) {
         return new connection(options);
@@ -655,7 +759,11 @@ var connection = function (options) {
     this.url = _getXmppUrl(options.url, this.https);
     this.hold = options.hold || 1;
     this.route = options.route || null;
+<<<<<<< HEAD
     this.domain = options.domain || 'easemob.com';
+=======
+    this.domain = options.domain || 'hyphneate.io';
+>>>>>>> origin/2.0
     this.inactivity = options.inactivity || 30;
     this.heartBeatWait = options.heartBeatWait || 4500;
     this.maxRetries = options.maxRetries || 5;
@@ -688,6 +796,12 @@ var connection = function (options) {
     this.xmppTotal = 0;    //max number of creating xmpp server connection(ws/bosh) retries
 
     this.groupOption = {};
+<<<<<<< HEAD
+=======
+    
+    // global params
+    isStropheLog = options.isStropheLog || false;
+>>>>>>> origin/2.0
 };
 
 connection.prototype.registerUser = function (options) {
@@ -737,8 +851,16 @@ connection.prototype.listen = function (options) {
     _listenNetwork(this.onOnline, this.onOffline);
 };
 
+<<<<<<< HEAD
 //webrtc需要强制心跳，加个默认为false的参数 向下兼容
 connection.prototype.heartBeat = function (forcing = false) {
+=======
+// webrtc requires forced heartbeat and default false for backward compability
+connection.prototype.heartBeat = function (forcing) {
+    if (forcing !== true) {
+        forcing = false;
+    }
+>>>>>>> origin/2.0
     var me = this;
     //IE8: strophe auto switch from ws to BOSH, need heartbeat
     var isNeed = !/^ws|wss/.test(me.url) || /mobile/.test(navigator.userAgent);
@@ -752,7 +874,12 @@ connection.prototype.heartBeat = function (forcing = false) {
         type: 'normal'
     };
     this.heartBeatID = setInterval(function () {
+<<<<<<< HEAD
         me.ping(options);
+=======
+        // fix: do heartbeat only when websocket 
+        _utils.isSupportWss && me.ping(options);
+>>>>>>> origin/2.0
     }, this.heartBeatWait);
 };
 
@@ -1137,7 +1264,11 @@ connection.prototype.notifyVersion = function (suc, fail) {
     })
         .c('query', {xmlns: 'jabber:iq:version'})
         .c('name')
+<<<<<<< HEAD
         .t('hyphenate')
+=======
+        .t('easemob')
+>>>>>>> origin/2.0
         .up()
         .c('version')
         .t(_version)
@@ -1246,6 +1377,7 @@ connection.prototype.handlePresence = function (msginfo) {
     var x = msginfo.getElementsByTagName('x');
     if (x && x.length > 0) {
         // 加群申请
+<<<<<<< HEAD
         var apply = x[0].getElementsByTagName('apply');
         // 加群成功
         var accept = x[0].getElementsByTagName('accept');
@@ -1260,6 +1392,30 @@ connection.prototype.handlePresence = function (msginfo) {
         // 被禁言
         var addMute = x[0].getElementsByTagName('add_mute');
         // 取消禁言
+=======
+        // request to join group
+        var apply = x[0].getElementsByTagName('apply');
+        // 加群成功
+        // join group successfully
+        var accept = x[0].getElementsByTagName('accept');
+        // 同意加群后用户进群通知
+        // user joining group request accepted
+        var item = x[0].getElementsByTagName('item');
+        // 加群被拒绝
+        // user joining group request declined
+        var decline = x[0].getElementsByTagName('decline');
+        // 被设为管理员
+        // user added to group admin
+        var addAdmin = x[0].getElementsByTagName('add_admin');
+        // 被取消管理员
+        // user removed from group admin
+        var removeAdmin = x[0].getElementsByTagName('remove_admin');
+        // 被禁言
+        // user is muted from group
+        var addMute = x[0].getElementsByTagName('add_mute');
+        // 取消禁言
+        // user is unmuted from group
+>>>>>>> origin/2.0
         var removeMute = x[0].getElementsByTagName('remove_mute');
 
         if (apply && apply.length > 0) {
@@ -1282,6 +1438,16 @@ connection.prototype.handlePresence = function (msginfo) {
                 info.mid = info.fromJid.split('/');
                 info.mid = info.mid[info.mid.length - 1];
                 info.type = 'memberJoinPublicGroupSuccess';
+<<<<<<< HEAD
+=======
+                var roomtype = msginfo.getElementsByTagName('roomtype');
+                if (roomtype && roomtype.length > 0) {
+                    var type = roomtype[0].getAttribute('type');
+                    if (type == 'chatroom') {
+                        info.type = 'memberJoinChatRoomSuccess';
+                    }
+                }
+>>>>>>> origin/2.0
             }
         } else if (decline && decline.length) {
             isDecline = true;
@@ -1695,10 +1861,14 @@ connection.prototype.handleDeliveredMessage = function (message) {
     var id = message.id;
     var body = message.getElementsByTagName('body');
     var mid = 0;
+<<<<<<< HEAD
     if (isNaN(body[0].innerHTML))
         mid = body[1].innerHTML;
     else
         mid = body[0].innerHTML;
+=======
+    mid = body[0].innerHTML;
+>>>>>>> origin/2.0
     var msg = {
         mid: mid
     };
@@ -1712,10 +1882,14 @@ connection.prototype.handleAckedMessage = function (message) {
     var id = message.id;
     var body = message.getElementsByTagName('body');
     var mid = 0;
+<<<<<<< HEAD
     if (isNaN(body[0].innerHTML))
         mid = body[1].innerHTML;
     else
         mid = body[0].innerHTML;
+=======
+    mid = body[0].innerHTML;
+>>>>>>> origin/2.0
     var msg = {
         mid: mid
     };
@@ -1943,6 +2117,7 @@ connection.prototype.getRoster = function (options) {
     var options = options || {};
     var suc = options.success || this.onRoster;
     var completeFn = function (ele) {
+<<<<<<< HEAD
         var roster = [];
         var msgBodies = ele.getElementsByTagName('query');
         if (msgBodies && msgBodies.length > 0) {
@@ -1950,6 +2125,15 @@ connection.prototype.getRoster = function (options) {
             roster = _parseFriend(queryTag);
         }
         suc(roster, ele);
+=======
+        var rouster = [];
+        var msgBodies = ele.getElementsByTagName('query');
+        if (msgBodies && msgBodies.length > 0) {
+            var queryTag = msgBodies[0];
+            rouster = _parseFriend(queryTag);
+        }
+        suc(rouster, ele);
+>>>>>>> origin/2.0
     };
     var error = options.error || this.onError;
     var failFn = function (ele) {
@@ -2378,7 +2562,11 @@ connection.prototype.joinChatRoom = function (options) {
         .c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'member', role: 'participant'})
         .up().up()
+<<<<<<< HEAD
         .c('roomtype', {xmlns: 'hyphenate:x:roomtype', type: 'chatroom'});
+=======
+        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+>>>>>>> origin/2.0
 
     this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
@@ -2402,7 +2590,11 @@ connection.prototype.quitChatRoom = function (options) {
         .c('x', {xmlns: Strophe.NS.MUC + '#user'})
         .c('item', {affiliation: 'none', role: 'none'})
         .up().up()
+<<<<<<< HEAD
         .c('roomtype', {xmlns: 'hyphenate:x:roomtype', type: 'chatroom'});
+=======
+        .c('roomtype', {xmlns: 'easemob:x:roomtype', type: 'chatroom'});
+>>>>>>> origin/2.0
 
     this.context.stropheConn.sendIQ(iq.tree(), suc, errorFn);
 };
@@ -2441,6 +2633,10 @@ connection.prototype._onReceiveInviteFromGroup = function (info) {
 
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2.0
 connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2451,6 +2647,10 @@ connection.prototype._onReceiveInviteAcceptionFromGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2.0
 connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2461,6 +2661,10 @@ connection.prototype._onReceiveInviteDeclineFromGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2.0
 connection.prototype._onAutoAcceptInvitationFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2481,6 +2685,10 @@ connection.prototype._onLeaveGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2.0
 connection.prototype._onReceiveJoinGroupApplication = function (info) {
     info = eval('(' + info + ')');
     var self = this;
@@ -2514,6 +2722,10 @@ connection.prototype._onReceiveJoinGroupApplication = function (info) {
     };
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2.0
 connection.prototype._onReceiveAcceptionFromGroup = function (info) {
     info = eval('(' + info + ')');
     var options = {
@@ -2524,6 +2736,10 @@ connection.prototype._onReceiveAcceptionFromGroup = function (info) {
     };
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/2.0
 connection.prototype._onReceiveRejectionFromGroup = function () {
     info = eval('(' + info + ')');
     var options = {
@@ -2534,12 +2750,24 @@ connection.prototype._onReceiveRejectionFromGroup = function () {
     };
     this.onConfirmPop(options);
 };
+<<<<<<< HEAD
 connection.prototype._onUpdateMyGroupList = function (options) {
     this.onUpdateMyGroupList(options);
 };
 connection.prototype._onUpdateMyRoster = function (options) {
     this.onUpdateMyRoster(options);
 };
+=======
+
+connection.prototype._onUpdateMyGroupList = function (options) {
+    this.onUpdateMyGroupList(options);
+};
+
+connection.prototype._onUpdateMyRoster = function (options) {
+    this.onUpdateMyRoster(options);
+};
+
+>>>>>>> origin/2.0
 connection.prototype.reconnect = function () {
     var that = this;
     setTimeout(function () {
@@ -2560,7 +2788,11 @@ connection.prototype.closed = function () {
 
 // used for blacklist
 function _parsePrivacy(iq) {
+<<<<<<< HEAD
     var list = [];
+=======
+    var list = {};
+>>>>>>> origin/2.0
     var items = iq.getElementsByTagName('item');
 
     if (items) {
@@ -2758,11 +2990,19 @@ connection.prototype.removeGroupMemberFromBlacklist = function (options) {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * changeGroupSubject 修改群名称
+>>>>>>> origin/2.0
  * changeGroupSubject update group subject
  *
  * @param options
  */
+<<<<<<< HEAD
 // <iq to='hyphenatedemo#chatdemoui_roomid@conference.hyphenate.io' type='set' id='3940489311' xmlns='jabber:client'>
+=======
+// <iq to='easemob-demo#chatdemoui_roomid@conference.easemob.com' type='set' id='3940489311' xmlns='jabber:client'>
+>>>>>>> origin/2.0
 //     <query xmlns='http://jabber.org/protocol/muc#owner'>
 //         <x type='submit' xmlns='jabber:x:data'>
 //             <field var='FORM_TYPE'><value>http://jabber.org/protocol/muc#roomconfig</value></field>
@@ -2802,14 +3042,25 @@ connection.prototype.changeGroupSubject = function (options) {
 };
 
 /**
+<<<<<<< HEAD
+=======
+ * destroyGroup 删除群组
+>>>>>>> origin/2.0
  * destroyGroup destroy group
  *
  * @param options
  */
+<<<<<<< HEAD
 // <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="hyphenatedemo#chatdemoui_1477462231499@conference.hyphenate.io" type="set">
 //     <query xmlns="http://jabber.org/protocol/muc#owner">
 //         <destroy>
 //             <reason>xxx destory group yyy</reason>
+=======
+// <iq id="9BEF5D20-841A-4048-B33A-F3F871120E58" to="easemob-demo#chatdemoui_1477462231499@conference.easemob.com" type="set">
+//     <query xmlns="http://jabber.org/protocol/muc#owner">
+//         <destroy>
+//             <reason>xxx destroy group yyy</reason>
+>>>>>>> origin/2.0
 //         </destroy>
 //     </query>
 // </iq>
@@ -2834,6 +3085,7 @@ connection.prototype.destroyGroup = function (options) {
 };
 
 /**
+<<<<<<< HEAD
  * leaveGroupBySelf user left the group voluntarily
  *
  * @param options
@@ -2841,6 +3093,16 @@ connection.prototype.destroyGroup = function (options) {
 // <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_hyphenate_occupants_change_affiliation" to="hyphenatedemo#chatdemoui_1477481609392@conference.hyphenate.io" type="set">
 //     <query xmlns="http://jabber.org/protocol/muc#admin">
 //         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
+=======
+ * leaveGroupBySelf 主动离开群组
+ * leaveGroupBySelf group member leaves the group voluntarily
+ *
+ * @param options
+ */
+// <iq id="5CD33172-7B62-41B7-98BC-CE6EF840C4F6_easemob_occupants_change_affiliation" to="easemob-demo#chatdemoui_1477481609392@conference.easemob.com" type="set">
+//     <query xmlns="http://jabber.org/protocol/muc#admin">
+//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+>>>>>>> origin/2.0
 //     </query>
 // </iq>
 // <presence to="easemob-demo#chatdemoui_1479811172349@conference.easemob.com/mt002" type="unavailable"/>
@@ -2872,6 +3134,7 @@ connection.prototype.leaveGroupBySelf = function (options) {
 };
 
 /**
+<<<<<<< HEAD
  * leaveGroup member removed from group by admin
  *
  * @param options
@@ -2882,6 +3145,19 @@ connection.prototype.leaveGroupBySelf = function (options) {
 //         <item jid="hyphenatedemo#chatdemoui_lwz4@hyphenate.io" role="none"/>
 //         <item affiliation="none" jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io"/>
 //         <item jid="hyphenatedemo#chatdemoui_lwz2@hyphenate.io" role="none"/>
+=======
+ * leaveGroup 被踢出群组
+ * leaveGroup group member dismissed from the group by admin
+ *
+ * @param options
+ */
+// <iq id="9fb25cf4-1183-43c9-961e-9df70e300de4:sendIQ" to="easemob-demo#chatdemoui_1477481597120@conference.easemob.com" type="set" xmlns="jabber:client">
+//     <query xmlns="http://jabber.org/protocol/muc#admin">
+//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz4@easemob.com"/>
+//         <item jid="easemob-demo#chatdemoui_lwz4@easemob.com" role="none"/>
+//         <item affiliation="none" jid="easemob-demo#chatdemoui_lwz2@easemob.com"/>
+//         <item jid="easemob-demo#chatdemoui_lwz2@easemob.com" role="none"/>
+>>>>>>> origin/2.0
 //     </query>
 // </iq>
 connection.prototype.leaveGroup = function (options) {
@@ -2916,6 +3192,7 @@ connection.prototype.leaveGroup = function (options) {
 };
 
 /**
+<<<<<<< HEAD
  * addGroupMembers add group member
  *
  * @param options
@@ -2933,6 +3210,29 @@ connection.prototype.leaveGroup = function (options) {
  <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_hyphenate_occupants_change_affiliation' to='hyphenatedemo#chatdemoui_1477482739698@conference.hyphenate.io' type='set'>
  <query xmlns='http://jabber.org/protocol/muc#admin'>
  <item affiliation='member' jid='hyphenatedemo#chatdemoui_lwz2@hyphenate.io'/>
+=======
+ * addGroupMembers 添加群组成员
+ * addGroupMembers add user to group
+ *
+ * @param options
+
+ Attention the sequence: message first (每个成员单独发一条message), iq second (多个成员可以合成一条iq发)
+ <!-- 添加成员通知：send -->
+ Attention the sequence: message first (send a message to individual group member), iq second (send one iq for multiple members at the same time)
+ <!-- notification when new group member added: send -->
+ <message to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com'>
+ <x xmlns='http://jabber.org/protocol/muc#user'>
+ <invite to='easemob-demo#chatdemoui_lwz2@easemob.com'>
+ <reason>apple invites you to join group 'thanks'</reason>
+ </invite>
+ </x>
+ </message>
+ <!-- 添加成员：send -->
+ <!-- add group member：send -->
+ <iq id='09DFB1E5-C939-4C43-B5A7-8000DA0E3B73_easemob_occupants_change_affiliation' to='easemob-demo#chatdemoui_1477482739698@conference.easemob.com' type='set'>
+ <query xmlns='http://jabber.org/protocol/muc#admin'>
+ <item affiliation='member' jid='easemob-demo#chatdemoui_lwz2@easemob.com'/>
+>>>>>>> origin/2.0
  </query>
  </iq>
  */
@@ -2977,7 +3277,12 @@ connection.prototype.addGroupMembers = function (options) {
 };
 
 /**
+<<<<<<< HEAD
  * acceptInviteFromGroup accept group invitation
+=======
+ * acceptInviteFromGroup 接受加入申请
+ * acceptInviteFromGroup accept joining group invitation
+>>>>>>> origin/2.0
  *
  * @param options
  */
@@ -2990,6 +3295,7 @@ connection.prototype.acceptInviteFromGroup = function (options) {
 };
 
 /**
+<<<<<<< HEAD
  * rejectInviteFromGroup decline group invitation
  *
  * ignore request for now, not processing it
@@ -2997,6 +3303,17 @@ connection.prototype.acceptInviteFromGroup = function (options) {
  <message to='hyphenatedemo#chatdemoui_mt002@hyphenate.io' from='hyphenatedemo#chatdemoui_mt001@hyphenate.io' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
  <x xmlns='http://jabber.org/protocol/muc#user'>
  <apply to='hyphenatedemo#chatdemoui_groupid1@conference.hyphenate.io' from='easmeob-demo#chatdemoui_mt001@hyphenate.io' toNick='llllll'>
+=======
+ * rejectInviteFromGroup 拒绝入群申请
+ * rejectInviteFromGroup reject joining group invitation
+ *
+ * throw request for now 暂时不处理，直接丢弃
+ * throw request for now (currently not handled, but discarded)
+ *
+ <message to='easemob-demo#chatdemoui_mt002@easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' id='B83B7210-BCFF-4DEE-AB28-B9FE5579C1E2'>
+ <x xmlns='http://jabber.org/protocol/muc#user'>
+ <apply to='easemob-demo#chatdemoui_groupid1@conference.easemob.com' from='easmeob-demo#chatdemoui_mt001@easemob.com' toNick='llllll'>
+>>>>>>> origin/2.0
  <reason>reject</reason>
  </apply>
  </x>
@@ -3021,7 +3338,11 @@ connection.prototype.rejectInviteFromGroup = function (options) {
 };
 
 connection.prototype.createGroupAsync = function (p) {
+<<<<<<< HEAD
     var roomId = p.from
+=======
+    var roomId = p.from;
+>>>>>>> origin/2.0
     var me = this;
     var toRoom = this._getGroupJid(roomId);
     var to = toRoom + '/' + this.context.userId;
@@ -3117,8 +3438,19 @@ connection.prototype.createGroupAsync = function (p) {
 };
 
 /**
+<<<<<<< HEAD
  * createGroup create group
  *
+=======
+ * createGroup 创建群组
+ * createGroup create group
+ *
+ * 1. 创建申请 -> 得到房主身份
+ * 2. 获取房主信息 -> 得到房间form
+ * 3. 完善房间form -> 创建成功
+ * 4. 添加房间成员
+ * 5. 消息通知成员
+>>>>>>> origin/2.0
  * 1. create group request -> obtain group admin
  * 2. obtain group admin info -> obtain group form
  * 3. complete group form -> group created successfully
@@ -3139,7 +3471,13 @@ connection.prototype.createGroup = function (options) {
     // createGroupACK
     this.sendCommand(pres.tree());
 };
+<<<<<<< HEAD
 // 通过Rest接口创建群组
+=======
+
+// 通过Rest接口创建群组
+// create group via REST API
+>>>>>>> origin/2.0
 connection.prototype.createGroupNew = function (opt) {
     opt.data.owner = this.user;
     var options = {
@@ -3162,11 +3500,19 @@ connection.prototype.createGroupNew = function (opt) {
 
 /**
  * shieldGroup 屏蔽群组
+<<<<<<< HEAD
+=======
+ * shieldGroup shield group
+>>>>>>> origin/2.0
  * @param valueDom
  * @param v
  * @private
  */
 // 通过Rest屏蔽群组
+<<<<<<< HEAD
+=======
+// shield the group via REST API
+>>>>>>> origin/2.0
 connection.prototype.blockGroup = function (opt) {
     var groupId = opt.groupId;
     groupId = 'notification_ignore_' + groupId;
@@ -3189,7 +3535,13 @@ connection.prototype.blockGroup = function (opt) {
     options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
+<<<<<<< HEAD
 // 通过Rest发出入群申请
+=======
+
+// 通过Rest发出入群申请
+// request to join group via REST API
+>>>>>>> origin/2.0
 connection.prototype.joinGroup = function (opt) {
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/'
@@ -3205,13 +3557,26 @@ connection.prototype.joinGroup = function (opt) {
     options.error = opt.error || _utils.emptyfn;
     WebIM.utils.ajax(options);
 };
+<<<<<<< HEAD
 // 通过Rest获取群组列表
+=======
+
+// 通过Rest获取群组列表
+// get a list of public group via REST API
+>>>>>>> origin/2.0
 connection.prototype.listGroups = function (opt) {
     var requestData = [];
     requestData['limit'] = opt.limit;
     requestData['cursor'] = opt.cursor;
     if (!requestData['cursor'])
         delete requestData['cursor'];
+<<<<<<< HEAD
+=======
+    if (isNaN(opt.limit)) {
+        throw 'The parameter \"limit\" should be a number';
+        return;
+    }
+>>>>>>> origin/2.0
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/publicchatgroups',
         type: 'GET',
@@ -3228,6 +3593,10 @@ connection.prototype.listGroups = function (opt) {
 };
 
 // 通过Rest根据groupid获取群组详情
+<<<<<<< HEAD
+=======
+// get group info by group id via REST API
+>>>>>>> origin/2.0
 connection.prototype.getGroupInfo = function (opt) {
     var options = {
         url: this.apiUrl + '/' + this.orgName + '/' + this.appName + '/chatgroups/' + opt.groupId,
@@ -3244,6 +3613,10 @@ connection.prototype.getGroupInfo = function (opt) {
 };
 
 // 通过Rest列出某用户所加入的所有群组
+<<<<<<< HEAD
+=======
+// get a list of all the groups of the user joined via REST API
+>>>>>>> origin/2.0
 connection.prototype.getGroup = function (opt) {
     var options = {
         url: this.apiUrl + '/' + this.orgName +
@@ -3262,7 +3635,22 @@ connection.prototype.getGroup = function (opt) {
 };
 
 // 通过Rest列出群组的所有成员
+<<<<<<< HEAD
 connection.prototype.listGroupMember = function (opt) {
+=======
+// get a list of all the group members of the group via REST API
+connection.prototype.listGroupMember = function (opt) {
+    if (isNaN(opt.pageNum) || opt.pageNum <= 0) {
+        throw 'The parameter \"pageNum\" should be a positive number';
+        return;
+    } else if (isNaN(opt.pageSize) || opt.pageSize <= 0) {
+        throw 'The parameter \"pageSize\" should be a positive number';
+        return;
+    } else if (opt.groupId === null && typeof opt.groupId === 'undefined') {
+        throw 'The parameter \"groupId\" should be added';
+        return;
+    }
+>>>>>>> origin/2.0
     var requestData = [],
         groupId = opt.groupId;
     requestData['pagenum'] = opt.pageNum;
@@ -3284,6 +3672,10 @@ connection.prototype.listGroupMember = function (opt) {
 };
 
 // 通过Rest禁止群用户发言
+<<<<<<< HEAD
+=======
+// mute the group member from talking via REST API
+>>>>>>> origin/2.0
 connection.prototype.mute = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3306,7 +3698,12 @@ connection.prototype.mute = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+<<<<<<< HEAD
 // 通过Rest取消对用户禁言的禁止
+=======
+// 通过Rest取消对用户禁言
+// unmute the group member form talking via REST API
+>>>>>>> origin/2.0
 connection.prototype.removeMute = function (opt) {
     var groupId = opt.groupId,
         username = opt.username;
@@ -3326,6 +3723,10 @@ connection.prototype.removeMute = function (opt) {
 };
 
 // 通过Rest获取群组下所有管理员
+<<<<<<< HEAD
+=======
+// get a list of group admin of the group via REST API
+>>>>>>> origin/2.0
 connection.prototype.getGroupAdmin = function (opt) {
     var groupId = opt.groupId;
     var options = {
@@ -3344,6 +3745,10 @@ connection.prototype.getGroupAdmin = function (opt) {
 };
 
 // 通过Rest获取群组下所有被禁言成员
+<<<<<<< HEAD
+=======
+// get a list of all the muted group members of the group via REST API
+>>>>>>> origin/2.0
 connection.prototype.getMuted = function (opt) {
     var groupId = opt.groupId;
     var options = {
@@ -3362,6 +3767,10 @@ connection.prototype.getMuted = function (opt) {
 };
 
 // 通过Rest设置群管理员
+<<<<<<< HEAD
+=======
+// add group admin for the group via REST API
+>>>>>>> origin/2.0
 connection.prototype.setAdmin = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3384,6 +3793,10 @@ connection.prototype.setAdmin = function (opt) {
 };
 
 // 通过Rest取消群管理员
+<<<<<<< HEAD
+=======
+// remove group admin of the group via REST API
+>>>>>>> origin/2.0
 connection.prototype.removeAdmin = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3403,8 +3816,13 @@ connection.prototype.removeAdmin = function (opt) {
 };
 
 // 通过Rest同意用户加入群
+<<<<<<< HEAD
 connection.prototype.agreeJoinGroup = function (opt) {
     console.log('Agree Join Group New');
+=======
+// accept user's join group request via REST API
+connection.prototype.agreeJoinGroup = function (opt) {
+>>>>>>> origin/2.0
     var groupId = opt.groupId,
         requestData = {
             "applicant": opt.applicant,
@@ -3428,6 +3846,10 @@ connection.prototype.agreeJoinGroup = function (opt) {
 };
 
 // 通过Rest拒绝用户加入群
+<<<<<<< HEAD
+=======
+// reject user's join group request via REST API
+>>>>>>> origin/2.0
 connection.prototype.rejectJoinGroup = function (opt) {
     var groupId = opt.groupId,
         requestData = {
@@ -3452,6 +3874,10 @@ connection.prototype.rejectJoinGroup = function (opt) {
 };
 
 // 通过Rest添加用户至群组黑名单(单个)
+<<<<<<< HEAD
+=======
+// Block a Group Member via REST API
+>>>>>>> origin/2.0
 connection.prototype.groupBlockSingle = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3472,6 +3898,10 @@ connection.prototype.groupBlockSingle = function (opt) {
 };
 
 // 通过Rest添加用户至群组黑名单(批量)
+<<<<<<< HEAD
+=======
+// Block Group Member(s) in batch via REST API
+>>>>>>> origin/2.0
 connection.prototype.groupBlockMulti = function (opt) {
     var groupId = opt.groupId,
         usernames = opt.usernames,
@@ -3496,6 +3926,10 @@ connection.prototype.groupBlockMulti = function (opt) {
 };
 
 // 通过Rest将用户从群黑名单移除（单个）
+<<<<<<< HEAD
+=======
+// Unblock a Group Member via REST API
+>>>>>>> origin/2.0
 connection.prototype.removeGroupBlockSingle = function (opt) {
     var groupId = opt.groupId,
         username = opt.username,
@@ -3516,6 +3950,10 @@ connection.prototype.removeGroupBlockSingle = function (opt) {
 };
 
 // 通过Rest将用户从群黑名单移除（批量）
+<<<<<<< HEAD
+=======
+// Unblock Group Member(s) in batch via REST API
+>>>>>>> origin/2.0
 connection.prototype.removeGroupBlockMulti = function (opt) {
     var groupId = opt.groupId,
         username = opt.username.join(','),
@@ -3535,6 +3973,152 @@ connection.prototype.removeGroupBlockMulti = function (opt) {
     WebIM.utils.ajax(options);
 };
 
+<<<<<<< HEAD
+=======
+// 通过Rest解散群组
+// destroy/dissolve group via REST API
+connection.prototype.dissolveGroup = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '?version=v3',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest获取群组
+// Get Blocked Members via REST API
+connection.prototype.getGroupBlacklistNew = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'blocks' + '/' + 'users',
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// 通过Rest离开群组
+// Remove a Member from the Group via REST API
+connection.prototype.quitGroup = function (opt) {
+    var groupId = opt.groupId,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'quit',
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// Update Group Details via REST API
+connection.prototype.modifyGroup = function (opt) {
+    var groupId = opt.groupId,
+        requestData = {
+            groupname: opt.groupName,
+            description: opt.description
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId,
+            type: 'PUT',
+            data: JSON.stringify(requestData),
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// Remove a Member from the Group via REST API
+connection.prototype.removeSingleGroupMember = function (opt) {
+    var groupId = opt.groupId,
+        username = opt.username,
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/'
+            + username,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// Remove Group Members in Batch
+connection.prototype.removeMultiGroupMember = function (opt) {
+    var groupId = opt.groupId,
+        users = opt.users.join(','),
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'users' + '/'
+            + users,
+            type: 'DELETE',
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+// Invite user to join the group
+connection.prototype.inviteToGroup = function (opt) {
+    var groupId = opt.groupId,
+        users = opt.users,
+        requestData = {
+            usernames: users
+        },
+        options = {
+            url: this.apiUrl + '/' + this.orgName + '/' + this.appName
+            + '/' + 'chatgroups' + '/' + groupId + '/' + 'invite',
+            type: 'POST',
+            data: JSON.stringify(requestData),
+            dataType: 'json',
+            headers: {
+                'Authorization': 'Bearer ' + this.token,
+                'Content-Type': 'application/json'
+            }
+        };
+    options.success = opt.success || _utils.emptyfn;
+    options.error = opt.error || _utils.emptyfn;
+    WebIM.utils.ajax(options);
+};
+
+>>>>>>> origin/2.0
 function _setText(valueDom, v) {
     if ('textContent' in valueDom) {
         valueDom.textContent = v;
@@ -3566,6 +4150,7 @@ WebIM.doQuery = function (str, suc, fail) {
 };
 
 /**************************** debug ****************************/
+<<<<<<< HEAD
 function logMessage(message) {
     WebIM && WebIM.config.isDebug && console.log(WebIM.utils.ts() + '[recv] ', message.data);
 }
@@ -3582,8 +4167,26 @@ if (WebIM && WebIM.config && WebIM.config.isSandBox) {
 }
 
 
+=======
+WebIM.debug = function (bool) {
+
+    logMessage = function (message) {
+        bool && console.log(WebIM.utils.ts() + '[recv] ', message.data);
+    }
+
+    Strophe.Connection.prototype.rawOutput = function (data) {
+        bool && console.log('%c ' + WebIM.utils.ts() + '[send] ' + data, "background-color: #e2f7da");
+    }
+
+}
+
+>>>>>>> origin/2.0
 module.exports = WebIM;
 
 if (module.hot) {
     module.hot.accept();
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/2.0

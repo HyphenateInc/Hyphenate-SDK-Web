@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+;
+>>>>>>> origin/2.0
 (function () {
 
     var EMPTYFN = function () {
@@ -564,6 +568,11 @@
 
             var formData = new FormData();
             formData.append('file', options.file.data);
+<<<<<<< HEAD
+=======
+            // fix: ie8 status error
+            window.XDomainRequest && (xhr.readyState = 2);
+>>>>>>> origin/2.0
             xhr.send(formData);
         },
 
@@ -647,6 +656,11 @@
                     xhr.setRequestHeader(key, innerHeaer[key]);
                 }
             }
+<<<<<<< HEAD
+=======
+            // fix: ie8 status error
+            window.XDomainRequest && (xhr.readyState = 2);
+>>>>>>> origin/2.0
             xhr.send(null);
         },
 
@@ -741,6 +755,7 @@
             };
         },
 
+<<<<<<< HEAD
         parseUri: function(){
             var pattern = /([^\?|&])\w+=([^&]+)/g;
             var uri = {};
@@ -751,6 +766,34 @@
                     var eq = str.indexOf('=');
                     var key = str.substr(0, eq);
                     var value = str.substr(eq+1);
+=======
+        parseUri: function () {
+            var pattern = /([^\?|&])\w+=([^&]+)/g;
+            var uri = {};
+            if (window.location.search) {
+                var args = window.location.search.match(pattern);
+                for (var i in args) {
+                    var str = args[i];
+                    var eq = str.indexOf('=');
+                    var key = str.substr(0, eq);
+                    var value = str.substr(eq + 1);
+                    uri[key] = value;
+                }
+            }
+            return uri;
+        },
+
+        parseHrefHash: function () {
+            var pattern = /([^\#|&])\w+=([^&]+)/g;
+            var uri = {};
+            if (window.location.hash) {
+                var args = window.location.hash.match(pattern);
+                for (var i in args) {
+                    var str = args[i];
+                    var eq = str.indexOf('=');
+                    var key = str.substr(0, eq);
+                    var value = str.substr(eq + 1);
+>>>>>>> origin/2.0
                     uri[key] = value;
                 }
             }
@@ -848,7 +891,11 @@
                 data = null;
                 tempData = null;
             }
+<<<<<<< HEAD
             xhr.open(type, options.url);
+=======
+            xhr.open(type, options.url, utils.isCanSetRequestHeader);
+>>>>>>> origin/2.0
 
             if (utils.isCanSetRequestHeader) {
                 var headers = options.headers || {};
@@ -858,15 +905,26 @@
                     }
                 }
             }
+<<<<<<< HEAD
 
+=======
+            // fix: ie8 status error
+            window.XDomainRequest && (xhr.readyState = 2)
+>>>>>>> origin/2.0
             xhr.send(data);
             return xhr;
         },
         ts: function () {
             var d = new Date();
+<<<<<<< HEAD
             var Hours = d.getHours();     // get current hour (0-23)
             var Minutes = d.getMinutes(); // get current min (0-59)
             var Seconds = d.getSeconds(); // get current sec(0-59)
+=======
+            var Hours = d.getHours();               // get current hour (0-23)
+            var Minutes = d.getMinutes();           // get current min (0-59)
+            var Seconds = d.getSeconds();           // get current sec(0-59)
+>>>>>>> origin/2.0
             var Milliseconds = d.getMilliseconds(); // get current ms
             return (Hours < 10 ? "0" + Hours : Hours) + ':' + (Minutes < 10 ? "0" + Minutes : Minutes) + ':' + (Seconds < 10 ? "0" + Seconds : Seconds) + ':' + Milliseconds + ' ';
         },

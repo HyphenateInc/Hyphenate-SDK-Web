@@ -6,8 +6,13 @@ let version = packageJson.version
 
 var gulp = require('gulp')
 var webpack = require('webpack-stream')
+<<<<<<< HEAD
 var mocha = require('gulp-mocha')   // For unit test
 var babel = require('gulp-babel')   // For turn ES6 into ES5
+=======
+var mocha = require('gulp-mocha')   // unit testing
+var babel = require('gulp-babel')   // conversation to ES6 from ES5
+>>>>>>> origin/2.0
 // var browserify = require('browserify');
 // var source = require('vinyl-source-stream');
 // var buffer = require('vinyl-buffer');
@@ -50,3 +55,11 @@ gulp.task('sdk', ['sdk:umd', 'sdk:umd:min'])
 
 gulp.task('default', ['sdk'])
 
+<<<<<<< HEAD
+=======
+//
+// gulp.task('watch', function() {
+//     livereload.listen(); // use listen() method
+//     gulp.watch('less/*.less', ['less']);
+// });
+>>>>>>> origin/2.0

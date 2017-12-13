@@ -39,7 +39,11 @@ var _Call = {
         var self = this;
 
         if (typeof self.connection === "undefined") {
+<<<<<<< HEAD
             throw "Caller need a instance of Hyphenate.im.Connection"
+=======
+            throw "Caller need a instance of Easemob.im.Connection"
+>>>>>>> origin/2.0
         }
 
         self.api = self.api || new Api({

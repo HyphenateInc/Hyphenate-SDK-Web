@@ -1,10 +1,23 @@
+<<<<<<< HEAD
 (function () {
+=======
+;(function () {
+>>>>>>> origin/2.0
     function Array_h(length) {
         this.array = length === undefined ? [] : new Array(length);
     }
 
     Array_h.prototype = {
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 返回数组长度
+         *
+         * @return {Number} length [数组长度]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * return length of array
          *
          * @return {Number} length [length of array]
@@ -22,6 +35,16 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 向数组的末尾添加一个或多个元素，并返回新的长度。
+         *
+         * @param  {*} obj [description]
+         * @return {Number} length [新数组的长度]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * add object to the end of array, and return length of array
          *
          * @param  {*} obj [description]
@@ -32,6 +55,17 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 返回数组中选定的元素
+         *
+         * @param  {Number} start [开始索引值]
+         * @param  {Number} end [结束索引值]
+         * @return {Array} newArray  [新的数组]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * return selected range of object in array
          *
          * @param  {Number} start [start index]
@@ -61,6 +95,15 @@
     };
 
     /**
+<<<<<<< HEAD
+=======
+     * \~chinese
+     * 先进先出队列 (First Input First Output)
+     *
+     * 一种先进先出的数据缓存器
+     *
+     * \~english
+>>>>>>> origin/2.0
      * First Input First Output
      *
      * FIFO buffer
@@ -73,6 +116,16 @@
         _index: 0,
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 排队
+         *
+         * @param  {Object} obj [description]
+         * @return {[type]}     [description]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * queue
          *
          * @param  {Object} obj [description]
@@ -83,6 +136,15 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 出队
+         *
+         * @return {Object} [description]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * dequeue
          *
          * @return {Object} [description]
@@ -100,6 +162,15 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 返回队列中头部(即最新添加的)的动态对象
+         *
+         * @return {Object} [description]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * return the latest added object of the array (last object in array)
          *
          * @return {Object} [description]
@@ -113,6 +184,15 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 返回队列中尾部(即最早添加的)的动态对象
+         *
+         * @return {Object} [description]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * return the oldest added object of the array
          *
          * @return {Object} [description]
@@ -126,6 +206,15 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 返回数据队列长度
+         *
+         * @return {Number} [description]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * return the length of the queue
          *
          * @return {Number} [description]
@@ -135,6 +224,15 @@
         },
 
         /**
+<<<<<<< HEAD
+=======
+         * \~chinese
+         * 队列是否为空
+         *
+         * @return {Boolean} [description]
+         *
+         * \~english
+>>>>>>> origin/2.0
          * if empty queue
          *
          * @return {Boolean} [description]

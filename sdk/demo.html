@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!--本Demo登陆测试帐号：mengyuanyuan，密码：123456, 测试对方账号：asdfghj，密码：123456-->
 <html>
 <head>
@@ -356,6 +357,385 @@
                 apiUrl: WebIM.config.apiURL,
                 file: file,
                 to: 'orange',
+=======
+<!--Demo testing account: apple, password: apple. account: orange, password: orange-->
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hyphenate web demo</title>
+    <script src="../demo/javascript/dist/webim.config.js"></script>
+    <script src="./dist/strophe-1.2.8.min.js"></script>
+    <script src="./dist/demo-1.4.11.js"></script>
+    <script src="../webrtc/dist/adapter.js"></script>
+    <script src="../webrtc/dist/webrtc-1.4.11.js"></script>
+
+    <!-- fix: ie8 upload -->
+    <script type='text/javascript' src='../ie8/swfupload/swfupload.js'></script>
+    <script type='text/javascript' src='../ie8/swfupload/swfupload.cookie.js'></script>
+    <script type='text/javascript' src='../ie8/swfupload/uploadShim.js'></script>
+</head>
+
+<body>
+    <h2>Text Box</h2>
+    <div>
+        <input type="text" id="text">
+    </div>
+    <h2>Private</h2>
+    <div>
+        <button id="register">Register</button>
+        <button id="privateText">PrivateText</button>
+        <button id="privateCmd">PrivateCmd</button>
+        <button id="logout">logout</button>
+        <button id="reConn">reConn</button>
+        <div>
+            <br> image: <input type="file" id="image">
+            <button id="privateImg">PrivateImg</button>
+        </div>
+        <br>
+        <video id="privateVideo" style="border: 1px solid black" autoplay controls></video>
+    </div>
+
+    <h2>ChatRoom</h2>
+    <div>
+        <button id="roomJoin">JoinRoom</button>
+        <button id="roomText">RoomText</button>
+        <button id="roomQuit">RoomQuit</button>
+        <button id="listChatRooms">ListChatRooms</button>
+    </div>
+
+    <h2>Group</h2>
+    <div>
+        <button id="groupCreate">GroupCreate</button>
+        <button id="groupText">GroupText</button>
+        <button id="groupMember">GroupMember</button>
+        <button id="queryGroupInfo">QueryGroupInfo</button>
+        <button id="leaveGroup">LeaveGroup</button>
+        <button id="addToGroupBlackList">AddToGroupBlackList</button>
+        <button id="listGroups">ListGroups</button>
+        <button id="changeGroupInfo">ChangeGroupInfo</button>
+        <button id="getGroupBlackList">GetGroupBlackList</button>
+        <button id="destroyGroup">DestroyGroup</button>
+        <button id="addGroupMembers">AddGroupMembers</button>
+        <button id="removeGroupMemberFromBlackList">RemoveGroupMemberFromBlackList</button>
+    </div>
+
+    <h3>Roasters</h3>
+    <div>
+        <button id="getRoasters">GetRoasters</button>
+        <button id="addFriends">AddFriends</button>
+        <button id="agreeFriends">AgreeFriends</button>
+        <button id="rejectFriends">RejectFriends</button>
+        <button id="removeRoster">RemoveRoster</button>
+        <button id="addToBlackList">AddToBlackList</button>
+        <button id="getBlackList">GetBlackList</button>
+        <button id="removeFromBlackList">RemoveFromBlackList</button>
+    </div>
+
+    <h3>WebRTC</h3>
+    <div>
+        <button id="rtCall">Call</button>
+        <button id="rtAcceptCall">AcceptCall</button>
+        <button id="rtEndCall">EndCall</button>
+        <button id="rtAudioCall">AudioCall</button>
+        <div>
+            <video id="video" style="border: 1px solid red" autoplay>
+
+            </video>
+            <video id="localVideo" style="border: 1px solid blue" autoplay>
+
+            </video>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Created by clock on 16-11-25.
+         */
+        var conn = {};
+        conn = new WebIM.connection({
+            isMultiLoginSessions: WebIM.config.isMultiLoginSessions,
+            https: typeof WebIM.config.https === 'boolean' ? WebIM.config.https : location.protocol ===
+                'https:',
+            url: WebIM.config.xmppURL,
+            isAutoLogin: true,
+            heartBeatWait: WebIM.config.heartBeatWait,
+            autoReconnectNumMax: WebIM.config.autoReconnectNumMax,
+            autoReconnectInterval: WebIM.config.autoReconnectInterval
+        });
+
+        // tips: ie8 support  fileInputId should match with the file in the document
+        WebIM.flashUpload = UploadShim({
+            fileInputId: 'image'
+        }, conn).flashUpload;
+
+
+        // callback listening
+        conn.listen({
+            onOpened: function (message) { // connection established callback. Can only send message if connection established
+                // If set isAutoLogin=false, then must re-login manually
+                // Manually login using conn.setPresence(); in this example, conn init has isAutoLogin=true so no need to call conn.setPresence();
+
+                console.log("%c [opened] connection established", "color: green")
+            },
+            onTextMessage: function (message) {
+                // process the message respect to its message.type. one-to-one chat, group chat, or chat room
+                console.log(message.type);
+                console.log('Text');
+            }, // text message received
+            onEmojiMessage: function (message) {
+                // If WebIM has Emoji property, then connection will translate the character string to corresponding emojin in WebIM.Emoji automatically
+                // the key-value structure is {type: 'emoji(or txt)', data:''}
+                // If type='emoji', data represent the path to emoji. If type='txt', data is text message
+                console.log('Emoji');
+                var data = message.data;
+                for (var i = 0, l = data.length; i < l; i++) {
+                    console.log(data[i]);
+                }
+            }, // Emoji message received
+            onPictureMessage: function (message) {
+                console.log('Picture');
+
+                var options = {
+                    url: message.url
+                };
+                options.onFileDownloadComplete = function () {
+                    // image downloading successfully
+                    console.log('Image download complete!');
+                };
+                options.onFileDownloadError = function () {
+                    // image downloading failed
+                    console.log('Image download failed!');
+                };
+                WebIM.utils.download.call(conn, options);
+
+            }, // image message received
+            onCmdMessage: function (message) {
+                console.log('CMD');
+            }, // command message received
+            onAudioMessage: function (message) {
+                console.log("Audio");
+            }, // audio message received
+            onLocationMessage: function (message) {
+                console.log("Location");
+            }, // location message received
+            onFileMessage: function (message) {
+                console.log("File");
+            }, // file received
+            onVideoMessage: function (message) {
+                var node = document.getElementById('privateVideo');
+                var option = {
+                    url: message.url,
+                    headers: {
+                        'Accept': 'audio/mp4'
+                    },
+                    onFileDownloadComplete: function (response) {
+                        var objectURL = WebIM.utils.parseDownloadResponse.call(conn, response);
+                        node.src = objectURL;
+                    },
+                    onFileDownloadError: function () {
+                        console.log('File down load error.')
+                    }
+                };
+                WebIM.utils.download.call(conn, option);
+            }, // video calling received
+            onPresence: function (message) {
+                switch (message.type) {
+                    case 'subscribe': // receiving user receives friend request
+                        // receiving user accepts friend request
+                        document.getElementById('agreeFriends').onclick = function (message) {
+                            conn.subscribed({
+                                to: 'asdfghj',
+                                message: "[resp:true]"
+                            });
+                            // need to send receiving user friend request
+                            conn.subscribe({
+                                to: message.from,
+                                message: "[resp:true]"
+                            });
+                        };
+                        // receiving user declines friend request
+                        document.getElementById('rejectFriends').onclick = function (message) {
+                            conn.unsubscribed({
+                                to: message.from,
+                                message: "message of rejecting friend request"
+                            });
+                        };
+
+                        break;
+                    case 'subscribed': // receiving user accepted friend request. requesting user accepts friend request
+                        break;
+                    case 'unsubscribe': // receiving user remove friend
+                        break;
+                    case 'unsubscribed': // receiving user declined friend request. requesting user declines friend request
+                        break;
+                    case 'joinChatRoomSuccess': // join chat room succeed
+                        console.log('join chat room success');
+                        break;
+                    case 'joinChatRoomFaild': // join chat room failed
+                        console.log('join chat room faild');
+                        break;
+                    case 'joinPublicGroupSuccess': // join public group succeed
+                        console.log('join public group success', message.from);
+                        break;
+                    case 'createGroupACK':
+                        conn.createGroupAsync({
+                            from: message.from,
+                            success: function (option) {
+                                console.log('Create Group Succeed');
+                            }
+                        });
+                        break;
+                }
+            }, // receive friend request, group and chat room related updates
+            onRoster: function (message) {
+                console.log('Roster');
+            }, // handle friend request
+            onInviteMessage: function (message) {
+                console.log('Invite');
+            }, // receive group invitation
+            onOnline: function () {
+                console.log('onLine');
+            }, // connection established
+            onOffline: function () {
+                console.log('offline');
+            }, // connection dropped
+            onError: function (message) {
+                console.log('Error');
+                console.log(message);
+                if (message && message.type == 1) {
+                    console.warn('Error: connection failed. Please make sure account is associated with API key')
+                }
+            }, // callback event failed
+            onBlacklistUpdate: function (list) {
+                // the following events will trigger the callback, query blacklist, add user to blacklist, remove user from blacklist. return the list of blacklist
+                console.log(list);
+            } // blacklist updated
+        });
+        // init WebRTC Call
+        var rtcCall = null
+        if (WebIM.WebRTC) {
+            rtcCall = new WebIM.WebRTC.Call({
+                connection: conn,
+
+                mediaStreamConstaints: {
+                    audio: true,
+                    video: true
+                },
+
+                listener: {
+                    onAcceptCall: function (from, options) {
+                        console.log('onAcceptCall::', 'from: ', from, 'options: ', options);
+                    },
+                    onGotRemoteStream: function (stream, streamType) {
+                        console.log('onGotRemoteStream::', 'stream: ', stream, 'streamType: ', streamType);
+                        var video = document.getElementById('video');
+                        video.srcObject = stream;
+                    },
+                    onGotLocalStream: function (stream, streamType) {
+                        console.log('onGotLocalStream::', 'stream:', stream, 'streamType: ', streamType);
+                        var video = document.getElementById('localVideo');
+                        video.srcObject = stream;
+                    },
+                    onRinging: function (caller) {
+                        console.log('onRinging::', 'caller:', caller);
+                    },
+                    onTermCall: function (reason) {
+                        console.log('onTermCall::');
+                        console.log('reason:', reason);
+                    },
+                    onIceConnectionStateChange: function (iceState) {
+                        console.log('onIceConnectionStateChange::', 'iceState:', iceState);
+                    },
+                    onError: function (e) {
+                        console.log(e);
+                    }
+                }
+            });
+        } else {
+            console.warn('Error: Cannot perform video calling. Please check if the current browser support webrtc or protocol is not using https')
+        }
+    </script>
+    <script>
+        // config
+        var options = {
+            apiUrl: WebIM.config.apiURL,
+            user: "apple",
+            pwd: "apple",
+            appKey: WebIM.config.appkey
+        };
+
+        var register = function () {
+            var option = {
+                username: 'orange',
+                password: 'orange',
+                nickname: 'orange is orange',
+                appKey: WebIM.config.appkey,
+                success: function () {
+                    console.log('registration successful');
+                },
+                error: function () {
+                    console.log('Error: Registration failed');
+                },
+                apiUrl: WebIM.config.apiURL
+            };
+            conn.signup(option);
+        };
+
+        /*
+         One-to-One Messaging
+         */
+
+        // Send a text message or emoji message. The characters associated with emoji will be translated to emoji automatically.
+        var sendPrivateText = function () {
+            var id = conn.getUniqueId();
+            var msg = new WebIM.message('txt', id);
+            msg.set({
+                msg: 'good morning!',                       // message content
+                to: 'orange',                               // receiver
+                roomType: false,
+                success: function (id, serverMsgId) {
+                    console.log("send private text Success");
+                }
+            });
+            msg.body.chatType = 'singleChat';
+            conn.send(msg.body);
+        };
+
+        // send command message
+        var sendPrivateCmd = function () {
+            var id = conn.getUniqueId();
+            var msg = new WebIM.message('cmd', id);
+            msg.set({
+                msg: 'ls',
+                to: 'asdfghj',
+                roomType: false,
+                success: function (id, serverMsgId) {
+                    console.log('CMD Success');
+                }
+            });
+            msg.body.chatType = 'singleChat';
+            conn.send(msg.body);
+        };
+
+        // send image message
+        var sendPrivateImg = function () {
+            var id = conn.getUniqueId();
+            var msg = new WebIM.message('img', id);
+            var input = document.getElementById('image');               // get image input
+            var file = WebIM.utils.getFileUrl(input);                   // convert image to binary file
+            var allowType = {
+                'jpg': true,
+                'gif': true,
+                'png': true,
+                'bmp': true
+            };
+
+            var option = {
+                apiUrl: WebIM.config.apiURL,
+                file: file,
+                to: 'asdfghj',
+>>>>>>> origin/2.0
                 roomType: false,
                 chatType: 'singleChat',
                 onFileUploadError: function () {
@@ -365,6 +745,7 @@
                     console.log('onFileUploadComplete');
                 },
                 success: function () {
+<<<<<<< HEAD
                     console.log('send image succeed');
                 },
             };
@@ -867,3 +1248,524 @@
 </script>
 </body>
 </html>
+=======
+                    console.log('Success');
+                },
+            };
+            // for ie8
+            try {
+                if (!file.filetype.toLowerCase() in allowType) {
+                    console.log('file type error')
+                    return
+                }
+            } catch (e) {
+                option.flashUpload = WebIM.flashUpload
+            }
+            msg.set(option);
+            conn.send(msg.body);
+        };
+
+        // get a list of friends (roster)
+        var getRoasters = function () {
+            var option = {
+                success: function (roster) {
+                    // roster is list of friends with following format
+                    /*
+                     [
+                     {
+                     jid:"hyphenatedemo#chatdemoui_test1@hyphenate.io",
+                     name:"orange",
+                     subscription: "both"
+                     // subscription with enum values{both, to, from, none},
+                     // both - users added each other as friend
+                     // to and from - pending definition
+                     // none - if user declined to be friend
+                     }
+                     ]
+                     */
+                    for (var o in roster) {
+                        console.log("jid: ", roster[o].jid);
+                        console.log("name: ", roster[o].name);
+                        console.log("subscription: ", roster[o].subscription);
+                    }
+                }
+            };
+            conn.getRoster(option);
+        };
+
+        // Add friend
+        var addFriends = function () {
+            conn.subscribe({
+                to: "asdfghj",
+                message: "Hello World!" // receiver won't see this message but part of status message
+            });
+        };
+
+        // remove friend
+        var removeFriends = function () {
+            conn.removeRoster({
+                to: 'asdfghj',
+                success: function () {
+                    conn.unsubscribed({
+                        to: 'asdfghj'
+                    });
+                },
+                error: function () {}
+            });
+        };
+
+        // If user A blocks user B, user A can still see user B, but user B is unable to sent message to user A.
+        // The structure of a list {username_1: {}, username_2: {} ...}. If you want to add user C to the blacklist already contains user A and B, then pass user A, B, and C to the function.
+        // If blacklist already contain users A and B. To add user C to blacklist, then pass all user A, B, and C's message to the function
+        /*
+         var list = {
+            username_1:{
+                jid: 'apiKey_'+username_1+'@hyphenate.io',
+                name: username_1,
+                subscription: 'both',
+                order: 2
+            },
+            username_2:{
+                jid: 'apiKey_'+username_2+'@hyphenate.io',
+                name: username_2,
+                subscription: 'both',
+                order: 3,
+                type: 'jid'
+            },
+            username_3:{
+                jid: 'apiKey_'+username_3+'@hyphenate.io',
+                name: username_3,
+                subscription: 'both',
+                order: 4,
+                type: 'jid'
+            }
+         }
+    // The parameters, jid, username, and subscription, will be obtained during getting contact list. User can obtain list of contact respect to the parameters above. However, do not repeat the parameter, `order`.
+
+         */
+        var addToBlackList = function () {
+            var list = {
+                // user_1
+                orange: {
+                    jid: "hyphenatedemo#chatdemoui_orange@hyphenate.io",
+                    name: "orange",
+                    subscription: 'both',
+                    order: 2,
+                    type: 'jid'
+                },
+                // user_2
+                apple: {
+                    jid: "hyphenatedemo#chatdemoui_apple@hyphenate.io",
+                    name: "apple",
+                    subscription: 'both',
+                    order: 3,
+                    type: 'jid'
+                }
+            };
+            conn.addToBlackList({
+                list: list,
+                type: 'jid',
+                success: function () {
+                    console.log('Add friend to blacklist success');
+                },
+                error: function () {
+                    console.log('Error: Add friend to blacklist');
+                }
+            });
+        }
+
+        // Use the function getBlacklist to get the blacklist. Once completed, expect to receive variable onBlacklistUpdate from callback function conn.listen. Please see [Basic Operations](doc:web-basic-operations) for further details.    var getBlackList = function () {
+        var getBlackList = function () {
+            conn.getBlacklist();
+        };
+
+        // remove user from blacklist
+        var removeBlackList = function () {
+            var list = {};
+            conn.removeFromBlackList({
+                list: list,
+                type: 'jid',
+                success: function () {
+                    console.log('Remove from black list success.');
+                },
+                error: function () {
+                    console.log('Remove from black list error.')
+                }
+            });
+        };
+
+        /*
+         Chat Room
+         */
+
+        // send text message
+        var sendRoomText = function () {
+            // leave chat room
+            var id = conn.getUniqueId();
+            var msg = new WebIM.message('txt', id);
+            var option = {
+                msg: 'good morning!',                       // message content
+                to: '114715680632209992',                   // receiver. chat room ID
+                roomType: true,
+                chatType: 'chatRoom',
+                success: function () {
+                    console.log('send room text success');
+                },
+                fail: function () {
+                    console.log('failed');
+                }
+            };
+            msg.set(option);
+            msg.setGroup('groupchat');
+            conn.send(msg.body);
+        };
+        // join chat room
+        var joinRoom = function () {
+            conn.joinChatRoom({
+                roomId: "114715680632209992"
+            });
+        };
+        // leave chat room
+        var quitRoom = function () {
+            conn.quitChatRoom({
+                roomId: "114715680632209992"
+            });
+        };
+        // list all the chat rooms with pagination
+        var listRooms = function () {
+            var option = {
+                apiUrl: 'https://api.hyphenate.io',
+                pagenum: 1,                                 // page index
+                pagesize: 20,                               // number of items on the page
+                success: function (list) {
+                    console.log(list);
+                },
+                error: function () {
+                    console.log('List chat room error');
+                }
+            };
+            conn.getChatRooms(option);
+        }
+
+        /*
+         Group Chat
+         */
+
+        // send message
+        var sendGroupText = function () {
+            var id = conn.getUniqueId();
+            var msg = new WebIM.message('txt', id);
+            var option = {
+                msg: 'good morning!',                       // message content
+                to: '1480567165764',                     	// receiver. group id.
+                roomType: false,
+                chatType: 'chatRoom',
+                success: function () {
+                    console.log('send room text success');
+                },
+                fail: function () {
+                    console.log('failed');
+                }
+            };
+            msg.set(option);
+            msg.setGroup('groupchat');
+            conn.send(msg.body);
+        };
+
+        // Create a group
+        var createGroup = function () {
+            var option = {
+                subject: 'groupName',                       // group name
+                description: 'create a group test',         // group description
+                members: ['apple', 'orange'],               // list to user to be added to group
+                optionsPublic: true,                        // allow any user to joing
+                optionsModerate: false,                     // require permission to join
+                optionsMembersOnly: false,                  // require invitation to join
+                optionsAllowInvites: false                  // allow member to invite
+            };
+            conn.createGroup(option);
+        }
+
+        // get group info (only for group admin)
+        var queryGroupInfo = function () {
+            conn.queryRoomInfo({
+                roomId: '1480747027186',
+                // settings
+                // members[0] including admin info with following format, {affiliation: "owner", jid: appKey + "_" + username + "@hyphenate.io"}
+                // username of jid is admin ID
+                // attributes：
+                /*
+                 {
+                 affiliations: "2",                  // number of all member in group, including admin and owner
+                 description: "12311231313",         // group description
+                 maxusers: "200",                    // max number of group member in group
+                 name: "123",                        // group name
+                 occupants: "2",                     // number of group members, exclude admin and owner
+                 owner: "hyphenatedemo#chatdemoui_mengyuanyuan"               // group admin jid
+                 }
+                 */
+                success: function (settings, members, fields) {
+                    console.log('settings: ', settings);
+                    console.log('members: ', members);
+                    console.log('fields: ', fields);
+                },
+                error: function (e) {
+                    console.log('Error!', e);
+                }
+            });
+        };
+
+        // group member leaves the group voluntarily
+        var leaveGroup = function () {
+            var option = {
+                to: 'asdfghj',
+                roomId: '1480747027186',
+                success: function () {
+                    console.log('You leave room succeed!');
+                },
+                error: function () {
+                    console.log('Leave room faild');
+                }
+            };
+            conn.leaveGroupBySelf(option);
+        };
+
+        // group member is removed from group and added to blacklist
+        var addToGroupBlackList = function () {
+            var option = {
+                affiliation: "owner", // 写死
+                roomId: "1480756943693", // 群组ID
+                success: function () {
+                    console.log('add to black list succeed');
+                },
+                to: 'asdfghj' // 需要删除的成员ID
+            };
+            conn.addToGroupBlackList(option);
+        };
+
+        // get a list of all groups
+        var listGroups = function () {
+            var option = {
+                success: function (rooms) {
+                    console.log(rooms);
+                },
+                error: function () {
+                    console.log('List chat rooms error');
+                }
+            };
+            conn.listRooms(option);
+        };
+
+        // update group info
+        var changeGroupInfo = function () {
+            var option = {
+                roomId: '1480756943693',
+                subject: 'ChangeTest',
+                description: 'Change group information test',
+                success: function () {
+                    console.log("Change Group Names Success!");
+                }
+            };
+            conn.changeGroupSubject(option);
+        };
+
+        // get group blacklist
+        var getGroupBlackList = function () {
+            var option = {
+                roomId: '1480758709661',
+                success: function (list) {
+                    console.log('Get group black list: ', list);
+                },
+                error: function () {
+                    console.log('Get group black list error.');
+                }
+            };
+            conn.getGroupBlacklist(option);
+        };
+
+        // dismiss a group, destroy a group
+        var destroyGroup = function () {
+            var option = {
+                reason: 'Test Destroy Group',
+                roomId: '1480840256052',
+                success: function () {
+                    console.log('Destroy group success!');
+                }
+            };
+            conn.destroyGroup(option);
+        };
+
+        // add group member
+        var addGroupMembers = function () {
+            var option = {
+                list: ['asdfghj', 'wjy6'],
+                roomId: '1480841456167'
+            };
+            conn.addGroupMembers(option);
+        };
+
+        // remove member from blacklist
+        var removeFromGroupBlackList = function () {
+            var option = {
+                roomId: '1480841456167',
+                to: 'wjy6',
+                success: function () {
+                    console.log('Remove from black list success!');
+                }
+            };
+            conn.removeGroupMemberFromBlacklist(option);
+        };
+
+        // get group member info (also for chat room)
+        // the response format of the inquery member is {affiliation: 'member', jid: "hyphenatedemo#chatdemoui_wjy6@hyphenate.io"}
+        // Note: jid format, user's username is appending after "chatdemoui_" and before "@hyphenate.io", in this case "wjy6"
+        var queryRoomMember = function () {
+            var member = '';
+            conn.queryRoomMember({
+                roomId: '114715680632209992',
+                success: function (members) {
+                    for (var o in members) {
+                        member = members[o];
+                        console.log(member);
+                    }
+                }
+            });
+        };
+
+        /*
+         * WebRTC
+         */
+        // video call
+        var call = function () {
+            rtcCall.caller = 'wenke123';
+            rtcCall.makeVideoCall('asdfghj');
+        };
+
+        // close or decline call
+        var endCall = function () {
+            rtcCall.endCall();
+        }
+
+        // accept call
+        var acceptCall = function () {
+            rtcCall.acceptCall();
+        }
+
+        // voice call
+        var audioCall = function () {
+            console.log('Audio Call');
+            rtcCall.caller = 'wenke123';
+            rtcCall.makeVoiceCall('asdfghj');
+        };
+
+        // logout
+        var logout = function () {
+            //        conn.clear();
+            conn.close('logout');
+            conn.errorType = WebIM.statusCode.WEBIM_CONNCTION_CLIENT_LOGOUT;
+        }
+
+		// connection options
+        var reConn = function () {
+            // appkey： hyphenatedemo#hyphenatedemo
+            // xmppURL: 'im-api.hyphenate.io',
+            // apiURL: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
+            // testing account：10vip5/123456 ,11vip5/123456
+            options = {
+                xmppURL: 'im-api.hyphenate.io',
+                apiUrl: (location.protocol === 'https:' ? 'https:' : 'http:') + '//api.hyphenate.io',
+                appKey: "hyphenatedemo#hyphenatedemo",
+                user: "apple",
+                pwd: "apple"
+            };
+            conn.open(options)
+        }
+    </script>
+    <script>
+        window.onload = function () {
+            document.getElementById('register').onclick = register;
+            document.getElementById('privateText').onclick = sendPrivateText;
+            document.getElementById('privateCmd').onclick = sendPrivateCmd;
+            document.getElementById('privateImg').onclick = sendPrivateImg;
+            document.getElementById('getBlackList').onclick = getBlackList;
+            document.getElementById('addToBlackList').onclick = addToBlackList;
+            document.getElementById('removeFromBlackList').onclick = removeBlackList;
+
+            document.getElementById('roomText').onclick = sendRoomText;
+            document.getElementById('roomJoin').onclick = joinRoom;
+            document.getElementById('roomQuit').onclick = quitRoom;
+            document.getElementById('listChatRooms').onclick = listRooms;
+
+            document.getElementById('groupText').onclick = sendGroupText;
+            document.getElementById('groupMember').onclick = queryRoomMember;
+            document.getElementById('groupCreate').onclick = createGroup;
+            document.getElementById('queryGroupInfo').onclick = queryGroupInfo;
+            document.getElementById('leaveGroup').onclick = leaveGroup;
+            document.getElementById('addToGroupBlackList').onclick = addToGroupBlackList;
+            document.getElementById('listGroups').onclick = listGroups;
+            document.getElementById('changeGroupInfo').onclick = changeGroupInfo;
+            document.getElementById('getGroupBlackList').onclick = getGroupBlackList;
+            document.getElementById('destroyGroup').onclick = destroyGroup;
+            document.getElementById('addGroupMembers').onclick = addGroupMembers;
+            document.getElementById('removeGroupMemberFromBlackList').onclick = removeFromGroupBlackList;
+
+            document.getElementById('getRoasters').onclick = getRoasters;
+            document.getElementById('addFriends').onclick = addFriends;
+            document.getElementById('removeRoster').onclick = removeFriends;
+
+            document.getElementById('rtCall').onclick = call;
+            document.getElementById('rtEndCall').onclick = endCall;
+            document.getElementById('rtAcceptCall').onclick = acceptCall;
+            document.getElementById('rtAudioCall').onclick = audioCall;
+
+            document.getElementById('logout').onclick = logout;
+            document.getElementById('reConn').onclick = reConn;
+
+            // send thumbnail message (load into message module)
+            document.addEventListener('paste', function (e) {
+                if (e.clipboardData && e.clipboardData.types) {
+                    if (e.clipboardData.items.length > 0) {
+                        if (/^image\/\w+$/.test(e.clipboardData.items[0].type)) {
+                            var blob = e.clipboardData.items[0].getAsFile();
+                            var url = window.URL.createObjectURL(blob);
+                            var id = conn.getUniqueId(); // create local message id
+
+                            var msg = new WebIM.message('img', id);
+                            msg.set({
+                                apiUrl: WebIM.config.apiURL,
+                                file: {
+                                    data: blob,
+                                    url: url
+                                },
+                                to: 'asdfghj',
+                                roomType: false,
+                                chatType: 'singleChat',
+                                onFileUploadError: function (error) {
+                                    console.log("Error");
+                                },
+                                onFileUploadComplete: function (data) {
+                                    console.log("Complete", data);
+                                },
+                                success: function (id) {
+                                    console.log("Success");
+                                }
+                            });
+                            conn.send(msg.body);
+                        }
+                    }
+                }
+            });
+
+            options = {
+                apiUrl: WebIM.config.apiURL,
+                user: "apple",
+                pwd: "apple",
+                appKey: WebIM.config.appkey
+            };
+            conn.open(options);
+        };
+    </script>
+</body>
+
+</html>
+>>>>>>> origin/2.0

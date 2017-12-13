@@ -16,8 +16,18 @@ if (typeof module === 'object' && typeof module.exports === 'object') {
 
 
 /**
+<<<<<<< HEAD
  * check if support pranswer
  */
 if (/Chrome/.test(navigator.userAgent)) {
     WebIM.WebRTC.supportPRAnswer = (navigator.userAgent.split("Chrome/")[1].split(".")[0] >= 50) ? true : false;
 }
+=======
+ * 判断是否支持pranswer
+ */
+if (/Chrome/.test(navigator.userAgent)) {
+    WebIM.WebRTC.supportPRAnswer = (navigator.userAgent.split("Chrome/")[1].split(".")[0] >= 50) ? true : false;
+}
+
+//WebIM.WebRTC.supportPRAnswer = false;
+>>>>>>> origin/2.0
