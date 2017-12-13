@@ -41,9 +41,6 @@ const { Types, Creators } = createActions({
 
                     dispatch(Creators.setLoginToken(username, token.access_token))
                     dispatch(Creators.setLoginSuccess(username))
-                },
-                error: e => {
-                    dispatch(Creators.stopLoging())
                 }
             })
         }

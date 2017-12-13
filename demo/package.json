@@ -5,7 +5,6 @@
   "devDependencies": {
     "@storybook/react": "^3.1.9",
     "babel-plugin-import": "^1.4.0",
-    "babel-plugin-transform-runtime": "^6.23.0",
     "crypto-js": "^3.1.9-1",
     "less": "^2.7.2",
     "less-loader": "^4.0.5",
@@ -60,7 +59,6 @@
     "react-loadable": "^4.0.3",
     "react-redux": "^5.0.5",
     "react-router-dom": "^4.1.1",
-    "react-router-redux": "next",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
     "reduxsauce": "^0.6.0",

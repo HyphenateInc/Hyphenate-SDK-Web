@@ -54,7 +54,7 @@ class GroupInfo extends React.Component {
             }
             const { room } = this.props
             const info = {
-                groupId: room.groupId,
+                groupId: room.roomId,
                 groupName: values.name
             }
             if (!_.isEmpty(values.description)) _.merge(info, { description: values.description })
@@ -79,7 +79,7 @@ class GroupInfo extends React.Component {
 
     saveFormRef = form => (this.form = form)
 
-    handleDissolveGroup = () => this.props.dissolveGroupAsync(this.props.room.groupId)
+    handleDissolveGroup = () => this.props.dissolveGroupAsync(this.props.room.roomId)
 
     handleMenuClick = ({ item, key, selectedKeys }) => {
         switch (key) {
@@ -92,19 +92,18 @@ class GroupInfo extends React.Component {
             this.showModal()
             break
         case "4":
-            console.log(this.props)
-            this.props.getGroupBlackListAsync(this.props.room.groupId)
+            this.props.getGroupBlackListAsync(this.props.room.roomId)
             this.setState({ blackListVisible: true })
             break
         case "5":
-            const { groupId, name } = this.props.room
+            const { roomId, name } = this.props.room
             this.props.switchRightSider({ rightSiderOffset: 0 })
-            this.props.dissolveGroupAsync({ groupId: groupId, groupName: name })
+            this.props.dissolveGroupAsync({ groupId: roomId, groupName: name })
             break
         case "6":
             const { login } = this.props
             const username = _.get(login, "username")
-            this.props.quitGroupAsync(this.props.room.groupId, username)
+            this.props.quitGroupAsync(this.props.room.roomId, username)
             break
         default:
             break
@@ -113,7 +112,7 @@ class GroupInfo extends React.Component {
 
     handleGetBlackList = () => {
         const { room } = this.props
-        this.props.getGroupBlackListAsync(room.groupId)
+        this.props.getGroupBlackListAsync(room.roomId)
         this.setState({ blackListVisible: true })
     }
 
@@ -122,7 +121,7 @@ class GroupInfo extends React.Component {
     add = () => {
         const value = this.state.users
         if (!value || value.length === 0) return
-        this.props.inviteToGroupAsync(this.props.room.groupId, value)
+        this.props.inviteToGroupAsync(this.props.room.roomId, value)
         this.closeInviteModal()
     }
 
@@ -131,11 +130,11 @@ class GroupInfo extends React.Component {
     }
 
     onRemoveGroupBlockSingle = user =>
-        this.props.removeGroupBlockSingleAsync(this.props.room.groupId, user)
+        this.props.removeGroupBlockSingleAsync(this.props.room.roomId, user)
 
     renderGroupOperationMenu = () => {
         const { login, groupMember, room } = this.props
-        const user = _.get(groupMember, [ room.groupId, "byName", _.get(login, "username") ], {
+        const user = _.get(groupMember, [ room.roomId, "byName", _.get(login, "username") ], {
             name: null,
             affiliation: null
         })
@@ -189,7 +188,7 @@ class GroupInfo extends React.Component {
             // entities
         } = this.props
         const isLoading = _.get(this.props, "entities.group.isLoading", false)
-        const blacklist = _.get(groupMember, [ room.groupId, "blacklist" ], [])
+        const blacklist = _.get(groupMember, [ room.roomId, "blacklist" ], [])
 
         const menu = this.renderGroupOperationMenu()
 
@@ -243,7 +242,7 @@ class GroupInfo extends React.Component {
                     </span>
                 </h3>
                 <p className="gray fs-117em">
-                    {this.props.room.groupName}
+                    {this.props.room.name}
                 </p>
                 {/* <h3>Group Description</h3>
                 <p className='gray fs-117em'>{this.props.room.description}</p> */}

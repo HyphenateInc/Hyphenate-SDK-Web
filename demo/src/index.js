@@ -26,11 +26,9 @@ const rootEl = document.getElementById("root")
 const render = Component =>
     ReactDOM.render(
         <Provider store={store}>
-            {/* <ConnectedRouter history={history}> */}
             <Router history={history}>
-                <Component/>
+                <Component />
             </Router>
-            {/* </ConnectedRouter> */}
         </Provider>,
         rootEl
     )

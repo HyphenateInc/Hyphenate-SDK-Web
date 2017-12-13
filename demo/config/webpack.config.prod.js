@@ -57,13 +57,7 @@ module.exports = {
 	// You can exclude the *.map files from the build during deployment.
 	devtool: "source-map",
 	// In production, we only want to load the polyfills and the app code.
-	entry: {
-		"WebIMConfig": paths.appConfigJs,
-		"index": [require.resolve("./polyfills"), paths.appIndexJs]
-	},
-	externals: {
-		WebIMConfig: 'WebIMConfig'
-	},
+	entry: [require.resolve("./polyfills"), paths.appIndexJs],
 	watch: true,
 	output: {
 		// The build folder.
@@ -73,8 +67,6 @@ module.exports = {
 		// We don't currently advertise code splitting but Webpack supports it.
 		filename: "static/js/[name].[chunkhash:8].js",
 		chunkFilename: "static/js/[name].[chunkhash:8].chunk.js",
-        library: 'WebIMConfig',
-        libraryTarget: 'umd',
 		// We inferred the "public path" (such as / or /my-project) from homepage.
 		publicPath: publicPath,
 		// Point sourcemap entries to original disk location (format as URL on Windows)
@@ -109,11 +101,7 @@ module.exports = {
 			// To fix this, we prevent you from importing files out of src/ -- if you'd like to,
 			// please link the files into your node_modules/ and let module-resolution kick in.
 			// Make sure your source files are compiled, as they will not be processed in any way.
-			new ModuleScopePlugin(paths.appSrc),
-			new webpack.optimize.CommonsChunkPlugin({
-				name: "WebIMConfig",
-				chunks: ["WebIMConfig"]
-			})
+			new ModuleScopePlugin(paths.appSrc)
 		]
 	},
 	module: {
@@ -176,7 +164,6 @@ module.exports = {
 			// Process JS with Babel.
 			{
 				test: /\.(js|jsx)$/,
-				exclude: paths.appConfigJs,
 				include: paths.appSrc,
 				loader: require.resolve("babel-loader"),
 				options: {
@@ -290,8 +277,6 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			inject: true,
 			template: paths.appHtml,
-			chunks: ['WebIMConfig', 'index'],
-			chunksSortMode: 'manual',
 			minify: {
 				removeComments: true,
 				collapseWhitespace: true,
@@ -312,7 +297,6 @@ module.exports = {
 		new webpack.DefinePlugin(env.stringified),
 		// Minify the code.
 		new webpack.optimize.UglifyJsPlugin({
-            exclude: /WebIMConfig/,
 			compress: {
 				warnings: false,
 				// Disabled because of an issue with Uglify breaking seemingly valid code:

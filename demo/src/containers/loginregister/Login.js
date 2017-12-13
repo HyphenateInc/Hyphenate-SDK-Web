@@ -37,11 +37,10 @@ const Login = ({
     // const b = a.b.c
     // console.log(messageList, "---")
 
-    const logo = WebIM.config.i18n == "cn" ? <i className='font'>V</i> : <i className="iconfont icon-hyphenate"/>
     return (
         <div className="form x-login">
             <div className="logo">
-                {logo}
+                <i className="iconfont icon-hyphenate" />
                 <span>{config.name}</span>
             </div>
             <form>
@@ -52,7 +51,7 @@ const Login = ({
                                 required: true
                             }
                         ]
-                    })(<Input size="large" onPressEnter={handleOk} placeholder={I18N.username}/>)}
+                    })(<Input size="large" onPressEnter={handleOk} placeholder={I18N.username} />)}
                 </FormItem>
                 <FormItem hasFeedback>
                     {getFieldDecorator("password", {
@@ -61,7 +60,7 @@ const Login = ({
                                 required: true
                             }
                         ]
-                    })(<Input size="large" type="password" onPressEnter={handleOk} placeholder={I18N.password}/>)}
+                    })(<Input size="large" type="password" onPressEnter={handleOk} placeholder={I18N.password} />)}
                 </FormItem>
                 <FormItem hasFeedback>{getFieldDecorator("type")(<Checkbox>{I18N.tokenSignin}</Checkbox>)}</FormItem>
                 <Row>

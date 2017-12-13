@@ -127,12 +127,7 @@ class Chat extends React.Component {
     handleEmojiSelect(v) {
         this.setState({
             value: (this.state.value || "") + v.key
-        }, () => {
-            this.logger.info("callback")
-            this.logger.info(this.state.value)
         })
-        this.logger.info("async")
-        this.logger.info(this.state.value)
         this.input.focus()
     }
 
@@ -156,6 +151,9 @@ class Chat extends React.Component {
     }
 
     handleChange(e) {
+        // 场景1：正常+ -
+        // 场景2：从中间位置+ - -> 如果删除一个字符后字符串匹配，则非中间位置
+        // 场景3：删除操作可以从textInput直接编辑，适应于以上情况
         const v = e.target.value
         const splitValue = this.state.value ? this.state.value.split("") : []
         splitValue.pop()
@@ -207,6 +205,7 @@ class Chat extends React.Component {
     handleRightIconClick() {
         const { selectTab } = this.state
         if (selectTab === "group") {
+            // 显示群组侧边栏
             const rightSiderOffset = -1 * config.RIGHT_SIDER_WIDTH
             this.props.switchRightSider({ rightSiderOffset })
         }
